@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('tanggal_lahir')->nullable();
             $table->string('tempat_lahir')->nullable();
             $table->text('alamat')->nullable();
-            $table->enum('role', ['admin', 'guru']);
+            $table->enum('role', ['administrator', 'guru']);
             $table->string('foto_profil')->nullable();
             $table->string('verify_token')->nullable();
             $table->string('email')->unique();

@@ -57,14 +57,14 @@
                       <label for="role">Role</label>
                       <select id="role" name="role" class="form-control" required>
                         <option value="">-- Pilih Role --</option>
-                        <option value="admin">Admin</option>
+                        <option value="administrator">Administrator</option>
                         <option value="guru">Guru</option>
                       </select>
                     </div>
 
                     <div class="form-group">
                       <label for="token">Token</label>
-                      <input type="token" id="token" name="token" class="form-control" required>
+                      <input type="password" id="token" name="token" class="form-control" required>
                     </div>
 
                     <div class="form-group">

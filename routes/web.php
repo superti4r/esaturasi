@@ -16,8 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['guest'])->group(function(){
-    Route::get('/', function () {return view('welcome');});
+Route::middleware(['guest'])->group(function () {
+    Route::get('/', function () {
+        return view('welcome');
+    });
     Route::get('/auth', [AuthController::class, 'indexlogin'])->name('login');
     Route::post('/auth', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'indexregister'])->name('register');
@@ -25,12 +27,12 @@ Route::middleware(['guest'])->group(function(){
     Route::get('/verify/{verify_token}', [AuthController::class, 'verify']);
 });
 
-Route::middleware(['auth', 'roleaccess:admin'])->group(function(){
+Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::redirect('/home', '/administrator');
     Route::get('/administrator', [AdminController::class, 'index'])->name('dashboard.admin');
 });
 
-Route::middleware(['auth', 'roleaccess:guru'])->group(function(){
+Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
     Route::redirect('/home', '/guru');
     Route::get('/guru', [GuruController::class, 'index'])->name('dashboard.guru');
 });
