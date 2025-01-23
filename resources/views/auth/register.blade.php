@@ -57,8 +57,8 @@
                       <label for="role">Role</label>
                       <select id="role" name="role" class="form-control" required>
                         <option value="">-- Pilih Role --</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Guru">Guru</option>
+                        <option value="admin">Admin</option>
+                        <option value="guru">Guru</option>
                       </select>
                     </div>
 

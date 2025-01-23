@@ -31,10 +31,10 @@ class AuthController extends Controller
 
         if (Auth::attempt($infologin)){
             if(Auth::user()->email_verified_at != null){
-                if(Auth::user()->role === 'Admin') {
-                    return redirect()->route('dashboard-admin')->with('success', 'Halo Admin');
-                } else if (Auth::user()->role === 'Guru') {
-                    return redirect()->route('dashboard-guru')->with('success', 'Halo Guru');
+                if(Auth::user()->role === 'admin') {
+                    return redirect()->route('dashboard.admin')->with('success', 'Halo Admin');
+                } else if (Auth::user()->role === 'guru') {
+                    return redirect()->route('dashboard.guru')->with('success', 'Halo Guru');
                 }
             } else{
                 Auth::logout();
@@ -52,7 +52,7 @@ class AuthController extends Controller
         $request->validate([
             'nik' => 'required|max:16',
             'nama' => 'required|min:5',
-            'role' => 'required|in:Admin,Guru',
+            'role' => 'required|in:admin,guru',
             'token' => 'required|string',
             'email' => 'required|unique:users|email',
             'password' => 'required|min:6',
