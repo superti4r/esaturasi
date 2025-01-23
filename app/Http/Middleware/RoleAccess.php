@@ -15,18 +15,15 @@ class RoleAccess
      */
     public function handle(Request $request, Closure $next, $role): Response
     {
-        // Cek jika user belum terverifikasi
         if (auth()->user()->email_verified_at === null) {
-            auth()->logout(); // Logout pengguna yang belum terverifikasi
+            auth()->logout();
             return redirect()->route('login')->withErrors('Akun Anda belum terverifikasi. Harap verifikasi terlebih dahulu.');
         }
 
-        // Cek jika peran user sesuai
         if (auth()->user()->role === $role) {
             return $next($request);
         }
 
-        // Arahkan ke halaman sesuai role jika tidak sesuai
         $url = "/" . auth()->user()->role;
         return redirect($url)->withErrors("Anda tidak diperbolehkan mengakses halaman ini!");
     }

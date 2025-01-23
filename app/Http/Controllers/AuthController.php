@@ -32,7 +32,6 @@ class AuthController extends Controller
         ];
 
         if (Auth::attempt($infologin)) {
-            // Cek apakah akun sudah terverifikasi
             if (Auth::user()->email_verified_at != null) {
                 if (Auth::user()->role === 'administrator') {
                     return redirect()->route('dashboard.admin')->with('success', 'Halo Admin');
