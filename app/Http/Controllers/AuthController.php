@@ -113,4 +113,9 @@ class AuthController extends Controller
             return redirect()->route('login')->withErrors('Key tidak valid. Pastikan Anda telah melakukan registrasi.')->withInput();
         }
     }
+
+    public function logout(){
+        Auth::logout();
+        return redirect('/auth');
+    }
 }

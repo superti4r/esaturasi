@@ -36,3 +36,5 @@ Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
     Route::redirect('/home', '/guru');
     Route::get('/guru', [GuruController::class, 'index'])->name('dashboard.guru');
 });
+
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
