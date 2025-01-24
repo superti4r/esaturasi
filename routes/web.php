@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DataUserController;
 use App\Http\Controllers\GuruController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,7 +30,14 @@ Route::middleware(['guest'])->group(function () {
 
 Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::redirect('/home', '/administrator');
-    Route::get('/administrator', [AdminController::class, 'index'])->name('dashboard.admin');
+    Route::get('/administrator', [AdminController::class, 'index'])->name('administrator');
+    Route::get('/administrator/user', [DataUserController::class, 'index'])->name('administrator.user');
+    Route::get('/administrator/user/add', [DataUserController::class, 'add'])->name('administrator.user.add');
+    Route::post('/administrator/user/add', [DataUserController::class, 'store'])->name('administrator.user.add.post');
+    Route::get('/administrator/user/edit/{id}', [DataUserController::class, 'edit'])->name('administrator.user.edit');
+    Route::put('/administrator/user/edit/{id}', [DataUserController::class, 'update'])->name('administrator.user.edit.post');
+    Route::get('/administrator/user/view/{id}', [DataUserController::class, 'view'])->name('administrator.user.view');
+    Route::post('/administrator/user/delete/{id}', [DataUserController::class, 'delete'])->name('administrator.user.delete');
 });
 
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
