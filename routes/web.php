@@ -37,7 +37,8 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::get('/administrator/user/edit/{id}', [DataUserController::class, 'edit'])->name('administrator.user.edit');
     Route::put('/administrator/user/edit/{id}', [DataUserController::class, 'update'])->name('administrator.user.edit.post');
     Route::get('/administrator/user/view/{id}', [DataUserController::class, 'view'])->name('administrator.user.view');
-    Route::post('/administrator/user/delete/{id}', [DataUserController::class, 'delete'])->name('administrator.user.delete');
+    Route::delete('/administrator/user/delete/{id}', [DataUserController::class, 'delete'])->name('administrator.user.delete');
+    Route::post('/administrator/user/delete/selected', [DataUserController::class, 'bulkdelete'])->name('administrator.user.bulkdelete');
 });
 
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {

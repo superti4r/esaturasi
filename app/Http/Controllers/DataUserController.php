@@ -31,6 +31,28 @@ class DataUserController extends Controller
         return redirect('/administrator/user');
     }
 
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer|exists:users,id',
+        ]);
+
+        try {
+            ModelUser::whereIn('id', $request->ids)->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data yang dipilih berhasil dihapus.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menghapus data.',
+            ], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         $request->validate([
