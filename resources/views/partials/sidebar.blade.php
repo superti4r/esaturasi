@@ -10,7 +10,9 @@
         <ul class="sidebar-menu">
             <li class="menu-header">Dashboard</li>
             <li class="nav-item dropdown">
-                <a href="#" class="nav-link"><i class="fas fa-fire"></i><span>Dashboard</span></a>
+                <a href="{{ Auth::user()->role === 'administrator' ? '/administrator' : '/guru' }}" class="nav-link">
+                    <i class="fas fa-fire"></i><span>Dashboard</span>
+                </a>
             </li>
             @if(auth()->user()->role === 'administrator')
             <li class="menu-header">Admin</li>

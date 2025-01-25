@@ -33,10 +33,11 @@ class AuthController extends Controller
 
         if (Auth::attempt($infologin)) {
             if (Auth::user()->email_verified_at != null) {
+                $nama = Auth::user()->nama;
                 if (Auth::user()->role === 'administrator') {
-                    return redirect()->route('dashboard.admin')->with('success', 'Halo Admin');
+                    return redirect()->route('administrator')->with('success', "Selamat datang, $nama");
                 } else if (Auth::user()->role === 'guru') {
-                    return redirect()->route('dashboard.guru')->with('success', 'Halo Guru');
+                    return redirect()->route('guru')->with('success', "Selamat datang, $nama");
                 }
             } else {
                 Auth::logout();

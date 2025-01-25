@@ -62,7 +62,7 @@ class DataUserController extends Controller
             'tempat_lahir' => 'nullable|string',
             'alamat' => 'nullable|string',
             'role' => 'required',
-            'foto_profil' => 'nullable|image|max:2048',
+            'cropped_image' => 'nullable',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'verified' => 'required|boolean',
@@ -77,12 +77,23 @@ class DataUserController extends Controller
         $data->role = $request->role;
         $data->email = $request->email;
         $data->password = Hash::make($request->password);
-        $data->verify_token = Str::random(100);
 
-        if ($request->hasFile('foto_profil')) {
-            $file = $request->file('foto_profil');
-            $path = $file->store('public/foto_profil');
-            $data->foto_profil = str_replace('public/', '', $path);
+        if ($request->filled('cropped_image')) {
+            $imageData = $request->input('cropped_image');
+            $image = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $imageData));
+            $imageName = 'foto_profil/' . uniqid() . '.jpg';
+            $imagePath = storage_path('app/public/' . $imageName);
+
+            if (!is_dir(storage_path('app/public/foto_profil'))) {
+                mkdir(storage_path('app/public/foto_profil'), 0775, true);
+            }
+
+            $success = file_put_contents($imagePath, $image);
+            if ($success) {
+                $data->foto_profil = $imageName;
+            } else {
+                return back()->withErrors('Gambar gagal diunggah.');
+            }
         }
 
         if ($request->verified) {
@@ -90,7 +101,6 @@ class DataUserController extends Controller
         }
 
         $data->save();
-
         Session::flash('success', 'User berhasil ditambahkan');
         return redirect('/administrator/user');
     }
@@ -110,9 +120,10 @@ class DataUserController extends Controller
             'tempat_lahir' => 'nullable|string',
             'alamat' => 'nullable|string',
             'role' => 'required',
-            'foto_profil' => 'nullable|image|max:2048',
+            'cropped_image' => 'nullable',
             'email' => 'required|email|unique:users,email,' . $id,
             'verified' => 'required|boolean',
+            'password' => 'nullable|min:8',
         ]);
 
         $user = ModelUser::findOrFail($id);
@@ -124,10 +135,30 @@ class DataUserController extends Controller
         $user->role = $request->role;
         $user->email = $request->email;
 
-        if ($request->hasFile('foto_profil')) {
-            $file = $request->file('foto_profil');
-            $path = $file->store('public/foto_profil');
-            $user->foto_profil = str_replace('public/', '', $path);
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->password);
+        }
+
+        if ($request->filled('cropped_image')) {
+            $imageData = $request->input('cropped_image');
+            $image = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $imageData));
+            $imageName = 'foto_profil/' . uniqid() . '.jpg';
+            $imagePath = storage_path('app/public/' . $imageName);
+
+            if (!is_dir(storage_path('app/public/foto_profil'))) {
+                mkdir(storage_path('app/public/foto_profil'), 0775, true);
+            }
+
+            $success = file_put_contents($imagePath, $image);
+            if ($success) {
+                if ($user->foto_profil && file_exists(storage_path('app/public/' . $user->foto_profil))) {
+                    unlink(storage_path('app/public/' . $user->foto_profil));
+                }
+
+                $user->foto_profil = $imageName;
+            } else {
+                return back()->withErrors('Gambar gagal diunggah.');
+            }
         }
 
         if ($request->verified) {
@@ -141,4 +172,10 @@ class DataUserController extends Controller
         Session::flash('success', 'User berhasil diperbarui');
         return redirect('/administrator/user');
     }
+
+    public function view($id)
+{
+    $user = ModelUser::findOrFail($id);
+    return view('administrator.user.view', compact('user'));
+}
 }

@@ -43,7 +43,7 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
 
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
     Route::redirect('/home', '/guru');
-    Route::get('/guru', [GuruController::class, 'index'])->name('dashboard.guru');
+    Route::get('/guru', [GuruController::class, 'index'])->name('guru');
 });
 
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');

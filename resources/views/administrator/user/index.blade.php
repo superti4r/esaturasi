@@ -184,14 +184,22 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal!',
-                                text: data.message,
+                                text: data.message || 'Terjadi kesalahan saat menghapus data.',
                             });
                         }
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan pada server.',
+                        });
+                        console.error('Error:', error);
+                    });
                 }
             });
         });
     });
 </script>
+
 @endsection
