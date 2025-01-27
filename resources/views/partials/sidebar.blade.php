@@ -24,7 +24,7 @@
                 </ul>
             </li>
             <li class="nav-item dropdown">
-                <a href="#" class="nav-link"><i class="fas fa-building"></i> <span>Kelas</span></a>
+                <a href="{{ route ('administrator.kelas') }}" class="nav-link"><i class="fas fa-building"></i> <span>Kelas</span></a>
                 <a href="{{ route ('administrator.jurusan') }}" class="nav-link"><i class="fas fa-bookmark"></i> <span>Jurusan</span></a>
                 <a href="#" class="nav-link"><i class="fas fa-list"></i> <span>Jadwal</span></a>
                 <a href="{{ route ('administrator.mapel')}}" class="nav-link"><i class="fas fa-book"></i> <span>Mata Pelajaran</span></a>

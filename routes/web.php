@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DataUserController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JurusanController;
+use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
 use Illuminate\Support\Facades\Route;
 
@@ -58,6 +59,14 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::put('/administrator/mapel/edit/{id}', [MataPelajaranController::class, 'update'])->name('administrator.mapel.update');
     Route::delete('/administrator/mapel/delete/{id}', [MataPelajaranController::class, 'delete'])->name('administrator.mapel.delete');
     Route::post('/administrator/mapel/selected', [MataPelajaranController::class, 'bulkdelete'])->name('administrator.mapel.bulkdelete');
+
+    Route::get('/administrator/kelas', [KelasController::class, 'index'])->name('administrator.kelas');
+    Route::get('/administrator/kelas/add', [KelasController::class, 'add'])->name('administrator.kelas.add');
+    Route::post('/administrator/kelas/add', [KelasController::class, 'store'])->name('administrator.kelas.post');
+    Route::get('/administrator/kelas/edit/{id}', [KelasController::class, 'edit'])->name('administrator.kelas.edit');
+    Route::put('/administrator/kelas/edit/{id}', [KelasController::class, 'update'])->name('administrator.kelas.update');
+    Route::delete('/administrator/kelas/delete/{id}', [KelasController::class, 'delete'])->name('administrator.kelas.delete');
+    Route::post('/administrator/kelas/delete/selected', [KelasController::class, 'bulkdelete'])->name('administrator.kelas.bulkdelete');
 });
 
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
