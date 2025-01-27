@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BabController;
 use App\Http\Controllers\DataUserController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JurusanController;
@@ -67,6 +68,11 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::put('/administrator/kelas/edit/{id}', [KelasController::class, 'update'])->name('administrator.kelas.update');
     Route::delete('/administrator/kelas/delete/{id}', [KelasController::class, 'delete'])->name('administrator.kelas.delete');
     Route::post('/administrator/kelas/delete/selected', [KelasController::class, 'bulkdelete'])->name('administrator.kelas.bulkdelete');
+
+    Route::get('administrator/bab', [BabController::class, 'index'])->name('administrator.bab');
+    Route::get('administrator/bab/add', [BabController::class, 'add'])->name('administrator.bab.add');
+    Route::post('administrator/bab/add', [BabController::class, 'store'])->name('administrator.bab.post');
+    Route::delete('administrator/bab/delete', [BabController::class, 'delete'])->name('administrator.bab.delete');
 });
 
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
