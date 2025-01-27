@@ -35,13 +35,16 @@ class JurusanController extends Controller
         return redirect()->route('administrator.jurusan')->with('success', 'Jurusan berhasil ditambahkan.');
     }
 
-    public function edit(Jurusan $jurusan)
+    public function edit($id)
     {
+        $jurusan = Jurusan::findOrFail($id);
         return view('administrator.jurusan.edit', compact('jurusan'));
     }
 
-    public function update(Request $request, Jurusan $jurusan)
+    public function update(Request $request, $id)
     {
+        $jurusan = Jurusan::findOrFail($id);
+
         $validator = Validator::make($request->all(), [
             'kode_jurusan' => 'required|string|max:5|unique:jurusan,kode_jurusan,' . $jurusan->id,
             'nama_jurusan' => 'required|string',
@@ -56,9 +59,11 @@ class JurusanController extends Controller
         return redirect()->route('administrator.jurusan')->with('success', 'Jurusan berhasil diperbarui.');
     }
 
-    public function delete(Jurusan $jurusan)
+    public function delete($id)
     {
+        $jurusan = Jurusan::findOrFail($id);
         $jurusan->delete();
+
         return redirect()->route('administrator.jurusan')->with('success', 'Jurusan berhasil dihapus.');
     }
 

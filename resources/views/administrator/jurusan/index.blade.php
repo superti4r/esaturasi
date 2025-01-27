@@ -28,7 +28,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped" id="table-2">
+                            <table class="table table-striped" id="table-jurusan">
                                 <thead>
                                     <tr>
                                         <th class="text-center">
@@ -77,12 +77,16 @@
     </div>
 </section>
 @endsection
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @section('scripts')
 
 <script>
     $(document).ready(function() {
+        $('#table-jurusan').DataTable();
+
         $('#checkbox-all').on('change', function() {
             $('.checkbox-item').prop('checked', this.checked);
         });

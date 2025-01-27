@@ -6,8 +6,8 @@
         <h1>Edit Jurusan</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
-            <div class="breadcrumb-item"><a href="{{ route('administrator.jurusan') }}">Jurusan</a></div>
-            <div class="breadcrumb-item">Edit Jurusan</div>
+            <div class="breadcrumb-item active"><a href="/administrator/jurusan">Jurusan</a></div>
+            <div class="breadcrumb-item">>Edit</div>
         </div>
     </div>
     <div class="section-body">

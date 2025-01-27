@@ -5,8 +5,8 @@
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
   <title>Register &mdash; E-Saturasi</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" href="{{ asset('_sys/css/style.css') }}">
-  <link rel="stylesheet" href="{{ asset('_sys/css/components.css') }}">
+  <link rel="stylesheet" href="{{ asset('_sys/css/module/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('_sys/css/module/components.css') }}">
 </head>
 
 <body>
@@ -96,8 +96,8 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-  <script src="{{ asset('_sys/js/stisla.js') }}"></script>
-  <script src="{{ asset('_sys/js/scripts.js') }}"></script>
-  <script src="{{ asset('_sys/js/custom.js') }}"></script>
+  <script src="{{ asset('_sys/js/module/stisla.js') }}"></script>
+  <script src="{{ asset('_sys/js/module/scripts.js') }}"></script>
+  <script src="{{ asset('_sys/js/module/custom.js') }}"></script>
 </body>
 </html>

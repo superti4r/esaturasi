@@ -5,9 +5,9 @@
     <div class="section-header">
         <h1>Detail User</h1>
         <div class="section-header-breadcrumb">
-            <div class="breadcrumb-item"><a href="/administrator">Dashboard</a></div>
-            <div class="breadcrumb-item"><a href="{{ route('administrator.user') }}">User</a></div>
-            <div class="breadcrumb-item">Detail</div>
+            <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
+            <div class="breadcrumb-item active"><a href="/administrator/user">User</a></div>
+            <div class="breadcrumb-item">Detail User</div>
         </div>
     </div>
 

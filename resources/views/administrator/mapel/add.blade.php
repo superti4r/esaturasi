@@ -6,7 +6,7 @@
         <h1>Tambah Mata Pelajaran</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
-            <div class="breadcrumb-item"><a href="{{ route('administrator.mapel') }}">Mata Pelajaran</a></div>
+            <div class="breadcrumb-item active"><a href="/administrator/mapel">Mata Pelajaran</a></div>
             <div class="breadcrumb-item">Tambah Mata Pelajaran</div>
         </div>
     </div>
@@ -48,8 +48,9 @@
 </section>
 @endsection
 
-@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@section('scripts')
 @if(session('success'))
 <script>
     Swal.fire({

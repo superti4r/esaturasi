@@ -5,8 +5,9 @@
     <div class="section-header">
         <h1>Tambah Data User</h1>
         <div class="section-header-breadcrumb">
-            <div class="breadcrumb-item"><a href="/administrator/user">User</a></div>
-            <div class="breadcrumb-item">Tambah</div>
+            <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
+            <div class="breadcrumb-item active"><a href="/administrator/user">User</a></div>
+            <div class="breadcrumb-item">Tambah User</div>
         </div>
     </div>
 
