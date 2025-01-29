@@ -31,7 +31,7 @@
                 <a href="#" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> <span>Pembagian Jadwal</span></a>
                 <a href="#" class="nav-link"><i class="fas fa-user-clock"></i> <span>Tahun Ajaran</span></a>
                 <a href="{{ route ('administrator.bab') }}" class="nav-link"><i class="fas fa-table"></i> <span>Bab</span></a>
-                <a href="#" class="nav-link"><i class="fas fa-volume-up"></i> <span>Pemberitahuan</span></a>
+                <a href="{{ route ('administrator.pengumuman') }}" class="nav-link"><i class="fas fa-volume-up"></i> <span>Pengumuman</span></a>
             </li>
             @endif
             @if(auth()->user()->role === 'guru')

@@ -8,6 +8,7 @@ use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
+use App\Http\Controllers\PengumumanController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -73,6 +74,15 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::get('administrator/bab/add', [BabController::class, 'add'])->name('administrator.bab.add');
     Route::post('administrator/bab/add', [BabController::class, 'store'])->name('administrator.bab.post');
     Route::delete('administrator/bab/delete', [BabController::class, 'delete'])->name('administrator.bab.delete');
+
+    Route::get('/administrator/pengumuman', [PengumumanController::class, 'index'])->name('administrator.pengumuman');
+    Route::get('/administrator/pengumuman/add', [PengumumanController::class, 'add'])->name('administrator.pengumuman.add');
+    Route::post('/administrator/pengumuman/add', [PengumumanController::class, 'store'])->name('administrator.pengumuman.post');
+    Route::get('/administrator/pengumuman/edit/{id}', [PengumumanController::class, 'edit'])->name('administrator.pengumuman.edit');
+    Route::put('/administrator/pengumuman/edit/{id}', [PengumumanController::class, 'update'])->name('administrator.pengumuman.update');
+    Route::get('/administrator/pengumuman/view/{id}', [PengumumanController::class, 'view'])->name('administrator.pengumuman.view');
+    Route::delete('/administrator/pengumuman/delete/{id}', [PengumumanController::class, 'delete'])->name('administrator.pengumuman.delete');
+    Route::post('/administrator/pengumuman/delete/selected', [PengumumanController::class, 'bulkdelete'])->name('administrator.pengumuman.bulkdelete');
 });
 
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
