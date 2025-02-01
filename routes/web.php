@@ -52,7 +52,7 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::get('/administrator/jurusan/edit/{id}', [JurusanController::class, 'edit'])->name('administrator.jurusan.edit');
     Route::put('/administrator/jurusan/edit/{id}', [JurusanController::class, 'update'])->name('administrator.jurusan.update');
     Route::delete('/administrator/jurusan/delete/{id}', [JurusanController::class, 'delete'])->name('administrator.jurusan.delete');
-    Route::post('/administrator/jurusan/selected', [JurusanController::class, 'bulkdelete'])->name('administrator.jurusan.bulkdelete');
+    Route::post('/administrator/jurusan/delete/selected', [JurusanController::class, 'bulkdelete'])->name('administrator.jurusan.bulkdelete');
 
     Route::get('/administrator/mapel', [MataPelajaranController::class, 'index'])->name('administrator.mapel');
     Route::get('/administrator/mapel/add', [MataPelajaranController::class, 'add'])->name('administrator.mapel.add');
@@ -60,7 +60,7 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::get('/administrator/mapel/edit/{id}', [MataPelajaranController::class, 'edit'])->name('administrator.mapel.edit');
     Route::put('/administrator/mapel/edit/{id}', [MataPelajaranController::class, 'update'])->name('administrator.mapel.update');
     Route::delete('/administrator/mapel/delete/{id}', [MataPelajaranController::class, 'delete'])->name('administrator.mapel.delete');
-    Route::post('/administrator/mapel/selected', [MataPelajaranController::class, 'bulkdelete'])->name('administrator.mapel.bulkdelete');
+    Route::post('/administrator/mapel/delete/selected', [MataPelajaranController::class, 'bulkdelete'])->name('administrator.mapel.bulkdelete');
 
     Route::get('/administrator/kelas', [KelasController::class, 'index'])->name('administrator.kelas');
     Route::get('/administrator/kelas/add', [KelasController::class, 'add'])->name('administrator.kelas.add');
