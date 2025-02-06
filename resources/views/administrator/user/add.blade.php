@@ -17,6 +17,11 @@
             <div class="card-body">
                 <form action="{{ route('administrator.user.add.post') }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    @if($errors->has('nik'))
+                    <div class="alert alert-danger">
+                        {{ $errors->first('nik') }}
+                    </div>
+                @endif
                     <div class="form-group row">
                         <label for="nik" class="col-sm-2 col-form-label">NIK</label>
                         <div class="col-sm-10">

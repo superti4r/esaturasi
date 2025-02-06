@@ -31,7 +31,7 @@ class DataUserController extends Controller
         return redirect('/administrator/user');
     }
 
-    public function bulkDelete(Request $request)
+    public function bulkdelete(Request $request)
     {
         $request->validate([
             'ids' => 'required|array|min:1',
@@ -66,7 +66,14 @@ class DataUserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'verified' => 'required|boolean',
+
+        ], [
+            'nik.unique' => 'NIK sudah terdaftar.',
         ]);
+
+        if (ModelUser::where('nik', $request->nik)->exists()) {
+            return redirect()->back()->with('error', 'NIK sudah terdaftar!')->withInput();
+        }
 
         $data = new ModelUser();
         $data->nik = $request->nik;
@@ -88,11 +95,10 @@ class DataUserController extends Controller
                 mkdir(storage_path('app/public/foto_profil'), 0775, true);
             }
 
-            $success = file_put_contents($imagePath, $image);
-            if ($success) {
+            if (file_put_contents($imagePath, $image)) {
                 $data->foto_profil = $imageName;
             } else {
-                return back()->withErrors('Gambar gagal diunggah.');
+                return redirect()->back()->with('error', 'Gambar gagal diunggah.');
             }
         }
 
@@ -101,8 +107,7 @@ class DataUserController extends Controller
         }
 
         $data->save();
-        Session::flash('success', 'User berhasil ditambahkan');
-        return redirect('/administrator/user');
+        return redirect('/administrator/user')->with('success', 'User berhasil ditambahkan!');
     }
 
     public function edit($id)
@@ -125,6 +130,10 @@ class DataUserController extends Controller
             'verified' => 'required|boolean',
             'password' => 'nullable|min:8',
         ]);
+
+        if (ModelUser::where('nik', $request->nik)->where('id', '!=', $id)->exists()) {
+            return redirect()->back()->with('error', 'NIK sudah terdaftar!')->withInput();
+        }
 
         $user = ModelUser::findOrFail($id);
         $user->nik = $request->nik;
@@ -149,15 +158,13 @@ class DataUserController extends Controller
                 mkdir(storage_path('app/public/foto_profil'), 0775, true);
             }
 
-            $success = file_put_contents($imagePath, $image);
-            if ($success) {
+            if (file_put_contents($imagePath, $image)) {
                 if ($user->foto_profil && file_exists(storage_path('app/public/' . $user->foto_profil))) {
                     unlink(storage_path('app/public/' . $user->foto_profil));
                 }
-
                 $user->foto_profil = $imageName;
             } else {
-                return back()->withErrors('Gambar gagal diunggah.');
+                return redirect()->back()->with('error', 'Gambar gagal diunggah.');
             }
         }
 
@@ -168,14 +175,12 @@ class DataUserController extends Controller
         }
 
         $user->save();
-
-        Session::flash('success', 'User berhasil diperbarui');
-        return redirect('/administrator/user');
+        return redirect('/administrator/user')->with('success', 'User berhasil diperbarui!');
     }
 
     public function view($id)
-{
-    $user = ModelUser::findOrFail($id);
-    return view('administrator.user.view', compact('user'));
-}
+    {
+        $user = ModelUser::findOrFail($id);
+        return view('administrator.user.view', compact('user'));
+    }
 }

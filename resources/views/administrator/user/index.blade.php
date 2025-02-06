@@ -75,7 +75,7 @@
                                             <a href="{{ route('administrator.user.edit', $user->id) }}" class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            <form action="{{ route('administrator.user.delete', $user->id) }}" method="POST" style="display:inline;">
+                                            <form action="{{ route('administrator.user.delete', $user->id) }}" method="POST" class="d-inline delete-form">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-danger btn-sm btn-delete">
@@ -100,7 +100,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-
         const checkboxAll = document.getElementById('checkbox-all');
         if (checkboxAll) {
             checkboxAll.addEventListener('change', function () {
@@ -174,32 +173,16 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: data.message,
-                            }).then(() => location.reload());
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal!',
-                                text: data.message || 'Terjadi kesalahan saat menghapus data.',
-                            });
-                        }
-                    })
-                    .catch(error => {
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: 'Terjadi kesalahan pada server.',
-                        });
-                        console.error('Error:', error);
-                    });
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.message,
+                        }).then(() => location.reload());
+                    })
+                    .catch(error => console.error('Error:', error));
                 }
             });
         });
     });
 </script>
-
 @endsection
