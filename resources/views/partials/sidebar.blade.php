@@ -20,7 +20,7 @@
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-users"></i> <span>Data Pengguna</span></a>
                 <ul class="dropdown-menu">
                     <li><a class="nav-link" href="{{ route ('administrator.user') }}">User</a></li>
-                    <li><a class="nav-link" href="#">Siswa</a></li>
+                    <li><a class="nav-link" href="{{ route ('administrator.siswa') }}">Siswa</a></li>
                 </ul>
             </li>
             <li class="nav-item dropdown">

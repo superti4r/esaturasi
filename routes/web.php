@@ -9,6 +9,7 @@ use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\SiswaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,6 +46,15 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::get('/administrator/user/view/{id}', [DataUserController::class, 'view'])->name('administrator.user.view');
     Route::delete('/administrator/user/delete/{id}', [DataUserController::class, 'delete'])->name('administrator.user.delete');
     Route::post('/administrator/user/delete/selected', [DataUserController::class, 'bulkdelete'])->name('administrator.user.bulkdelete');
+
+    Route::get('/administrator/siswa', [SiswaController::class, 'index'])->name('administrator.siswa');
+    Route::get('/administrator/siswa/add', [SiswaController::class, 'add'])->name('administrator.siswa.add');
+    Route::post('/administrator/siswa/add', [SiswaController::class, 'store'])->name('administrator.siswa.store');
+    Route::get('/administrator/siswa/edit/{id}', [SiswaController::class, 'edit'])->name('administrator.siswa.edit');
+    Route::put('/administrator/siswa/edit/{id}', [SiswaController::class, 'update'])->name('administrator.siswa.update');
+    Route::get('/administrator/siswa/view/{id}', [SiswaController::class, 'view'])->name('administrator.siswa.view');
+    Route::delete('/administrator/siswa/delete/{id}', [SiswaController::class, 'delete'])->name('administrator.siswa.delete');
+    Route::post('/administrator/siswa/delete/selected', [SiswaController::class, 'bulkdelete'])->name('administrator.siswa.bulkdelete');
 
     Route::get('/administrator/jurusan', [JurusanController::class, 'index'])->name('administrator.jurusan');
     Route::get('/administrator/jurusan/add', [JurusanController::class, 'add'])->name('administrator.jurusan.add');
