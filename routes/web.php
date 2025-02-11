@@ -8,6 +8,7 @@ use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
+use App\Http\Controllers\PembagianJadwalController;
 use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\SiswaController;
 use Illuminate\Support\Facades\Route;
@@ -93,6 +94,14 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::get('/administrator/pengumuman/view/{id}', [PengumumanController::class, 'view'])->name('administrator.pengumuman.view');
     Route::delete('/administrator/pengumuman/delete/{id}', [PengumumanController::class, 'delete'])->name('administrator.pengumuman.delete');
     Route::post('/administrator/pengumuman/delete/selected', [PengumumanController::class, 'bulkdelete'])->name('administrator.pengumuman.bulkdelete');
+
+    route::get('/administrator/pembagian-jadwal', [PembagianJadwalController::class, 'index'])->name('administrator.jadwal');
+    route::get('/administrator/pembagian-jadwal/add', [PembagianJadwalController::class, 'add'])->name('administrator.jadwal.add');
+    route::post('/administrator/pembagian-jadwal/add', [PembagianJadwalController::class, 'store'])->name('administrator.jadwal.store');
+    route::get('/administrator/pembagian-jadwal/edit/{id}', [PembagianJadwalController::class, 'edit'])->name('administrator.jadwal.edit');
+    route::put('/administrator/pembagian-jadwal/edit/{id}', [PembagianJadwalController::class, 'update'])->name('administrator.jadwal.update');
+    route::delete('/administrator/pembagian-jadwal/reset/{id}', [PembagianJadwalController::class, 'reset'])->name('administrator.jadwal.reset');
+    route::post('/administrator/pembagian-jadwal/reset/', [PembagianJadwalController::class, 'resetall'])->name('administrator.jadwal.resetall');
 });
 
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
