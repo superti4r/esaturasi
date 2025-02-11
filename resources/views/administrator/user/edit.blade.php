@@ -98,16 +98,6 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="verified" class="col-sm-2 col-form-label">Status Akun</label>
-                        <div class="col-sm-10">
-                            <select name="verified" id="verified" class="form-control" required>
-                                <option value="1" {{ $user->verified ? 'selected' : '' }}>Terverifikasi</option>
-                                <option value="0" {{ !$user->verified ? 'selected' : '' }}>Tidak Terverifikasi</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
                         <div class="col-sm-10 offset-sm-2 d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary mr-2">Simpan</button>
                             <a href="/administrator/user" class="btn btn-danger">Batal</a>

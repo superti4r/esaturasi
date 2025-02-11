@@ -25,13 +25,13 @@
                     <div class="form-group row">
                         <label for="nik" class="col-sm-2 col-form-label">NIK</label>
                         <div class="col-sm-10">
-                            <input type="text" name="nik" id="nik" class="form-control" required>
+                            <input type="text" name="nik" id="nik" class="form-control" required placeholder="Masukkan NIK Anda.">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="nama" class="col-sm-2 col-form-label">Nama</label>
                         <div class="col-sm-10">
-                            <input type="text" name="nama" id="nama" class="form-control" required>
+                            <input type="text" name="nama" id="nama" class="form-control" required placeholder="Masukkan Nama Lengkap Anda.">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -43,13 +43,13 @@
                     <div class="form-group row">
                         <label for="tempat_lahir" class="col-sm-2 col-form-label">Tempat Lahir</label>
                         <div class="col-sm-10">
-                            <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control">
+                            <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control" required placeholder="Masukkan Tempat Lahir Anda.">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="alamat" class="col-sm-2 col-form-label">Alamat</label>
                         <div class="col-sm-10">
-                            <textarea name="alamat" id="alamat" class="form-control"></textarea>
+                            <textarea name="alamat" id="alamat" class="form-control" required placeholder="Masukkan Alamat Anda."></textarea>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -70,27 +70,19 @@
                             </div>
                             <button type="button" id="crop-button" class="btn btn-primary mt-3" style="display: none;">Crop & Simpan</button>
                             <input type="hidden" name="cropped_image" id="cropped_image">
+                            <small class="form-text text-muted">Pilih foto, dan sesuaikan, jangan lupa untuk di crop & simpan.</small>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="email" class="col-sm-2 col-form-label">Email</label>
                         <div class="col-sm-10">
-                            <input type="email" name="email" id="email" class="form-control" required>
+                            <input type="email" name="email" id="email" class="form-control" required placeholder="Masukkan Alamat Email AKtif Anda.">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="password" class="col-sm-2 col-form-label">Password</label>
                         <div class="col-sm-10">
-                            <input type="password" name="password" id="password" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="verified" class="col-sm-2 col-form-label">Status Akun</label>
-                        <div class="col-sm-10">
-                            <select name="verified" id="verified" class="form-control" required>
-                                <option value="1">Terverifikasi</option>
-                                <option value="0">Tidak Terverifikasi</option>
-                            </select>
+                            <input type="password" name="password" id="password" class="form-control" required placeholder="Masukkan Password Minimal 8 Karakter.">
                         </div>
                     </div>
                     <div class="form-group row">

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\User as ModelUser;
 use Illuminate\Support\Facades\Hash;
@@ -65,15 +64,9 @@ class DataUserController extends Controller
             'cropped_image' => 'nullable',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
-            'verified' => 'required|boolean',
-
         ], [
             'nik.unique' => 'NIK sudah terdaftar.',
         ]);
-
-        if (ModelUser::where('nik', $request->nik)->exists()) {
-            return redirect()->back()->with('error', 'NIK sudah terdaftar!')->withInput();
-        }
 
         $data = new ModelUser();
         $data->nik = $request->nik;
@@ -84,6 +77,7 @@ class DataUserController extends Controller
         $data->role = $request->role;
         $data->email = $request->email;
         $data->password = Hash::make($request->password);
+        $data->email_verified_at = now();
 
         if ($request->filled('cropped_image')) {
             $imageData = $request->input('cropped_image');
@@ -100,10 +94,6 @@ class DataUserController extends Controller
             } else {
                 return redirect()->back()->with('error', 'Gambar gagal diunggah.');
             }
-        }
-
-        if ($request->verified) {
-            $data->email_verified_at = now();
         }
 
         $data->save();
@@ -127,13 +117,8 @@ class DataUserController extends Controller
             'role' => 'required',
             'cropped_image' => 'nullable',
             'email' => 'required|email|unique:users,email,' . $id,
-            'verified' => 'required|boolean',
             'password' => 'nullable|min:8',
         ]);
-
-        if (ModelUser::where('nik', $request->nik)->where('id', '!=', $id)->exists()) {
-            return redirect()->back()->with('error', 'NIK sudah terdaftar!')->withInput();
-        }
 
         $user = ModelUser::findOrFail($id);
         $user->nik = $request->nik;
@@ -168,10 +153,8 @@ class DataUserController extends Controller
             }
         }
 
-        if ($request->verified) {
+        if (!$user->email_verified_at) {
             $user->email_verified_at = now();
-        } else {
-            $user->email_verified_at = null;
         }
 
         $user->save();
