@@ -32,13 +32,13 @@ class MapelPerkelasController extends Controller
     {
         $request->validate([
             'kelas_id' => 'required|exists:kelas,id',
-            'mapel_id' => 'required|exists:mata_pelajaran,id',
+            'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'guru_id' => 'required|exists:users,id',
         ]);
 
         MapelPerKelas::create([
             'kelas_id' => $request->kelas_id,
-            'mapel_id' => $request->mapel_id,
+            'mata_pelajaran_id' => $request->mata_pelajaran_id,
             'guru_id' => $request->guru_id,
         ]);
 
@@ -59,14 +59,14 @@ class MapelPerkelasController extends Controller
     {
         $request->validate([
             'kelas_id' => 'required|exists:kelas,id',
-            'mapel_id' => 'required|exists:mata_pelajaran,id',
+            'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'guru_id' => 'required|exists:users,id',
         ]);
 
         $mapelPerKelas = MapelPerKelas::findOrFail($id);
         $mapelPerKelas->update([
             'kelas_id' => $request->kelas_id,
-            'mapel_id' => $request->mapel_id,
+            'mata_pelajaran_id' => $request->mata_pelajaran_id,
             'guru_id' => $request->guru_id,
         ]);
 
@@ -83,9 +83,7 @@ class MapelPerkelasController extends Controller
 
     public function reset()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
         DB::table('mapel_perkelas')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         return redirect()->route('administrator.mapelperkelas')->with('success', 'Semua data berhasil direset.');
     }

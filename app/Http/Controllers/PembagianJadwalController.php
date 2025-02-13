@@ -13,7 +13,7 @@ class PembagianJadwalController extends Controller
     public function index()
     {
         $jadwal = PembagianJadwal::with(['kelas', 'mataPelajaran', 'guru'])->get();
-        $kelas = Kelas::all(); // Tambahkan ini agar $kelas tidak undefined
+        $kelas = Kelas::all();
 
         return view('administrator.pembagian-jadwal.index', compact('jadwal', 'kelas'));
     }

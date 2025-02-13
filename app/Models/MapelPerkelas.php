@@ -13,7 +13,7 @@ class MapelPerKelas extends Model
 
     protected $fillable = [
         'kelas_id',
-        'mapel_id',
+        'mata_pelajaran_id',
         'guru_id',
     ];
 
@@ -24,7 +24,7 @@ class MapelPerKelas extends Model
 
     public function mataPelajaran()
     {
-        return $this->belongsTo(MataPelajaran::class, 'mapel_id');
+        return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id');
     }
 
     public function guru()

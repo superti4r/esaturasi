@@ -21,7 +21,7 @@
                     <div class="form-group">
                         <label for="kelas_id">Pilih Kelas</label>
                         <select name="kelas_id" id="kelas_id" class="form-control @error('kelas_id') is-invalid @enderror">
-                            <option value="">-- Pilih Kelas --</option>
+                            <option value="">Pilih Kelas</option>
                             @foreach($kelas as $k)
                                 <option value="{{ $k->id }}" {{ $mapelPerKelas->kelas_id == $k->id ? 'selected' : '' }}>
                                     {{ $k->nama_kelas }}
@@ -34,16 +34,16 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="mapel_id">Pilih Mata Pelajaran</label>
-                        <select name="mapel_id" id="mapel_id" class="form-control @error('mapel_id') is-invalid @enderror">
-                            <option value="">-- Pilih Mata Pelajaran --</option>
+                        <label for="mata_pelajaran_id">Pilih Mata Pelajaran</label>
+                        <select name="mata_pelajaran_id" id="mata_pelajaran_id" class="form-control @error('mata_pelajaran_id') is-invalid @enderror">
+                            <option value="">Pilih Mata Pelajaran</option>
                             @foreach($mapel as $m)
-                                <option value="{{ $m->id }}" {{ $mapelPerKelas->mapel_id == $m->id ? 'selected' : '' }}>
+                                <option value="{{ $m->id }}" {{ $mapelPerKelas->mata_pelajaran_id == $m->id ? 'selected' : '' }}>
                                     {{ $m->nama_mapel }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('mapel_id')
+                        @error('mata_pelajaran_id')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
                     </div>
@@ -51,7 +51,7 @@
                     <div class="form-group">
                         <label for="guru_id">Pilih Guru</label>
                         <select name="guru_id" id="guru_id" class="form-control @error('guru_id') is-invalid @enderror">
-                            <option value="">-- Pilih Guru --</option>
+                            <option value="">Pilih Guru</option>
                             @foreach($guru as $g)
                                 <option value="{{ $g->id }}" {{ $mapelPerKelas->guru_id == $g->id ? 'selected' : '' }}>
                                     {{ $g->nama }}

@@ -45,8 +45,8 @@
                                 @foreach ($mapelKelas as $m)
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
-                                        <strong>{{ $m->mataPelajaran->nama_mapel }}</strong> <br>
-                                        <small>Diajarkan oleh: {{ $m->guru->nama }}</small>
+                                        <strong>{{ $m->mataPelajaran->nama_mapel ?? 'Mata pelajaran tidak ditemukan' }}</strong> <br>
+                                        <small>Diajarkan oleh: {{ $m->guru->nama ?? 'Guru tidak ditemukan' }}</small>
                                     </div>
                                     <div>
                                         <a href="{{ route('administrator.mapelperkelas.edit', $m->id) }}" class="btn btn-sm btn-warning">
