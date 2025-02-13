@@ -7,6 +7,7 @@ use App\Http\Controllers\DataUserController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\MapelPerkelasController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\PembagianJadwalController;
 use App\Http\Controllers\PengumumanController;
@@ -104,6 +105,14 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     route::put('/administrator/pembagian-jadwal/edit/{id}', [PembagianJadwalController::class, 'update'])->name('administrator.jadwal.update');
     route::delete('/administrator/pembagian-jadwal/reset/{id}', [PembagianJadwalController::class, 'reset'])->name('administrator.jadwal.reset');
     route::post('/administrator/pembagian-jadwal/reset/', [PembagianJadwalController::class, 'resetall'])->name('administrator.jadwal.resetall');
+
+    Route::get('/administrator/mapel-perkelas', [MapelPerkelasController::class, 'index'])->name('administrator.mapelperkelas');
+    Route::get('/administrator/mapel-perkelas/add', [MapelPerkelasController::class, 'add'])->name('administrator.mapelperkelas.add');
+    Route::post('/administrator/mapel-perkelas/add', [MapelPerkelasController::class, 'store'])->name('administrator.mapelperkelas.store');
+    Route::get('/administrator/mapel-perkelas/edit/{id}', [MapelPerkelasController::class, 'edit'])->name('administrator.mapelperkelas.edit');
+    Route::put('/administrator/mapel-perkelas/edit/{id}', [MapelPerkelasController::class, 'update'])->name('administrator.mapelperkelas.update');
+    Route::delete('/administrator/mapel-perkelas/delete/{id}', [MapelPerkelasController::class, 'delete'])->name('administrator.mapelperkelas.delete');
+    Route::post('/administrator/mapel-perkelas/reset', [MapelPerkelasController::class, 'reset'])->name('administrator.mapelperkelas.reset');
 });
 
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
