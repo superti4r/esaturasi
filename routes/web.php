@@ -56,6 +56,8 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::get('/administrator/siswa/view/{id}', [SiswaController::class, 'view'])->name('administrator.siswa.view');
     Route::delete('/administrator/siswa/delete/{id}', [SiswaController::class, 'delete'])->name('administrator.siswa.delete');
     Route::post('/administrator/siswa/delete/selected', [SiswaController::class, 'bulkdelete'])->name('administrator.siswa.bulkdelete');
+    Route::post('/administrator/siswa/naik-kelas', [SiswaController::class, 'naikkelas'])->name('administrator.siswa.naikkelas');
+
 
     Route::get('/administrator/jurusan', [JurusanController::class, 'index'])->name('administrator.jurusan');
     Route::get('/administrator/jurusan/add', [JurusanController::class, 'add'])->name('administrator.jurusan.add');

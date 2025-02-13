@@ -8,13 +8,15 @@ use App\Models\Kelas;
 use App\Models\Jurusan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class SiswaController extends Controller
 {
     public function index()
     {
         $data = Siswa::with(['kelas', 'jurusan'])->get();
-        return view('administrator.siswa.index', compact('data'));
+        $kelas = Kelas::all();
+        return view('administrator.siswa.index', compact('data', 'kelas'));
     }
 
     public function add()
@@ -148,16 +150,43 @@ class SiswaController extends Controller
 
         try {
             Siswa::whereIn('id', $request->ids)->delete();
+            return response()->json(['success' => true, 'message' => 'Data yang dipilih berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menghapus data.'], 500);
+        }
+    }
+
+    public function naikkelas(Request $request)
+    {
+        $studentIds = $request->input('student_ids');
+        $kelasId = $request->input('kelas_id');
+
+        if (empty($studentIds) || empty($kelasId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data siswa atau kelas tujuan tidak valid.',
+            ], 400);
+        }
+
+        try {
+            foreach ($studentIds as $studentId) {
+                $siswa = Siswa::find($studentId);
+                if ($siswa) {
+                    $siswa->kelas_id = $kelasId;
+                    $siswa->save();
+                }
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data yang dipilih berhasil dihapus.',
+                'message' => 'Siswa berhasil dinaikkan kelas.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat menghapus data.',
+                'message' => 'Gagal menaikkan kelas: ' . $e->getMessage(),
             ], 500);
         }
     }
+
 }

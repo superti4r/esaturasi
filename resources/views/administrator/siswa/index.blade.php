@@ -9,6 +9,7 @@
             <div class="breadcrumb-item">Siswa</div>
         </div>
     </div>
+
     <div class="section-body">
         <h2 class="section-title">List Data</h2>
         <p class="section-lead">Data Siswa yang Terdaftar.</p>
@@ -21,8 +22,11 @@
                             <a href="{{ route('administrator.siswa.add') }}" class="btn btn-success btn-sm">
                                 <i class="fas fa-plus"></i> Tambah Siswa
                             </a>
-                            <button type="button" id="btn-delete-selected" class="btn btn-danger btn-sm">
+                            <button type="button" id="btn-hapus-terpilih" class="btn btn-danger btn-sm">
                                 <i class="fas fa-trash"></i> Hapus yang Dipilih
+                            </button>
+                            <button type="button" id="btn-naik-kelas" class="btn btn-primary btn-sm">
+                                <i class="fas fa-arrow-up"></i> Naik Kelas
                             </button>
                         </div>
                     </div>
@@ -47,10 +51,10 @@
                                 <tbody>
                                     @foreach ($data as $siswa)
                                     <tr>
-                                        <td>
+                                        <td class="text-center">
                                             <div class="custom-checkbox custom-control">
-                                                <input type="checkbox" class="custom-control-input select-item" value="{{ $siswa->id }}" id="checkbox-{{ $siswa->id }}">
-                                                <label for="checkbox-{{ $siswa->id }}" class="custom-control-label"></label>
+                                                <input type="checkbox" class="custom-control-input select-item" id="checkbox-{{ $siswa->id }}" value="{{ $siswa->id }}">
+                                                <label for="checkbox-{{ $siswa->id }}" class="custom-control-label">&nbsp;</label>
                                             </div>
                                         </td>
                                         <td>{{ $siswa->nisn }}</td>
@@ -70,7 +74,7 @@
                                             <form action="{{ route('administrator.siswa.delete', $siswa->id) }}" method="POST" class="d-inline delete-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="button" class="btn btn-danger btn-sm btn-delete">
+                                                <button type="submit" class="btn btn-danger btn-sm btn-delete">
                                                     <i class="fas fa-trash"></i> Hapus
                                                 </button>
                                             </form>
@@ -86,95 +90,158 @@
         </div>
     </div>
 </section>
+
+<div class="modal fade" id="modal-naik-kelas" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Naikkan Siswa ke Kelas Baru</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="kelas-baru">Pilih Kelas Tujuan:</label>
+                <select class="form-control" id="kelas-baru">
+                    @foreach($kelas as $kls)
+                        <option value="{{ $kls->id }}">{{ $kls->nama_kelas }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+                <button type="button" id="btn-proses-naik-kelas" class="btn btn-primary">Proses</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const checkboxAll = document.getElementById('checkbox-all');
-        if (checkboxAll) {
-            checkboxAll.addEventListener('change', function () {
-                const checkboxes = document.querySelectorAll('.select-item');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
-                });
+document.addEventListener('DOMContentLoaded', function () {
+    const checkboxAll = document.getElementById('checkbox-all');
+    const studentCheckboxes = document.querySelectorAll('.select-item');
+    const btnHapusTerpilih = document.getElementById('btn-hapus-terpilih');
+    const btnNaikKelas = document.getElementById('btn-naik-kelas');
+
+    checkboxAll.addEventListener('change', function () {
+        studentCheckboxes.forEach(checkbox => checkbox.checked = this.checked);
+    });
+
+    btnHapusTerpilih.addEventListener('click', function () {
+        let selectedIds = [...document.querySelectorAll('.select-item:checked')].map(el => el.value);
+        if (selectedIds.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan',
+                text: 'Pilih minimal satu siswa untuk dihapus.',
             });
+            return;
         }
 
-        document.querySelectorAll('.select-item').forEach(item => {
-            item.addEventListener('change', function () {
-                const allCheckboxes = document.querySelectorAll('.select-item');
-                const allChecked = [...allCheckboxes].every(checkbox => checkbox.checked);
-                document.getElementById('checkbox-all').checked = allChecked;
-            });
-        });
-
-        document.querySelectorAll('.btn-delete').forEach(button => {
-            button.addEventListener('click', function (e) {
-                e.preventDefault();
-                const form = this.closest('form');
-
-                Swal.fire({
-                    title: 'Apakah Anda yakin?',
-                    text: "Data yang dihapus tidak dapat dikembalikan!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
+        Swal.fire({
+            title: "Konfirmasi",
+            text: "Apakah Anda yakin ingin menghapus siswa yang dipilih?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, Hapus!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch("{{ route('administrator.siswa.bulkdelete') }}", {
+                    method: "POST",
+                    body: JSON.stringify({ student_ids: selectedIds }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
                     }
-                });
-            });
-        });
-
-        document.getElementById('btn-delete-selected').addEventListener('click', function () {
-            const selectedIds = [...document.querySelectorAll('.select-item:checked')].map(el => el.value);
-
-            if (selectedIds.length === 0) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Tidak ada data yang dipilih!',
-                    text: 'Pilih setidaknya satu data untuk dihapus.',
-                });
-                return;
-            }
-
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Data yang dihapus tidak dapat dikembalikan!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch('{{ route('administrator.siswa.bulkdelete') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ ids: selectedIds })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Berhasil!',
+                            title: 'Berhasil',
                             text: data.message,
-                        }).then(() => location.reload());
-                    })
-                    .catch(error => console.error('Error:', error));
-                }
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: data.message,
+                        });
+                    }
+                }).catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        text: 'Silakan coba lagi.',
+                    });
+                });
+            }
+        });
+    });
+
+    btnNaikKelas.addEventListener('click', function () {
+        let selectedIds = [...document.querySelectorAll('.select-item:checked')].map(el => el.value);
+        if (selectedIds.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan',
+                text: 'Pilih minimal satu siswa untuk dinaikkan kelas.',
+            });
+            return;
+        }
+        $('#modal-naik-kelas').modal('show');
+    });
+
+    document.getElementById('btn-proses-naik-kelas').addEventListener('click', function () {
+        let selectedIds = [...document.querySelectorAll('.select-item:checked')].map(el => el.value);
+        let kelasTujuan = document.getElementById('kelas-baru').value;
+
+        fetch("{{ route('administrator.siswa.naikkelas') }}", {
+            method: "POST",
+            body: JSON.stringify({ student_ids: selectedIds, kelas_id: kelasTujuan }),
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Terjadi kesalahan pada server.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: data.message,
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: data.message || 'Terjadi kesalahan saat memproses data.',
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                text: error.message || 'Silakan coba lagi.',
             });
         });
     });
+});
 </script>
 @endsection
