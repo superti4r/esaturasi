@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PembagianJadwal;
 use App\Models\Kelas;
+use App\Models\MapelPerKelas;
 use App\Models\MataPelajaran;
 use App\Models\User;
 
@@ -15,7 +16,7 @@ class PembagianJadwalController extends Controller
         $jadwal = PembagianJadwal::with(['kelas', 'mataPelajaran', 'guru'])->get();
         $kelas = Kelas::all();
 
-        return view('administrator.pembagian-jadwal.index', compact('jadwal', 'kelas'));
+        return view('administrator.pembagianjadwal.index', compact('jadwal', 'kelas'));
     }
 
     public function add()
@@ -24,7 +25,7 @@ class PembagianJadwalController extends Controller
         $mataPelajaran = MataPelajaran::all();
         $guru = User::where('role', 'guru')->get();
 
-        return view('administrator.pembagian-jadwal.add', compact('kelas', 'mataPelajaran', 'guru'));
+        return view('administrator.pembagianjadwal.add', compact('kelas', 'mataPelajaran', 'guru'));
     }
 
     public function store(Request $request)
@@ -50,7 +51,7 @@ class PembagianJadwalController extends Controller
         $mataPelajaran = MataPelajaran::all();
         $guru = User::where('role', 'guru')->get();
 
-        return view('administrator.pembagian-jadwal.edit', compact('jadwal', 'kelas', 'mataPelajaran', 'guru'));
+        return view('administrator.pembagianjadwal.edit', compact('jadwal', 'kelas', 'mataPelajaran', 'guru'));
     }
 
     public function update(Request $request, $id)
@@ -84,4 +85,37 @@ class PembagianJadwalController extends Controller
 
         return redirect()->route('administrator.jadwal')->with('success', 'Semua jadwal berhasil dihapus.');
     }
+
+    public function sinkronisasi()
+    {
+        $kelas = Kelas::all();
+        $jumlahSinkronisasi = 0;
+
+        foreach ($kelas as $k) {
+            $mapelKelas = MapelPerKelas::where('kelas_id', $k->id)->get();
+
+            foreach ($mapelKelas as $mapel) {
+                $existingJadwal = PembagianJadwal::where('kelas_id', $k->id)
+                    ->where('mata_pelajaran_id', $mapel->mata_pelajaran_id)
+                    ->where('guru_id', $mapel->guru_id)
+                    ->first();
+
+                if (!$existingJadwal) {
+                    PembagianJadwal::create([
+                        'kelas_id' => $k->id,
+                        'mata_pelajaran_id' => $mapel->mata_pelajaran_id,
+                        'guru_id' => $mapel->guru_id,
+                        'hari' => null,
+                        'jam_mulai' => null,
+                        'jam_selesai' => null,
+                    ]);
+
+                    $jumlahSinkronisasi++;
+                }
+            }
+        }
+
+        return redirect()->route('administrator.jadwal')->with('success', "Sinkronisasi berhasil! $jumlahSinkronisasi jadwal baru ditambahkan.");
+    }
+
 }

@@ -98,13 +98,15 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::delete('/administrator/pengumuman/delete/{id}', [PengumumanController::class, 'delete'])->name('administrator.pengumuman.delete');
     Route::post('/administrator/pengumuman/delete/selected', [PengumumanController::class, 'bulkdelete'])->name('administrator.pengumuman.bulkdelete');
 
-    route::get('/administrator/pembagian-jadwal', [PembagianJadwalController::class, 'index'])->name('administrator.jadwal');
-    route::get('/administrator/pembagian-jadwal/add', [PembagianJadwalController::class, 'add'])->name('administrator.jadwal.add');
-    route::post('/administrator/pembagian-jadwal/add', [PembagianJadwalController::class, 'store'])->name('administrator.jadwal.store');
-    route::get('/administrator/pembagian-jadwal/edit/{id}', [PembagianJadwalController::class, 'edit'])->name('administrator.jadwal.edit');
-    route::put('/administrator/pembagian-jadwal/edit/{id}', [PembagianJadwalController::class, 'update'])->name('administrator.jadwal.update');
-    route::delete('/administrator/pembagian-jadwal/reset/{id}', [PembagianJadwalController::class, 'reset'])->name('administrator.jadwal.reset');
-    route::post('/administrator/pembagian-jadwal/reset/', [PembagianJadwalController::class, 'resetall'])->name('administrator.jadwal.resetall');
+    Route::get('/administrator/pembagian-jadwal', [PembagianJadwalController::class, 'index'])->name('administrator.jadwal');
+    Route::get('/administrator/pembagian-jadwal/add', [PembagianJadwalController::class, 'add'])->name('administrator.jadwal.add');
+    Route::post('/administrator/pembagian-jadwal/add', [PembagianJadwalController::class, 'store'])->name('administrator.jadwal.store');
+    Route::get('/administrator/pembagian-jadwal/edit/{id}', [PembagianJadwalController::class, 'edit'])->name('administrator.jadwal.edit');
+    Route::put('/administrator/pembagian-jadwal/edit/{id}', [PembagianJadwalController::class, 'update'])->name('administrator.jadwal.update');
+    Route::delete('/administrator/pembagian-jadwal/reset/{id}', [PembagianJadwalController::class, 'reset'])->name('administrator.jadwal.reset');
+    Route::post('/administrator/pembagian-jadwal/reset', [PembagianJadwalController::class, 'resetall'])->name('administrator.jadwal.resetall');
+    Route::post('/administrator/pembagian-jadwal/sinkronisasi', [PembagianJadwalController::class, 'sinkronisasi'])->name('administrator.jadwal.sinkronisasi');
+
 
     Route::get('/administrator/mapel-perkelas', [MapelPerkelasController::class, 'index'])->name('administrator.mapelperkelas');
     Route::get('/administrator/mapel-perkelas/add', [MapelPerkelasController::class, 'add'])->name('administrator.mapelperkelas.add');
