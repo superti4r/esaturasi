@@ -19,6 +19,12 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4>Data &mdash; Siswa</h4>
                         <div>
+                            <a href="{{ route('administrator.siswa.export.pdf') }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-print"></i> Download PDF
+                            </a>
+                            <a href="{{ route('administrator.siswa.export.excel') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-print"></i> Download .xlsx
+                            </a>
                             <a href="{{ route('administrator.siswa.add') }}" class="btn btn-success btn-sm">
                                 <i class="fas fa-plus"></i> Tambah Siswa
                             </a>

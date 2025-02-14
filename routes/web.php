@@ -58,6 +58,8 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::delete('/administrator/siswa/delete/{id}', [SiswaController::class, 'delete'])->name('administrator.siswa.delete');
     Route::post('/administrator/siswa/delete/selected', [SiswaController::class, 'bulkdelete'])->name('administrator.siswa.bulkdelete');
     Route::post('/administrator/siswa/naik-kelas', [SiswaController::class, 'naikkelas'])->name('administrator.siswa.naikkelas');
+    Route::get('/administrator/siswa/export/pdf', [SiswaController::class, 'exportPDF'])->name('administrator.siswa.export.pdf');
+    Route::get('/administrator/siswa/export/xlsx', [SiswaController::class, 'exportExcel'])->name('administrator.siswa.export.excel');
 
 
     Route::get('/administrator/jurusan', [JurusanController::class, 'index'])->name('administrator.jurusan');

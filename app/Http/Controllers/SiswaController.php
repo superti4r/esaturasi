@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Siswa;
+use App\Exports\SiswaExport;
 use App\Models\Kelas;
+use App\Models\Siswa;
 use App\Models\Jurusan;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Session;
 
 class SiswaController extends Controller
 {
@@ -188,5 +191,23 @@ class SiswaController extends Controller
             ], 500);
         }
     }
+
+    public function exportPDF()
+    {
+        $data = Siswa::with('kelas')->get();
+        $tanggal = now()->format('d-m-Y');
+
+        $pdf = Pdf::loadView('exports.print', ['data' => $data]);
+
+        return $pdf->download("data_siswa_esaturasi_{$tanggal}.pdf");
+    }
+
+    public function exportExcel()
+    {
+        $tanggal = now()->format('d-m-Y');
+
+        return Excel::download(new SiswaExport, "data_siswa_esaturasi_{$tanggal}.xlsx");
+    }
+
 
 }
