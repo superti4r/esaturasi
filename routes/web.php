@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdministratorProfileController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BabController;
 use App\Http\Controllers\DataUserController;
@@ -39,6 +40,8 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::redirect('/home', '/administrator');
     Route::get('/administrator', [AdminController::class, 'index'])->name('administrator');
+    Route::get('/administrator/settings', [AdministratorProfileController::class, 'index'])->name('administrator.settings');
+    Route::put('/administrator/settings', [AdministratorProfileController::class, 'update'])->name('administrator.settings.update');
 
     Route::get('/administrator/user', [DataUserController::class, 'index'])->name('administrator.user');
     Route::get('/administrator/user/add', [DataUserController::class, 'add'])->name('administrator.user.add');
