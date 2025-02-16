@@ -19,6 +19,7 @@ class AdministratorProfileController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
+
         $request->validate([
             'nik' => 'nullable|string|unique:users,nik,' . $user->id,
             'nama' => 'required|string|max:255',
@@ -61,12 +62,11 @@ class AdministratorProfileController extends Controller
                 }
 
                 $imageName = 'foto_profil/' . uniqid() . '.' . $imageType;
-                $imagePath = storage_path('app/public/' . $imageName);
 
-                file_put_contents($imagePath, $imageData);
+                Storage::disk('public')->put($imageName, $imageData);
 
-                if ($user->foto_profil && Storage::exists('public/' . $user->foto_profil)) {
-                    Storage::delete('public/' . $user->foto_profil);
+                if ($user->foto_profil && Storage::disk('public')->exists($user->foto_profil)) {
+                    Storage::disk('public')->delete($user->foto_profil);
                 }
 
                 $user->foto_profil = $imageName;
