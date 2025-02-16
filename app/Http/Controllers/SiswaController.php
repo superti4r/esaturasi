@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\SiswaExport;
 use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\Jurusan;
+use App\Exports\SiswaExport;
+use App\Imports\SiswaImport;
 use Illuminate\Http\Request;
+use App\Exports\SiswaTemplate;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -209,5 +211,19 @@ class SiswaController extends Controller
         return Excel::download(new SiswaExport, "data_siswa_esaturasi_{$tanggal}.xlsx");
     }
 
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file_excel' => 'required|mimes:xlsx|max:2048',
+        ]);
 
+        Excel::import(new SiswaImport, $request->file('file_excel'));
+
+        return redirect()->back()->with('success', 'Data siswa berhasil diimpor!');
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new SiswaTemplate, 'template_upload_siswa.xlsx');
+    }
 }

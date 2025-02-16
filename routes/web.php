@@ -60,6 +60,9 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::post('/administrator/siswa/naik-kelas', [SiswaController::class, 'naikkelas'])->name('administrator.siswa.naikkelas');
     Route::get('/administrator/siswa/export/pdf', [SiswaController::class, 'exportPDF'])->name('administrator.siswa.export.pdf');
     Route::get('/administrator/siswa/export/xlsx', [SiswaController::class, 'exportExcel'])->name('administrator.siswa.export.excel');
+    Route::post('/administrator/siswa/import', [SiswaController::class, 'import'])->name('administrator.siswa.import');
+    Route::get('/administrator/siswa/download-xlsx', [SiswaController::class, 'downloadTemplate'])->name('administrator.siswa.template');
+
 
 
     Route::get('/administrator/jurusan', [JurusanController::class, 'index'])->name('administrator.jurusan');

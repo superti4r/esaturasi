@@ -130,7 +130,10 @@
                     <div class="form-group row">
                         <div class="col-sm-10 offset-sm-2 d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary mr-2">Simpan</button>
-                            <a href="/administrator/siswa" class="btn btn-danger">Batal</a>
+                            <a href="/administrator/siswa" class="btn btn-danger mr-2">Batal</a>
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#uploadExcelModal">
+                                Tambah via .xlsx
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -138,6 +141,40 @@
         </div>
     </div>
 </section>
+
+
+<div class="modal fade" id="uploadExcelModal" tabindex="-1" aria-labelledby="uploadExcelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadExcelModalLabel">Upload Data Siswa via .xlsx</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('administrator.siswa.import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="form-group">
+                        <label for="file_excel">Pilih File Excel (.xlsx)</label>
+                        <input type="file" name="file_excel" id="file_excel" class="form-control" accept=".xlsx" required>
+                    </div>
+                    <div class="form-group">
+                        <a href="{{ route('administrator.siswa.template') }}" class="btn btn-success">Download Template</a>
+                        <small class="form-text text-muted mt-1">
+                            * Pastikan Anda menggunakan template yang sudah disediakan agar format data sesuai saat diupload.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @endsection
 
 @section('scripts')
