@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administrator;
 
 use App\Models\Pengumuman;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class PengumumanController extends Controller
 {

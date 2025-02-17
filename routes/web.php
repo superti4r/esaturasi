@@ -1,18 +1,18 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AdministratorProfileController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BabController;
-use App\Http\Controllers\DataUserController;
-use App\Http\Controllers\GuruController;
-use App\Http\Controllers\JurusanController;
-use App\Http\Controllers\KelasController;
-use App\Http\Controllers\MapelPerkelasController;
-use App\Http\Controllers\MataPelajaranController;
-use App\Http\Controllers\PembagianJadwalController;
-use App\Http\Controllers\PengumumanController;
-use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\Administrator\AdminController;
+use App\Http\Controllers\Administrator\AdministratorProfileController;
+use App\Http\Controllers\Administrator\AuthController;
+use App\Http\Controllers\Administrator\BabController;
+use App\Http\Controllers\Administrator\DataUserController;
+use App\Http\Controllers\Administrator\GuruController;
+use App\Http\Controllers\Administrator\JurusanController;
+use App\Http\Controllers\Administrator\KelasController;
+use App\Http\Controllers\Administrator\MapelPerkelasController;
+use App\Http\Controllers\Administrator\MataPelajaranController;
+use App\Http\Controllers\Administrator\PembagianJadwalController;
+use App\Http\Controllers\Administrator\PengumumanController;
+use App\Http\Controllers\Administrator\SiswaController;
 use Illuminate\Support\Facades\Route;
 
 /*

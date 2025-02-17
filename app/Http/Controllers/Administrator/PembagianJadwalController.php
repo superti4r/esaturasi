@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administrator;
 
-use Illuminate\Http\Request;
-use App\Models\PembagianJadwal;
+use App\Models\User;
 use App\Models\Kelas;
+use Illuminate\Http\Request;
 use App\Models\MapelPerKelas;
 use App\Models\MataPelajaran;
-use App\Models\User;
+use App\Models\PembagianJadwal;
+use App\Http\Controllers\Controller;
 
 class PembagianJadwalController extends Controller
 {

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administrator;
 
 use Illuminate\Http\Request;
 use App\Models\MataPelajaran;
+use App\Http\Controllers\Controller;
 
 class MataPelajaranController extends Controller
 {

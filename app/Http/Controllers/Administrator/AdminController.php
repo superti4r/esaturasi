@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administrator;
 
-use App\Models\Jurusan;
-use App\Models\Kelas;
-use App\Models\MataPelajaran;
-use App\Models\Siswa;
 use App\Models\User;
+use App\Models\Kelas;
+use App\Models\Siswa;
+use App\Models\Jurusan;
 use Illuminate\Http\Request;
+use App\Models\MataPelajaran;
+use App\Http\Controllers\Controller;
 
 class AdminController extends Controller
 {

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administrator;
 
 use App\Models\Bab;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class BabController extends Controller
 {

@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administrator;
 
+use App\Models\User;
+use App\Models\Kelas;
 use Illuminate\Http\Request;
 use App\Models\MapelPerKelas;
-use App\Models\Kelas;
 use App\Models\MataPelajaran;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class MapelPerkelasController extends Controller
 {
