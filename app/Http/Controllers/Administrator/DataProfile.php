@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
-class AdministratorProfileController extends Controller
+class DataProfile extends Controller
 {
     public function index()
     {

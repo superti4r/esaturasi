@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\MataPelajaran;
 use App\Http\Controllers\Controller;
 
-class AdminController extends Controller
+class DashboardAdministrator extends Controller
 {
     function index(){
 

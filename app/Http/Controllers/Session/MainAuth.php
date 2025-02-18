@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Administrator;
+namespace App\Http\Controllers\Session;
 
 use App\Models\User;
 use App\Mail\AuthMail;
@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
-class AuthController extends Controller
+class MainAuth extends Controller
 {
     public function indexlogin()
     {

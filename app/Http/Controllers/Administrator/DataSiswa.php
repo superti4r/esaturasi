@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
 
-class SiswaController extends Controller
+class DataSiswa extends Controller
 {
     public function index()
     {

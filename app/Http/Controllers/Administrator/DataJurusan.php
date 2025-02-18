@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
-class JurusanController extends Controller
+class DataJurusan extends Controller
 {
     public function index()
     {

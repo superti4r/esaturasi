@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\MataPelajaran;
 use App\Http\Controllers\Controller;
 
-class MataPelajaranController extends Controller
+class DataMataPelajaran extends Controller
 {
     public function index()
     {

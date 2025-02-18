@@ -10,7 +10,7 @@ use App\Models\MataPelajaran;
 use App\Models\PembagianJadwal;
 use App\Http\Controllers\Controller;
 
-class PembagianJadwalController extends Controller
+class DataPembagianJadwal extends Controller
 {
     public function index()
     {

@@ -10,7 +10,7 @@ use App\Models\MataPelajaran;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
-class MapelPerkelasController extends Controller
+class DataMapelPerkelas extends Controller
 {
     public function index()
     {

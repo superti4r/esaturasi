@@ -6,7 +6,7 @@ use App\Models\Bab;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class BabController extends Controller
+class DataBab extends Controller
 {
     public function index()
     {
