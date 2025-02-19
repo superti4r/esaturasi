@@ -12,6 +12,7 @@ use App\Http\Controllers\Administrator\DataMataPelajaran;
 use App\Http\Controllers\Administrator\DataPembagianJadwal;
 use App\Http\Controllers\Administrator\DataPengumuman;
 use App\Http\Controllers\Administrator\DataSiswa;
+use App\Http\Controllers\Administrator\DataArsip;
 use App\Http\Controllers\Guru\DashboardGuru;
 use Illuminate\Support\Facades\Route;
 
@@ -120,6 +121,13 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::put('/administrator/mapel-perkelas/edit/{id}', [DataMapelPerkelas::class, 'update'])->name('administrator.mapelperkelas.update');
     Route::delete('/administrator/mapel-perkelas/delete/{id}', [DataMapelPerkelas::class, 'delete'])->name('administrator.mapelperkelas.delete');
     Route::post('/administrator/mapel-perkelas/reset', [DataMapelPerkelas::class, 'reset'])->name('administrator.mapelperkelas.reset');
+
+    Route::get('/administrator/arsip', [DataArsip::class, 'index'])->name('administrator.arsip');
+    Route::get('/administrator/arsip/add', [DataArsip::class, 'add'])->name('administrator.arsip.add');
+    Route::post('/administrator/arsip/add', [DataArsip::class, 'store'])->name('administrator.arsip.store');
+    Route::get('/administrator/arsip/edit/{id}', [DataArsip::class, 'edit'])->name('administrator.arsip.edit');
+    Route::put('/administrator/arsip/edit/{id}', [DataArsip::class, 'update'])->name('administrator.arsip.update');
+    Route::delete('/administrator/arsip/delete/{id}', [DataArsip::class, 'delete'])->name('administrator.arsip.delete');
 });
 
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
