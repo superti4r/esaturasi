@@ -49,10 +49,9 @@
                                         </td>
                                         <td>{{ $item->nama_bab }}</td>
                                         <td>
-                                            <form action="{{ route('administrator.bab.delete') }}" method="POST" style="display:inline;">
+                                            <form action="{{ route('administrator.bab.delete', ['id' => $item->id]) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <input type="hidden" name="id" value="{{ $item->id }}">
                                                 <button type="submit" class="btn btn-danger btn-sm" onclick="confirmDelete(event)">
                                                     <i class="fas fa-trash"></i> Hapus
                                                 </button>

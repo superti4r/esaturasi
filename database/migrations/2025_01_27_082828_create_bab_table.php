@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('bab', function (Blueprint $table) {
             $table->id();
             $table->string('nama_bab');
+            $table->foreignId('arsip_id')->constrained('arsip')->onDelete('cascade');
             $table->timestamps();
         });
     }

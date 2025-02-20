@@ -12,5 +12,10 @@ class Bab extends Model
     protected $table = 'bab';
     protected $fillable = [
         'nama_bab',
+        'arsip_id',
     ];
+
+    public function arsip(){
+        return $this->belongsTo(Arsip::class, 'arsip_id');
+    }
 }

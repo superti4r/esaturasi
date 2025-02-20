@@ -94,7 +94,7 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::get('administrator/bab', [DataBab::class, 'index'])->name('administrator.bab');
     Route::get('administrator/bab/add', [DataBab::class, 'add'])->name('administrator.bab.add');
     Route::post('administrator/bab/add', [DataBab::class, 'store'])->name('administrator.bab.post');
-    Route::delete('administrator/bab/delete', [DataBab::class, 'delete'])->name('administrator.bab.delete');
+    Route::delete('administrator/bab/delete/{id}', [DataBab::class, 'delete'])->name('administrator.bab.delete');
 
     Route::get('/administrator/pengumuman', [DataPengumuman::class, 'index'])->name('administrator.pengumuman');
     Route::get('/administrator/pengumuman/add', [DataPengumuman::class, 'add'])->name('administrator.pengumuman.add');

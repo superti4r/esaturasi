@@ -10,7 +10,7 @@ class DataArsip extends Controller
 {
     public function index()
     {
-        $arsip = Arsip::all();
+        $arsip = Arsip::orderBy('created_at', 'desc')->get();
         return view('administrator.arsip.index', compact('arsip'));
     }
 
@@ -22,10 +22,14 @@ class DataArsip extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => 'required|string|max:255|unique:arsip,nama',
             'semester' => 'required|in:ganjil,genap',
             'status' => 'required|in:aktif,tidak aktif',
         ]);
+
+        if ($request->status === 'aktif') {
+            Arsip::where('status', 'aktif')->update(['status' => 'tidak aktif']);
+        }
 
         Arsip::create($request->all());
 
@@ -40,13 +44,18 @@ class DataArsip extends Controller
 
     public function update(Request $request, $id)
     {
+        $arsip = Arsip::findOrFail($id);
+
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => 'required|string|max:255|unique:arsip,nama,' . $id,
             'semester' => 'required|in:ganjil,genap',
             'status' => 'required|in:aktif,tidak aktif',
         ]);
 
-        $arsip = Arsip::findOrFail($id);
+        if ($request->status === 'aktif') {
+            Arsip::where('status', 'aktif')->where('id', '!=', $id)->update(['status' => 'tidak aktif']);
+        }
+
         $arsip->update($request->all());
 
         return redirect()->route('administrator.arsip')->with('success', 'Data arsip berhasil diperbarui.');

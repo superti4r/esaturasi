@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Administrator;
 
 use App\Models\User;
 use App\Models\Kelas;
-use Illuminate\Http\Request;
+use App\Models\Arsip;
 use App\Models\MapelPerKelas;
 use App\Models\MataPelajaran;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
@@ -14,33 +15,67 @@ class DataMapelPerkelas extends Controller
 {
     public function index()
     {
-        $mapelPerKelas = MapelPerKelas::with(['kelas', 'mataPelajaran', 'guru'])->get();
+        $arsipAktif = Arsip::where('status', 'aktif')->first();
+
+        if (!$arsipAktif) {
+            return redirect()->back()->with('error', 'Tidak ada arsip aktif.');
+        }
+
+        $mapelPerKelas = MapelPerKelas::with(['kelas', 'mataPelajaran', 'guru'])
+            ->where('arsip_id', $arsipAktif->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $kelas = Kelas::all();
 
-        return view('administrator.mapelperkelas.index', compact('mapelPerKelas', 'kelas'));
+        return view('administrator.mapelperkelas.index', compact('mapelPerKelas', 'kelas', 'arsipAktif'));
     }
 
     public function add()
     {
+        $arsipAktif = Arsip::where('status', 'aktif')->first();
+
+        if (!$arsipAktif) {
+            return redirect()->route('administrator.mapelperkelas')->with('error', 'Tidak ada arsip aktif.');
+        }
+
         $kelas = Kelas::all();
         $mapel = MataPelajaran::all();
         $guru = User::where('role', 'guru')->get();
 
-        return view('administrator.mapelperkelas.add', compact('kelas', 'mapel', 'guru'));
+        return view('administrator.mapelperkelas.add', compact('kelas', 'mapel', 'guru', 'arsipAktif'));
     }
 
     public function store(Request $request)
     {
+        $arsipAktif = Arsip::where('status', 'aktif')->first();
+
+        if (!$arsipAktif) {
+            return redirect()->route('administrator.mapelperkelas')->with('error', 'Tidak ada arsip aktif.');
+        }
+
         $request->validate([
             'kelas_id' => 'required|exists:kelas,id',
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'guru_id' => 'required|exists:users,id',
         ]);
 
+        $existingData = MapelPerKelas::where([
+            'kelas_id' => $request->kelas_id,
+            'mata_pelajaran_id' => $request->mata_pelajaran_id,
+            'guru_id' => $request->guru_id,
+            'arsip_id' => $arsipAktif->id,
+        ])->exists();
+
+        if ($existingData) {
+            return redirect()->back()->with('error', 'Data ini sudah ada dalam arsip aktif.');
+        }
+
         MapelPerKelas::create([
             'kelas_id' => $request->kelas_id,
             'mata_pelajaran_id' => $request->mata_pelajaran_id,
             'guru_id' => $request->guru_id,
+            'arsip_id' => $arsipAktif->id,
         ]);
 
         return redirect()->route('administrator.mapelperkelas')->with('success', 'Data berhasil ditambahkan.');
@@ -48,7 +83,7 @@ class DataMapelPerkelas extends Controller
 
     public function edit($id)
     {
-        $mapelPerKelas = MapelPerKelas::with(['kelas', 'mataPelajaran', 'guru'])->findOrFail($id);
+        $mapelPerKelas = MapelPerKelas::findOrFail($id);
         $kelas = Kelas::all();
         $mapel = MataPelajaran::all();
         $guru = User::where('role', 'guru')->get();
@@ -58,13 +93,14 @@ class DataMapelPerkelas extends Controller
 
     public function update(Request $request, $id)
     {
+        $mapelPerKelas = MapelPerKelas::findOrFail($id);
+
         $request->validate([
             'kelas_id' => 'required|exists:kelas,id',
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'guru_id' => 'required|exists:users,id',
         ]);
 
-        $mapelPerKelas = MapelPerKelas::findOrFail($id);
         $mapelPerKelas->update([
             'kelas_id' => $request->kelas_id,
             'mata_pelajaran_id' => $request->mata_pelajaran_id,
@@ -84,8 +120,14 @@ class DataMapelPerkelas extends Controller
 
     public function reset()
     {
-        DB::table('mapel_perkelas')->truncate();
+        $arsipAktif = Arsip::where('status', 'aktif')->first();
 
-        return redirect()->route('administrator.mapelperkelas')->with('success', 'Semua data berhasil direset.');
+        if (!$arsipAktif) {
+            return redirect()->route('administrator.mapelperkelas')->with('error', 'Tidak ada arsip aktif.');
+        }
+
+        MapelPerKelas::where('arsip_id', $arsipAktif->id)->delete();
+
+        return redirect()->route('administrator.mapelperkelas')->with('success', 'Semua data dalam arsip aktif berhasil direset.');
     }
 }

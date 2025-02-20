@@ -15,6 +15,7 @@ class MapelPerKelas extends Model
         'kelas_id',
         'mata_pelajaran_id',
         'guru_id',
+        'arsip_id',
     ];
 
     public function kelas()
@@ -30,5 +31,9 @@ class MapelPerKelas extends Model
     public function guru()
     {
         return $this->belongsTo(User::class, 'guru_id')->where('role', 'guru');
+    }
+
+    public function arsip(){
+        return $this->belongsTo(Arsip::class, 'arsip_id');
     }
 }

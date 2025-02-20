@@ -13,5 +13,10 @@ class Pengumuman extends Model
     protected $fillable = [
         'judul_pengumuman',
         'content_pengumuman',
+        'arsip_id',
     ];
+
+    public function arsip(){
+        return $this->belongsTo(Arsip::class, 'arsip_id');
+    }
 }

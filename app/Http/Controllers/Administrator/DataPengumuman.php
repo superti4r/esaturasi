@@ -3,16 +3,22 @@
 namespace App\Http\Controllers\Administrator;
 
 use App\Models\Pengumuman;
+use App\Models\Arsip;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class DataPengumuman extends Controller
 {
-
     public function index()
     {
-        $pengumuman = Pengumuman::all();
-        return view('administrator.pengumuman.index', compact('pengumuman'));
+        $arsipAktif = Arsip::where('status', 'aktif')->first();
+
+        if (!$arsipAktif) {
+            return redirect()->back()->with('error', 'Tidak ada arsip aktif.');
+        }
+
+        $pengumuman = Pengumuman::where('arsip_id', $arsipAktif->id)->get();
+        return view('administrator.pengumuman.index', compact('pengumuman', 'arsipAktif'));
     }
 
     public function add()
@@ -28,12 +34,22 @@ class DataPengumuman extends Controller
 
     public function store(Request $request)
     {
+        $arsipAktif = Arsip::where('status', 'aktif')->first();
+
+        if (!$arsipAktif) {
+            return redirect()->route('administrator.pengumuman')->with('error', 'Tidak ada arsip aktif.');
+        }
+
         $request->validate([
             'judul_pengumuman' => 'required|string|max:255',
-            'content_pengumuman' => 'required',
+            'content_pengumuman' => 'required|string',
         ]);
 
-        Pengumuman::create($request->all());
+        Pengumuman::create([
+            'judul_pengumuman' => $request->judul_pengumuman,
+            'content_pengumuman' => $request->content_pengumuman,
+            'arsip_id' => $arsipAktif->id,
+        ]);
 
         return redirect()->route('administrator.pengumuman')->with('success', 'Pengumuman berhasil ditambahkan.');
     }
@@ -48,11 +64,14 @@ class DataPengumuman extends Controller
     {
         $request->validate([
             'judul_pengumuman' => 'required|string|max:255',
-            'content_pengumuman' => 'required',
+            'content_pengumuman' => 'required|string',
         ]);
 
         $pengumuman = Pengumuman::findOrFail($id);
-        $pengumuman->update($request->all());
+        $pengumuman->update([
+            'judul_pengumuman' => $request->judul_pengumuman,
+            'content_pengumuman' => $request->content_pengumuman,
+        ]);
 
         return redirect()->route('administrator.pengumuman')->with('success', 'Pengumuman berhasil diperbarui.');
     }
@@ -67,8 +86,11 @@ class DataPengumuman extends Controller
 
     public function bulkdelete(Request $request)
     {
-        $ids = $request->ids;
-        Pengumuman::whereIn('id', $ids)->delete();
+        if (!$request->has('ids') || empty($request->ids)) {
+            return redirect()->route('administrator.pengumuman')->with('error', 'Tidak ada pengumuman yang dipilih untuk dihapus.');
+        }
+
+        Pengumuman::whereIn('id', $request->ids)->delete();
 
         return redirect()->route('administrator.pengumuman')->with('success', 'Pengumuman yang dipilih berhasil dihapus.');
     }

@@ -10,7 +10,15 @@ class PembagianJadwal extends Model
     use HasFactory;
 
     protected $table = 'pembagian_jadwal';
-    protected $fillable = ['kelas_id', 'mata_pelajaran_id', 'guru_id', 'hari', 'jam_mulai', 'jam_selesai'];
+    protected $fillable = [
+        'kelas_id',
+        'mata_pelajaran_id',
+        'guru_id',
+        'hari',
+        'jam_mulai',
+        'jam_selesai',
+        'arsip_id',
+    ];
 
     public function kelas()
     {
@@ -25,5 +33,9 @@ class PembagianJadwal extends Model
     public function guru()
     {
         return $this->belongsTo(User::class, 'guru_id');
+    }
+
+    public function arsip(){
+        return $this->belongsTo(Arsip::class, 'arsip_id');
     }
 }

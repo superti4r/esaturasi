@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('judul_pengumuman');
             $table->longText('content_pengumuman');
+            $table->foreignId('arsip_id')->constrained('arsip')->onDelete('cascade');
             $table->timestamps();
         });
     }

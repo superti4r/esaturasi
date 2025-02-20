@@ -12,5 +12,10 @@ class MataPelajaran extends Model
     protected $table = 'mata_pelajaran';
     protected $fillable = [
         'nama_mapel',
+        'arsip_id',
     ];
+
+    public function arsip(){
+        return $this->belongsTo(Arsip::class, 'arsip_id');
+    }
 }
