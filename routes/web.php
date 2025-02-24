@@ -46,6 +46,7 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::redirect('/home', '/administrator');
     Route::get('/administrator', [DashboardAdministrator::class, 'index'])->name('administrator');
+    Route::post('/administrator', [DashboardAdministrator::class, 'updateRegisterToken'])->name('administrator.update.register.token');
     Route::get('/administrator/settings', [DataProfile::class, 'index'])->name('administrator.settings');
     Route::put('/administrator/settings', [DataProfile::class, 'update'])->name('administrator.settings.update');
 
