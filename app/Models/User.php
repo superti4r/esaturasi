@@ -24,6 +24,8 @@ class User extends Authenticatable
         'nik',
         'role',
         'verify_token',
+        'verify_token_expired_at',
+        'email_verified_at',
     ];
 
     /**

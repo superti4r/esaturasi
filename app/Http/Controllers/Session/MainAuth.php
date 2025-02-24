@@ -7,8 +7,11 @@ use App\Mail\AuthMail;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Mail\ForgotPasswordMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 class MainAuth extends Controller
 {
@@ -82,8 +85,9 @@ class MainAuth extends Controller
             'nama' => $request->nama,
             'role' => $request->role,
             'email' => $request->email,
-            'password' => $request->password,
-            'verify_token' => $str
+            'password' => Hash::make($request->password),
+            'verify_token' => $str,
+            'verify_token_expired_at' => now()->addMinutes(30),
         ];
 
         User::create($inforegister);
@@ -94,7 +98,7 @@ class MainAuth extends Controller
             'role' => $inforegister['role'],
             'datetime' => date('Y-m-d H:i:s'),
             'website' => 'E-Saturasi - Verifikasi',
-            'url' => 'http://' . request()->getHttpHost() . "/" . "verify/" . $inforegister['verify_token'],
+            'url' => url("/verify/{$inforegister['verify_token']}"),
         ];
 
         Mail::to($inforegister['email'])->send(new AuthMail($details));
@@ -102,22 +106,100 @@ class MainAuth extends Controller
         return redirect()->route('login')->with('success', 'Link verifikasi telah dikirim ke email Anda.');
     }
 
+
     public function verify($verify_token)
     {
-        $keycheck = User::select('verify_token')
-            ->where('verify_token', $verify_token)
-            ->exists();
+        $user = User::where('verify_token', $verify_token)
+                    ->where('verify_token_expired_at', '>', now())
+                    ->first();
 
-        if ($keycheck) {
-            $user = User::where('verify_token', $verify_token)->update(['email_verified_at' => date('Y-m-d H:i:s')]);
-            return redirect()->route('login')->with('success', 'Verifikasi Berhasil.');
-        } else {
-            return redirect()->route('login')->withErrors('Key tidak valid. Pastikan Anda telah melakukan registrasi.')->withInput();
+        if (!$user) {
+            return redirect()->route('login')->withErrors('Token verifikasi tidak valid atau telah kedaluwarsa.');
         }
+
+        $user->update([
+            'email_verified_at' => now(),
+            'verify_token' => null,
+            'verify_token_expired_at' => null
+        ]);
+
+        return redirect()->route('login')->with('success', 'Verifikasi Berhasil.');
     }
+
 
     public function logout(){
         Auth::logout();
         return redirect('/login');
     }
+
+    public function indexForgotPassword()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.exists' => 'Email tidak ditemukan dalam sistem',
+        ]);
+
+        $token = Str::random(100);
+        $expiredAt = now()->addMinutes(30);
+
+        $user = User::where('email', $request->email)->first();
+        $user->update([
+            'verify_token' => $token,
+            'verify_token_expired_at' => $expiredAt
+        ]);
+
+        $details = [
+            'nama' => $user->nama,
+            'email' => $request->email,
+            'url' => url("/reset-password/$token"),
+            'datetime' => now()->format('d M Y H:i'),
+            'website' => 'E-Saturasi - Reset Password'
+        ];
+
+        Mail::to($request->email)->send(new ForgotPasswordMail($details));
+
+        return back()->with('success', 'Link reset password telah dikirim ke email Anda.');
+    }
+
+    public function indexResetPassword($token)
+    {
+        return view('auth.reset-password', compact('token'));
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'password' => 'required|min:6|confirmed',
+        ], [
+            'password.required' => 'Password wajib diisi',
+            'password.min' => 'Password minimal 6 karakter',
+            'password.confirmed' => 'Konfirmasi password tidak sesuai',
+        ]);
+
+        $user = User::where('verify_token', $request->token)
+                    ->where('verify_token_expired_at', '>', now())
+                    ->first();
+
+        if (!$user) {
+            return redirect()->route('login')->withErrors('Token reset password tidak valid atau telah kedaluwarsa.');
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password),
+            'verify_token' => null,
+            'verify_token_expired_at' => null
+        ]);
+
+        return redirect()->route('login')->with('success', 'Password berhasil direset. Silakan login.');
+    }
+
 }
