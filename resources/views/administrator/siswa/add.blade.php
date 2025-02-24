@@ -237,7 +237,7 @@
                             icon: 'success',
                             title: 'Gambar berhasil disimpan!',
                             text: 'Anda telah berhasil memotong dan menyimpan gambar profil.',
-                            confirmButtonText: 'Ok'
+                            confirmButtonText: 'Oke'
                         });
                     };
                     reader.readAsDataURL(blob);
@@ -247,7 +247,7 @@
                     icon: 'error',
                     title: 'Gagal memotong gambar!',
                     text: 'Silakan coba lagi.',
-                    confirmButtonText: 'Ok'
+                    confirmButtonText: 'Oke'
                 });
             }
         });

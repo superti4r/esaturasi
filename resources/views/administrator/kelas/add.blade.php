@@ -24,7 +24,7 @@
                             @csrf
                             <div class="form-group">
                                 <label for="nama_kelas">Nama Kelas</label>
-                                <input type="text" class="form-control @error('nama_kelas') is-invalid @enderror" id="nama_kelas" name="nama_kelas" value="{{ old('nama_kelas') }}" required>
+                                <input type="text" class="form-control @error('nama_kelas') is-invalid @enderror" id="nama_kelas" name="nama_kelas" value="{{ old('nama_kelas') }}" required placeholder="Masukkan Nama Kelas, misal : X TKJ">
                                 @error('nama_kelas')
                                     <div class="invalid-feedback">
                                         {{ $message }}

@@ -24,7 +24,7 @@
                             @csrf
                             <div class="form-group">
                                 <label for="kode_jurusan">Kode Jurusan</label>
-                                <input type="text" class="form-control @error('kode_jurusan') is-invalid @enderror" id="kode_jurusan" name="kode_jurusan" value="{{ old('kode_jurusan') }}" required>
+                                <input type="text" class="form-control @error('kode_jurusan') is-invalid @enderror" id="kode_jurusan" name="kode_jurusan" value="{{ old('kode_jurusan') }}" required placeholder="Masukkan Kode Jurusan, misal : TKJ, AK">
                                 @error('kode_jurusan')
                                     <div class="invalid-feedback">
                                         {{ $message }}
@@ -33,7 +33,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="nama_jurusan">Nama Jurusan</label>
-                                <input type="text" class="form-control @error('nama_jurusan') is-invalid @enderror" id="nama_jurusan" name="nama_jurusan" value="{{ old('nama_jurusan') }}" required>
+                                <input type="text" class="form-control @error('nama_jurusan') is-invalid @enderror" id="nama_jurusan" name="nama_jurusan" value="{{ old('nama_jurusan') }}" required placeholder="Masukkan Nama Jurusan, misal : Teknik Komputer & Jaringan">
                                 @error('nama_jurusan')
                                     <div class="invalid-feedback">
                                         {{ $message }}

@@ -24,7 +24,7 @@
                             @csrf
                             <div class="form-group">
                                 <label for="judul_pengumuman">Judul Pengumuman</label>
-                                <input type="text" class="form-control @error('judul_pengumuman') is-invalid @enderror" id="judul_pengumuman" name="judul_pengumuman" value="{{ old('judul_pengumuman') }}" required>
+                                <input type="text" class="form-control @error('judul_pengumuman') is-invalid @enderror" id="judul_pengumuman" name="judul_pengumuman" value="{{ old('judul_pengumuman') }}" required placeholder="Masukkan Nama Pengumuman">
                                 @error('judul_pengumuman')
                                     <div class="invalid-feedback">
                                         {{ $message }}
@@ -33,7 +33,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="content_pengumuman"></label>
-                                <textarea id="content_pengumuman" name="content_pengumuman" class="summernote form-control @error('content_pengumuman') is-invalid @enderror">{{ old('content_pengumuman') }}</textarea>
+                                <textarea id="content_pengumuman" name="content_pengumuman" class="summernote form-control @error('content_pengumuman') is-invalid @enderror">{{ old('content_pengumuman') }} </textarea>
                                 @error('content_pengumuman')
                                     <div class="invalid-feedback">
                                         {{ $message }}
@@ -57,6 +57,8 @@
 <script>
 $(document).ready(function() {
     $('.summernote').summernote({
+        inheritPlaceholder: true
+        placeholder: 'Masukkan isi artikel untuk Pengumuman nya disini...'
         height: 200,
         minHeight: 100,
         maxHeight: 300,

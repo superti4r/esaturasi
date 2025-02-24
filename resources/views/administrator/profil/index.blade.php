@@ -169,7 +169,7 @@
                             icon: 'success',
                             title: 'Gambar berhasil disimpan!',
                             text: 'Anda telah berhasil memotong dan menyimpan gambar profil.',
-                            confirmButtonText: 'Ok'
+                            confirmButtonText: 'Oke'
                         });
                     };
                     reader.readAsDataURL(blob);
@@ -179,7 +179,7 @@
                     icon: 'error',
                     title: 'Gagal memotong gambar!',
                     text: 'Silakan coba lagi.',
-                    confirmButtonText: 'Ok'
+                    confirmButtonText: 'Oke'
                 });
             }
         });
@@ -189,7 +189,7 @@
                 icon: 'success',
                 title: 'Berhasil!',
                 text: '{{ session('success') }}',
-                confirmButtonText: 'Ok'
+                confirmButtonText: 'Oke'
             });
         @endif
 
@@ -198,7 +198,7 @@
                 icon: 'error',
                 title: 'Gagal!',
                 text: '{{ session('error') }}',
-                confirmButtonText: 'Ok'
+                confirmButtonText: 'Oke'
             });
         @endif
     });

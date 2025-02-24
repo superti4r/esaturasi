@@ -24,7 +24,7 @@
                             @csrf
                             <div class="form-group">
                                 <label for="nama_mapel">Nama Mata Pelajaran</label>
-                                <input type="text" name="nama_mapel" id="nama_mapel" class="form-control @error('nama_mapel') is-invalid @enderror" value="{{ old('nama_mapel') }}" required>
+                                <input type="text" name="nama_mapel" id="nama_mapel" class="form-control @error('nama_mapel') is-invalid @enderror" value="{{ old('nama_mapel') }}" required placeholder="Masukkan Nama Mata Pelajaran, misal : PPKN">
                                 @error('nama_mapel')
                                     <div class="invalid-feedback">
                                         {{ $message }}

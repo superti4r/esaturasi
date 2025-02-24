@@ -61,7 +61,7 @@
             icon: 'success',
             title: 'Berhasil!',
             text: '{{ session('success') }}',
-            confirmButtonText: 'Ok'
+            confirmButtonText: 'Oke'
         });
     @endif
 
@@ -70,7 +70,7 @@
             icon: 'error',
             title: 'Gagal!',
             text: '{{ session('error') }}',
-            confirmButtonText: 'Ok'
+            confirmButtonText: 'Oke'
         });
     @endif
 </script>
