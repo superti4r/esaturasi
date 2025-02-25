@@ -6,6 +6,7 @@
   <title>E-Saturasi &mdash; SMK Negeri 1 Sumberasih</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link href="{{ asset('_root/img/favicon.ico')}}" rel="icon">
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
@@ -145,31 +146,32 @@
     </section>
 
     <div id="chatbot-toggle" class="chatbot-widget">
-      <div class="chatbot-button">
-        <dotlottie-player
-          src="https://lottie.host/0c617fc4-7584-41ff-ac62-ab7e01306aa2/lydrHgewQK.lottie"
-          background="transparent"
-          speed="1"
-          style="width: 40px; height: 40px"
-          loop
-          autoplay
-        ></dotlottie-player>
-      </div>
-    </div>
-    <div id="chatbot-modal" class="chatbot-modal hidden">
-      <div class="chatbot-content">
-        <div class="chatbot-header">
-          <h5>Tanya si Satria yuk!</h5>
-          <button id="chatbot-close">✖</button>
-        </div>
-        <div class="chatbot-messages" id="chatbot-messages"></div>
-        <div class="chatbot-input">
-          <input type="text" id="chatbot-user-input" placeholder="Ketik pesan..." />
-          <button id="chatbot-send-btn">➤</button>
+        <div class="chatbot-button">
+          <dotlottie-player
+            src="https://lottie.host/0c617fc4-7584-41ff-ac62-ab7e01306aa2/lydrHgewQK.lottie"
+            background="transparent"
+            speed="1"
+            style="width: 40px; height: 40px"
+            loop autoplay
+          ></dotlottie-player>
         </div>
       </div>
-    </div>
-    <script>
+
+      <div id="chatbot-modal" class="chatbot-modal hidden">
+        <div class="chatbot-content">
+          <div class="chatbot-header">
+            <h5>Tanya si Satria yuk!</h5>
+            <button id="chatbot-close">✖</button>
+          </div>
+          <div class="chatbot-messages" id="chatbot-messages"></div>
+          <div class="chatbot-input">
+            <input type="text" id="chatbot-user-input" placeholder="Ketik pesan..." />
+            <button id="chatbot-send-btn">➤</button>
+          </div>
+        </div>
+      </div>
+
+      <script>
       document.getElementById("chatbot-send-btn").addEventListener("click", sendChatbotMessage);
       document.getElementById("chatbot-user-input").addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
@@ -184,10 +186,22 @@
         addChatbotMessage(userInput, "chatbot-user");
         document.getElementById("chatbot-user-input").value = "";
 
-        setTimeout(() => {
-          const botResponse = chatbotResponse(userInput);
-          addChatbotMessage(botResponse, "chatbot-bot", "bot-lottie");
-        }, 1000);
+        fetch("{{ route('chatbot') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+          },
+          body: JSON.stringify({ message: userInput })
+        })
+          .then(response => response.json())
+          .then(data => {
+            addChatbotMessage(data.response, "chatbot-bot", "bot-lottie");
+          })
+          .catch(error => {
+            console.error("Error:", error);
+            addChatbotMessage("Maaf, terjadi kesalahan.", "chatbot-bot", "bot-lottie");
+          });
       }
 
       function addChatbotMessage(text, sender, avatar) {
@@ -207,8 +221,7 @@
               background="transparent"
               speed="1"
               style="width: 50px; height: 50px"
-              loop
-              autoplay
+              loop autoplay
             ></dotlottie-player>`;
           avatarElement.classList.add("chatbot-lottie");
 
@@ -222,15 +235,6 @@
         chatBox.scrollTop = chatBox.scrollHeight;
       }
 
-      function chatbotResponse(input) {
-        const responses = {
-          "halo": "Halo! Bagaimana saya bisa membantu?",
-          "apa kabar?": "Saya AI, selalu siap membantu!",
-          "siapa kamu?": "Saya Gemini, chatbot pintar dari Google AI."
-        };
-        return responses[input.toLowerCase()] || "Saya belum mengerti pertanyaan Anda.";
-      }
-
       document.getElementById("chatbot-toggle").addEventListener("click", function () {
         document.getElementById("chatbot-modal").classList.remove("hidden");
       });
@@ -238,7 +242,7 @@
       document.getElementById("chatbot-close").addEventListener("click", function () {
         document.getElementById("chatbot-modal").classList.add("hidden");
       });
-    </script>
+      </script>
   </main>
   <footer id="footer" class="footer">
     <div class="container footer-top">

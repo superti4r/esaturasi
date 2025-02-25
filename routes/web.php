@@ -14,6 +14,7 @@ use App\Http\Controllers\Administrator\DataPengumuman;
 use App\Http\Controllers\Administrator\DataSiswa;
 use App\Http\Controllers\Administrator\DataArsip;
 use App\Http\Controllers\Guru\DashboardGuru;
+use App\Http\Controllers\SatriaAI;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,9 +29,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['guest'])->group(function () {
-    Route::get('/', function () {
-        return view('welcome');
-    });
+    Route::get('/', function () {return view('welcome');});
+    Route::post('/', [SatriaAI::class, 'chat'])->name('chatbot');
     Route::get('/login', [MainAuth::class, 'indexlogin'])->name('login');
     Route::post('/login', [MainAuth::class, 'login']);
     Route::get('/register', [MainAuth::class, 'indexregister'])->name('register');
