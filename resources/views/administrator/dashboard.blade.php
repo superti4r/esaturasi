@@ -138,27 +138,40 @@
         <div class="col-lg-4 col-md-12 col-sm-12 col-12">
             <div class="card">
                 <div class="card-header bg-warning text-white">
-                    <h4 class="text-white"><i class="fas fa-key"></i> Ubah Token Register</h4>
+                    <h4 class="text-white"><i class="fas fa-key"></i> Manajemen Token & API</h4>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('administrator.update.register.token') }}" method="POST">
                         @csrf
                         <div class="form-group">
-                            <label for="register_token">Masukkan Token Baru</label>
-                            <input type="text" name="register_token" id="register_token" class="form-control" required placeholder="Masukkan token baru.">
+                            <label for="register_token">Masukkan Token Register</label>
+                            <input type="text" name="register_token" id="register_token" class="form-control" required placeholder="Masukkan token baru">
                         </div>
-                        <button type="submit" class="btn btn-warning btn-block">Update Token</button>
+                        <button type="submit" class="btn btn-warning btn-block">
+                            <i class="fas fa-save"></i> Update Token
+                        </button>
+                    </form>
+                    <hr>
+                    <form action="{{ route('administrator.update.gemini.api') }}" method="POST">
+                        @csrf
+                        <div class="form-group">
+                            <label for="gemini_api_key">Masukkan API untuk Satria AI</label>
+                            <input type="text" name="gemini_api_key" id="gemini_api_key" class="form-control" required placeholder="Masukkan API baru">
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-block">
+                            <i class="fas fa-save"></i> Update API
+                        </button>
                     </form>
                     <div class="alert alert-info mt-3">
-                        <i class="fas fa-exclamation-circle"></i> <strong>Catatan:</strong> Ketika kamu meng-update token baru, maka website akan me-refresh, silahkan lakukan reload. maka akan website akan kembali normal.
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Catatan:</strong> Setelah memperbarui token maupun API, website akan otomatis merefresh. Jika tampilan tidak berubah, silakan reload halaman.
                     </div>
                     <div class="alert alert-danger mt-3">
-                        <i class="fas fa-exclamation-circle"></i> <strong>Perhatian:</strong> Jangan beritahu token kepada siapa saja, karena bersifat sensitif, nila token diketahui oleh publik maka sistem akan mudah diretas.
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Perhatian:</strong> Jangan beritahu token maupun API kepada siapa pun, karena bersifat sensitif. Jika token diketahui publik, sistem dapat mudah diretas.
                     </div>
                 </div>
             </div>
         </div>
-
-
 </section>
 @endsection
