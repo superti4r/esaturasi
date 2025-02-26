@@ -144,105 +144,130 @@
         </div>
       </div>
     </section>
-
     <div id="chatbot-toggle" class="chatbot-widget">
         <div class="chatbot-button">
-          <dotlottie-player
-            src="https://lottie.host/0c617fc4-7584-41ff-ac62-ab7e01306aa2/lydrHgewQK.lottie"
-            background="transparent"
-            speed="1"
-            style="width: 40px; height: 40px"
-            loop autoplay
-          ></dotlottie-player>
+            <dotlottie-player
+                src="https://lottie.host/0c617fc4-7584-41ff-ac62-ab7e01306aa2/lydrHgewQK.lottie"
+                background="transparent"
+                speed="1"
+                style="width: 40px; height: 40px"
+                loop autoplay
+            ></dotlottie-player>
         </div>
-      </div>
-
-      <div id="chatbot-modal" class="chatbot-modal hidden">
+    </div>
+    <div id="chatbot-modal" class="chatbot-modal hidden">
         <div class="chatbot-content">
-          <div class="chatbot-header">
-            <h5>Tanya si Satria yuk!</h5>
-            <button id="chatbot-close">✖</button>
-          </div>
-          <div class="chatbot-messages" id="chatbot-messages"></div>
-          <div class="chatbot-input">
-            <input type="text" id="chatbot-user-input" placeholder="Ketik pesan..." />
-            <button id="chatbot-send-btn">➤</button>
-          </div>
+            <div class="chatbot-header">
+                <h5>Tanya si Satria yuk!</h5>
+                <button id="chatbot-close">✖</button>
+            </div>
+            <div class="chatbot-messages" id="chatbot-messages"></div>
+            <div class="chatbot-input">
+                <input type="text" id="chatbot-user-input" placeholder="Ketik pesan..." />
+                <button id="chatbot-send-btn">➤</button>
+            </div>
         </div>
-      </div>
+    </div>
 
-      <script>
-      document.getElementById("chatbot-send-btn").addEventListener("click", sendChatbotMessage);
-      document.getElementById("chatbot-user-input").addEventListener("keypress", function (event) {
+    <script>
+    document.getElementById("chatbot-send-btn").addEventListener("click", sendChatbotMessage);
+    document.getElementById("chatbot-user-input").addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
-          sendChatbotMessage();
+            sendChatbotMessage();
         }
-      });
+    });
 
-      function sendChatbotMessage() {
+    function sendChatbotMessage() {
         const userInput = document.getElementById("chatbot-user-input").value.trim();
         if (!userInput) return;
 
         addChatbotMessage(userInput, "chatbot-user");
         document.getElementById("chatbot-user-input").value = "";
 
-        fetch("{{ route('chatbot') }}", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
-          },
-          body: JSON.stringify({ message: userInput })
-        })
-          .then(response => response.json())
-          .then(data => {
-            addChatbotMessage(data.response, "chatbot-bot", "bot-lottie");
-          })
-          .catch(error => {
-            console.error("Error:", error);
-            addChatbotMessage("Maaf, terjadi kesalahan.", "chatbot-bot", "bot-lottie");
-          });
-      }
+        const loadingMessage = addChatbotMessage("Sedang memproses...", "chatbot-bot", "loading");
 
-      function addChatbotMessage(text, sender, avatar) {
+        fetch("{{ route('chatbot') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+            },
+            body: JSON.stringify({ message: userInput })
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadingMessage.remove();
+            addChatbotMessage(formatMessage(data.response), "chatbot-bot", "bot-lottie");
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            loadingMessage.remove();
+            addChatbotMessage("Maaf, terjadi kesalahan.", "chatbot-bot", "bot-lottie");
+        });
+    }
+
+    function addChatbotMessage(text, sender, avatar) {
         const chatBox = document.getElementById("chatbot-messages");
         const messageContainer = document.createElement("div");
         messageContainer.classList.add("chatbot-message-container", sender.includes("user") ? "user" : "bot");
 
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("chatbot-message", sender);
-        messageDiv.innerText = text;
+        messageDiv.innerHTML = text;
 
         if (avatar === "bot-lottie") {
-          let avatarElement = document.createElement("div");
-          avatarElement.innerHTML = `
-            <dotlottie-player
-              src="https://lottie.host/9a03c788-a616-498e-b7ef-a7e4e71e3756/1xtH5781ZI.lottie"
-              background="transparent"
-              speed="1"
-              style="width: 50px; height: 50px"
-              loop autoplay
-            ></dotlottie-player>`;
-          avatarElement.classList.add("chatbot-lottie");
+            let avatarElement = document.createElement("div");
+            avatarElement.innerHTML = `
+                <dotlottie-player
+                    src="https://lottie.host/9a03c788-a616-498e-b7ef-a7e4e71e3756/1xtH5781ZI.lottie"
+                    background="transparent"
+                    speed="1"
+                    style="width: 50px; height: 50px"
+                    loop autoplay
+                ></dotlottie-player>`;
+            avatarElement.classList.add("chatbot-lottie");
 
-          messageContainer.appendChild(avatarElement);
-          messageContainer.appendChild(messageDiv);
+            messageContainer.appendChild(avatarElement);
+            messageContainer.appendChild(messageDiv);
+        } else if (avatar === "loading") {
+            messageDiv.innerHTML = `<i>Sedang memproses...</i>`;
+            messageContainer.appendChild(messageDiv);
         } else {
-          messageContainer.appendChild(messageDiv);
+            messageContainer.appendChild(messageDiv);
         }
 
         chatBox.appendChild(messageContainer);
         chatBox.scrollTop = chatBox.scrollHeight;
-      }
 
-      document.getElementById("chatbot-toggle").addEventListener("click", function () {
+        return messageContainer;
+    }
+
+    function formatMessage(text) {
+        text = text.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+        text = text.replace(/\*([^*]+)\*/g, "<i>$1</i>");
+        text = text.replace(/### (.*?)\n/g, "<h3>$1</h3>");
+        text = text.replace(/## (.*?)\n/g, "<h2>$1</h2>");
+        text = text.replace(/# (.*?)\n/g, "<h1>$1</h1>");
+        text = text.replace(/- (.*?)\n/g, "<ul><li>$1</li></ul>");
+        text = text.replace(/\d+\. (.*?)\n/g, "<ol><li>$1</li></ol>");
+        text = text.replace(/__TITLE__ (.*?)\n/g, "<h1 style='font-weight:bold;'>$1</h1>");
+        text = text.replace(/__SUBTITLE__ (.*?)\n/g, "<h2 style='font-weight:lighter;'>$1</h2>");
+        text = text.replace(/~~(.*?)~~/g, "<del>$1</del>");
+        text = text.replace(/__(.*?)__/g, "<u>$1</u>");
+        text = text.replace(/> (.*?)\n/g, "<blockquote>$1</blockquote>");
+        text = text.replace(/`([^`]+)`/g, "<code>$1</code>");
+        text = text.replace(/```([\s\S]+?)```/g, "<pre><code>$1</code></pre>");
+        return text;
+    }
+
+    document.getElementById("chatbot-toggle").addEventListener("click", function () {
         document.getElementById("chatbot-modal").classList.remove("hidden");
-      });
+    });
 
-      document.getElementById("chatbot-close").addEventListener("click", function () {
+    document.getElementById("chatbot-close").addEventListener("click", function () {
         document.getElementById("chatbot-modal").classList.add("hidden");
-      });
-      </script>
+    });
+    </script>
   </main>
   <footer id="footer" class="footer">
     <div class="container footer-top">
