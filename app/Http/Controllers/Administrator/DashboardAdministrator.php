@@ -101,4 +101,33 @@ class DashboardAdministrator extends Controller
 
         return redirect()->back()->with('success', 'REGISTER_TOKEN berhasil diperbarui.');
     }
+
+    public function updateGeminiApiKey(Request $request)
+    {
+        $request->validate([
+            'gemini_api_key' => 'required|string|max:255',
+        ]);
+
+        $newApiKey = $request->input('gemini_api_key');
+        $envPath = base_path('.env');
+
+        if (!File::exists($envPath)) {
+            return redirect()->back()->with('error', 'File .env tidak ditemukan.');
+        }
+
+        $envContent = File::get($envPath);
+
+        if (preg_match('/^GEMINI_API_KEY=.*$/m', $envContent)) {
+            $envContent = preg_replace('/^GEMINI_API_KEY=.*$/m', "GEMINI_API_KEY={$newApiKey}", $envContent);
+        } else {
+            $envContent .= "\nGEMINI_API_KEY={$newApiKey}\n";
+        }
+
+        File::put($envPath, $envContent);
+        Artisan::call('config:clear');
+        Artisan::call('config:cache');
+
+        return redirect()->back()->with('success', 'GEMINI_API_KEY berhasil diperbarui.');
+    }
+
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\Administrator\DataPengumuman;
 use App\Http\Controllers\Administrator\DataSiswa;
 use App\Http\Controllers\Administrator\DataArsip;
 use App\Http\Controllers\Guru\DashboardGuru;
+use App\Http\Controllers\SatriaAI;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,9 +29,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['guest'])->group(function () {
-    Route::get('/', function () {
-        return view('welcome');
-    });
+    Route::get('/', function () {return view('welcome');});
+    Route::post('/', [SatriaAI::class, 'chat'])->name('chatbot');
     Route::get('/login', [MainAuth::class, 'indexlogin'])->name('login');
     Route::post('/login', [MainAuth::class, 'login']);
     Route::get('/register', [MainAuth::class, 'indexregister'])->name('register');
@@ -46,7 +46,10 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::redirect('/home', '/administrator');
     Route::get('/administrator', [DashboardAdministrator::class, 'index'])->name('administrator');
-    Route::post('/administrator', [DashboardAdministrator::class, 'updateRegisterToken'])->name('administrator.update.register.token');
+    Route::post('/administrator/token', [DashboardAdministrator::class, 'updateRegisterToken'])->name('administrator.update.register.token');
+    Route::post('/administrator/api', [DashboardAdministrator::class, 'updateGeminiApiKey'])->name('administrator.update.gemini.api');
+    Route::get('/administrator/token', [DashboardAdministrator::class, 'index'])->name('administrator');
+    Route::get('/administrator/api', [DashboardAdministrator::class, 'index'])->name('administrator');
     Route::get('/administrator/settings', [DataProfile::class, 'index'])->name('administrator.settings');
     Route::put('/administrator/settings', [DataProfile::class, 'update'])->name('administrator.settings.update');
 

@@ -1,298 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>E-Saturasi | SMK Negeri 1 Sumberasih</title>
-  <link rel="shortcut icon" href="{{ asset('_root/img/favicon.ico')}}" type="image/x-icon">
-  <link rel="icon" href="{{ asset('_root/img/favicon.ico')}}" type="image/x-icon">
-  <link href="{{ asset('https://fonts.googleapis.com/css2?family=Arimo:wght@600;700&family=Familjen+Grotesk:wght@600;700&family=Inter:wght@400;600&family=Libre+Baskerville:wght@700&family=Syne:wght@600;700&display=swap')}}" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('_root/css/bootstrap.min.css')}}">
-  <link rel="stylesheet" href="{{ asset('_root/css/magnific-popup.css')}}">
-  <link rel="stylesheet" href="{{ asset('_root/css/swiper-bundle.min.css')}}">
-  <link rel="stylesheet" href="{{ asset('_root/css/animate.css')}}">
-  <link rel="stylesheet" href="{{ asset('_root/css/custom-font.css')}}">
-  <link rel="stylesheet" href="{{ asset('_root/css/fontawesome.css')}}">
-  <link rel="stylesheet" href="{{ asset('_root/css/aos.css')}}">
-  <link rel="stylesheet" href="{{ asset('_root/css/icomoon.css')}}">
-  <link rel="stylesheet" href="{{ asset('_root/css/main.css')}}">
-  <link rel="stylesheet" href="{{ asset('_root/css/app.min.css')}}">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>E-Saturasi &mdash; SMK Negeri 1 Sumberasih</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link href="{{ asset('_root/img/favicon.ico')}}" rel="icon">
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Jost:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="{{ asset('_root/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+  <link href="{{ asset('_root/vendor/bootstrap-icons/bootstrap-icons.css')}}" rel="stylesheet">
+  <link href="{{ asset('_root/vendor/aos/aos.css')}}" rel="stylesheet">
+  <link href="{{ asset('_root/vendor/glightbox/css/glightbox.min.css')}}" rel="stylesheet">
+  <link href="{{ asset('_root/vendor/swiper/swiper-bundle.min.css')}}" rel="stylesheet">
+  <link href="{{ asset('_root/css/main.css')}}" rel="stylesheet">
+  <link href="{{ asset('_root/css/chatbot.css')}}" rel="stylesheet">
 </head>
-
-<body class="light">
-
-  <div class="esaturasi-preloader-wrap">
-    <div class="esaturasi-preloader">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-  </div>
-
-  <header class="site-header esaturasi-header-section esaturasi-header1 dark-bg" id="sticky-menu">
-    <div class="container">
-      <nav class="navbar site-navbar">
-        <div class="brand-logo">
-          <a href="index.html">
-            <img src="_root/img/logo.svg" alt="" class="light-version-logo">
-          </a>
-        </div>
-        <div class="menu-block-wrapper">
-          <div class="menu-overlay"></div>
-          <nav class="menu-block" id="append-menu-header">
-            <div class="mobile-menu-head">
-              <div class="go-back">
-                <i class="fa fa-angle-left"></i>
-              </div>
-              <div class="current-menu-title"></div>
-              <div class="mobile-menu-close">&times;</div>
-            </div>
-            <ul class="site-menu-main">
-              <li class="nav-item nav-item-has-children">
-                <a href="#" class="nav-link-item drop-trigger">Quick Link <i class="fas fa-angle-down"></i></a>
-                <ul class="sub-menu" id="submenu-2">
-                  <li class="sub-menu--item">
-                    <a href="https://www.kemdikbud.go.id/">
-                      <span class="menu-item-text">Kemdikbud</span>
-                    </a>
-                  </li>
-                  <li class="sub-menu--item">
-                    <a href="https://smkn1sumberasih-pbl.sch.id" target="_blank">
-                      <span class="menu-item-text">Web Sekolah</span>
-                    </a>
-                  </li>
-                </ul>
-              </li>
+<body class="index-page">
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+      <a href="/" class="logo d-flex align-items-center me-auto">
+        <h1 class="sitename">E-Saturasi</h1>
+      </a>
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="/" class="active">Home</a></li>
+          <li class="dropdown"><a href="#"><span>Quick Link</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="https://www.kemdikbud.go.id/">Kemdikbud</a></li>
+              <li><a href="https://smkn1sumberasih-pbl.sch.id/">Kunjungi Website Sekolah</a></li>
             </ul>
-          </nav>
-        </div>
-        <div class="mobile-menu-trigger light">
-          <span></span>
-        </div>
+          </li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
+      <a class="btn-getstarted" href="/login">Login</a>
     </div>
   </header>
-
-  <div class="esaturasi-hero-section dark-bg">
-    <div class="container position-relative">
-      <div class="row">
-        <div class="col-lg-8">
-          <div class="esaturasi-hero-content">
-            <h1>
-              <span class="esaturasi-title-animation">
-                E-Saturasi
-                <img src="_root/img/icon/star3.png" alt="">
-              </span>
-              Application
-            </h1>
+  <main class="main">
+    <section id="hero" class="hero section dark-background">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center" data-aos="zoom-out">
+            <h1>E-Saturasi</h1>
             <p>Sebuah Aplikasi E-Learning Management System Guna Mempermudah Proses Pembelajaran Untuk SMK Negeri 1 Sumberasih.</p>
-            <div class="esaturasi-hero-user-wrap">
-              <div class="esaturasi-hero-user-thumb">
-                <div class="esaturasi-hero-user-thumb-item wow fadeInUpX" data-wow-delay="0s">
-                  <img src="_root/img/icon/Laravel.png" alt="">
-                </div>
-                <div class="esaturasi-hero-user-thumb-item wow fadeInUpX" data-wow-delay="0.25s">
-                  <img src="_root/img/icon/Flutter.png" alt="">
-                </div>
-              </div>
-              <div class="esaturasi-hero-user-data">
-                <p>Framework Yang Dipakai</p>
-              </div>
-            </div>
-            <a class="esaturasi-download-btn" href="#">Siswa? Download App Disini <i class="fas fa-download"></i></a>
+            <div class="d-flex">
+              <a href="#" class="btn-get-started">Download Aplikasi</a>
             </div>
           </div>
+          <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="200">
+            <div class="d-flex justify-content-center align-items-center" style="height: 50vh;">
+              <dotlottie-player
+                src="https://lottie.host/9b9f7e05-8b71-45f7-a0af-0e19e072f044/l7NT4cnlNT.lottie"
+                background="transparent"
+                speed="1"
+                style="width: 400px; height: 400px"
+                loop
+                autoplay
+              ></dotlottie-player>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="clients" class="clients section light-background">
+      <div class="container" data-aos="zoom-in">
+        <div class="swiper init-swiper">
+          <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+            <script type="application/json" class="swiper-config">
+              {
+                "loop": true,
+                "speed": 600,
+                "autoplay": {
+                  "delay": 5000
+                },
+                "slidesPerView": "auto",
+                "pagination": {
+                  "el": ".swiper-pagination",
+                  "type": "bullets",
+                  "clickable": true
+                },
+                "breakpoints": {
+                  "320": {
+                    "slidesPerView": 2,
+                    "spaceBetween": 40
+                  },
+                  "480": {
+                    "slidesPerView": 3,
+                    "spaceBetween": 60
+                  },
+                  "640": {
+                    "slidesPerView": 4,
+                    "spaceBetween": 80
+                  },
+                  "992": {
+                    "slidesPerView": 5,
+                    "spaceBetween": 120
+                  },
+                  "1200": {
+                    "slidesPerView": 6,
+                    "spaceBetween": 120
+                  }
+                }
+              }
+            </script>
+          <div class="text-center mb-3">
+            <h3>Teknologi yang dipakai :</h3>
+          </div>
+          <div class="swiper-wrapper align-items-center">
+            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/flutter.webp')}}" class="img-fluid" alt=""></div>
+            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/laravel.webp')}}" class="img-fluid" alt=""></div>
+            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/dart.webp')}}" class="img-fluid" alt=""></div>
+            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/php.webp')}}" class="img-fluid" alt=""></div>
+            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/mysql.webp')}}" class="img-fluid" alt=""></div>
+            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/bootstrap.webp')}}" class="img-fluid" alt=""></div>
+          </div>
+      </div>
+    </section>
+    <section id="about" class="about section">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Tentang Kami</h2>
+      </div>
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-6 content" data-aos="fade-up" data-aos-delay="100">
+            <p>
+              E-Saturasi adalah Aplikasi E-Learning berbasis Website dan Mobile yang terintegrasi guna mempermudah
+              Siswa dan Guru dalam proses pembelajaran, dengan fitur :
+            </p>
+            <ul>
+              <li><i class="bi bi-check2-circle"></i> <span>Manajemen data Siswa dan Guru</span></li>
+              <li><i class="bi bi-check2-circle"></i> <span>Mempermudah Siswa dalam proses belajar</span></li>
+              <li><i class="bi bi-check2-circle"></i> <span>Memanfaatkan teknologi sekarang dalam proses pembelajaran</span></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+            <p>Sistem aplikasi ini dirancang guna mempermudah proses pembelajaran secara daring dengan keamanan yang aman dan nyaman, serta mempermudah segala hal bentuk pembelajaran yang menyokong SMK Negeri 1 Sumberasih menjadi sekolah modern sesuai motto SMK yaitu SMK Bisa, SMK Siap Kerja, Santun, Mandiri & Kreatif. </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="chatbot-toggle" class="chatbot-widget">
+        <div class="chatbot-button">
+          <dotlottie-player
+            src="https://lottie.host/0c617fc4-7584-41ff-ac62-ab7e01306aa2/lydrHgewQK.lottie"
+            background="transparent"
+            speed="1"
+            style="width: 40px; height: 40px"
+            loop autoplay
+          ></dotlottie-player>
+        </div>
+      </div>
+
+      <div id="chatbot-modal" class="chatbot-modal hidden">
+        <div class="chatbot-content">
+          <div class="chatbot-header">
+            <h5>Tanya si Satria yuk!</h5>
+            <button id="chatbot-close">✖</button>
+          </div>
+          <div class="chatbot-messages" id="chatbot-messages"></div>
+          <div class="chatbot-input">
+            <input type="text" id="chatbot-user-input" placeholder="Ketik pesan..." />
+            <button id="chatbot-send-btn">➤</button>
+          </div>
+        </div>
+      </div>
+
+      <script>
+      document.getElementById("chatbot-send-btn").addEventListener("click", sendChatbotMessage);
+      document.getElementById("chatbot-user-input").addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+          sendChatbotMessage();
+        }
+      });
+
+      function sendChatbotMessage() {
+        const userInput = document.getElementById("chatbot-user-input").value.trim();
+        if (!userInput) return;
+
+        addChatbotMessage(userInput, "chatbot-user");
+        document.getElementById("chatbot-user-input").value = "";
+
+        fetch("{{ route('chatbot') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+          },
+          body: JSON.stringify({ message: userInput })
+        })
+          .then(response => response.json())
+          .then(data => {
+            addChatbotMessage(data.response, "chatbot-bot", "bot-lottie");
+          })
+          .catch(error => {
+            console.error("Error:", error);
+            addChatbotMessage("Maaf, terjadi kesalahan.", "chatbot-bot", "bot-lottie");
+          });
+      }
+
+      function addChatbotMessage(text, sender, avatar) {
+        const chatBox = document.getElementById("chatbot-messages");
+        const messageContainer = document.createElement("div");
+        messageContainer.classList.add("chatbot-message-container", sender.includes("user") ? "user" : "bot");
+
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("chatbot-message", sender);
+        messageDiv.innerText = text;
+
+        if (avatar === "bot-lottie") {
+          let avatarElement = document.createElement("div");
+          avatarElement.innerHTML = `
+            <dotlottie-player
+              src="https://lottie.host/9a03c788-a616-498e-b7ef-a7e4e71e3756/1xtH5781ZI.lottie"
+              background="transparent"
+              speed="1"
+              style="width: 50px; height: 50px"
+              loop autoplay
+            ></dotlottie-player>`;
+          avatarElement.classList.add("chatbot-lottie");
+
+          messageContainer.appendChild(avatarElement);
+          messageContainer.appendChild(messageDiv);
+        } else {
+          messageContainer.appendChild(messageDiv);
+        }
+
+        chatBox.appendChild(messageContainer);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      document.getElementById("chatbot-toggle").addEventListener("click", function () {
+        document.getElementById("chatbot-modal").classList.remove("hidden");
+      });
+
+      document.getElementById("chatbot-close").addEventListener("click", function () {
+        document.getElementById("chatbot-modal").classList.add("hidden");
+      });
+      </script>
+  </main>
+  <footer id="footer" class="footer">
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6 footer-about">
+          <a href="/" class="d-flex align-items-center">
+            <span class="sitename">E-Saturasi</span>
+          </a>
+          <div class="footer-contact pt-3">
+            <p>Jl. Lemahkembar, Sumberasih, Probolinggo</p>
+            <p>East Java 67251, Indonesia - SMK NEGERI 1 SUMBERASIH</p>
+            <p class="mt-3"><strong>Hubungi:</strong> <span>(0335) 435952</span></p>
+            <p><strong>Email:</strong> <span>smknsumberasih@gmail.com</span></p>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Quick Link</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="/">Home</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="https://www.kemdikbud.go.id/">Kemdikbud</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="https://smkn1sumberasih-pbl.sch.id/">Web Sekolah</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="/login">Login</a></li>
+          </ul>
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="section esaturasi-section-padding4">
-    <div class="container">
-      <div class="esaturasi-section-title center">
-        <h2>
-          Fitur
-          <span class="esaturasi-title-animation">
-            Yang Kami Hadirkan
-            <span class="esaturasi-title-icon">
-              <img src="_root/img/icon/star2.png" alt="">
-            </span>
-          </span>
-        </h2>
-      </div>
-      <div class="esaturasi-service-wrap">
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="esaturasi-iconbox-wrap wow fadeInUpX" data-wow-delay="0.1s">
-              <div class="esaturasi-iconbox-icon">
-                <i class="icon-database"></i>
-              </div>
-              <div class="esaturasi-iconbox-data">
-                <h3>Data Yang Aman</h3>
-                <p>Kami berusaha memaksimalkan keamanan Database agar tidak disalahgunakan oleh pihak yang tidak bertanggung jawab.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="esaturasi-iconbox-wrap wow fadeInUpX" data-wow-delay="0.2s">
-              <div class="esaturasi-iconbox-icon">
-                <i class="icon-ui-design"></i>
-              </div>
-              <div class="esaturasi-iconbox-data">
-                <h3>User Friendly</h3>
-                <p>Memaksimalkan UI/UX dengan kualitas yang disukai anak muda di era sekarang agar tidak jenuh dengan UI/UX itu itu aja.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="esaturasi-iconbox-wrap wow fadeInUpX" data-wow-delay="0.3s">
-              <div class="esaturasi-iconbox-icon">
-                <i class="icon-web"></i>
-              </div>
-              <div class="esaturasi-iconbox-data">
-                <h3>Akses Dimana Saja</h3>
-                <p>Mengupayakan aplikasi ini dapat diakses dimana saja dan kapan saja tentunya.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="esaturasi-iconbox-wrap wow fadeInUpX" data-wow-delay="0.4s">
-              <div class="esaturasi-iconbox-icon">
-                <i class="icon-settings"></i>
-              </div>
-              <div class="esaturasi-iconbox-data">
-                <h3>Update Berkelanjutan</h3>
-                <p>Kami terus mengupayakan menghadirkan fitur yang diperlukan dalam proses belajar mengajar.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="esaturasi-auto-slider-section">
-    <div class="swiper esaturasi-auto-slider">
-      <div class="swiper-wrapper">
-        <div class="swiper-slide">
-          <div class="esaturasi-auto-slider-item">
-            <h3>SMK Bisa, SMK Hebat, Siap Kerja, Santun, Mandiri dan Kreatif.</h3>
-            <img src="_root/img/icon/star3.png" alt="">
-          </div>
-        </div>
-        <div class="swiper-slide">
-          <div class="esaturasi-auto-slider-item">
-            <h3>SMK Bisa, SMK Hebat, Siap Kerja, Santun, Mandiri dan Kreatif.</h3>
-            <img src="_root/img/icon/star3.png" alt="">
-          </div>
-        </div>
-        <div class="swiper-slide">
-          <div class="esaturasi-auto-slider-item">
-            <h3>SMK Bisa, SMK Hebat, Siap Kerja, Santun, Mandiri dan Kreatif.</h3>
-            <img src="_root/img/icon/star3.png" alt="">
-          </div>
-        </div>
-        <div class="swiper-slide">
-          <div class="esaturasi-auto-slider-item">
-            <h3>SMK Bisa, SMK Hebat, Siap Kerja, Santun, Mandiri dan Kreatif.</h3>
-            <img src="_root/img/icon/star3.png" alt="">
-          </div>
-        </div>
-        <div class="swiper-slide">
-          <div class="esaturasi-auto-slider-item">
-            <h3>SMK Bisa, SMK Hebat, Siap Kerja, Santun, Mandiri dan Kreatif.</h3>
-            <img src="_root/img/icon/star3.png" alt="">
-          </div>
-        </div>
-        <div class="swiper-slide">
-          <div class="esaturasi-auto-slider-item">
-            <h3>SMK Bisa, SMK Hebat, Siap Kerja, Santun, Mandiri dan Kreatif.</h3>
-            <img src="_root/img/icon/star3.png" alt="">
-          </div>
-        </div>
-        <div class="swiper-slide">
-          <div class="esaturasi-auto-slider-item">
-            <h3>SMK Bisa, SMK Hebat, Siap Kerja, Santun, Mandiri dan Kreatif.</h3>
-            <img src="_root/img/icon/star3.png" alt="">
-          </div>
-        </div>
-        <div class="swiper-slide">
-          <div class="esaturasi-auto-slider-item">
-            <h3>SMK Bisa, SMK Hebat, Siap Kerja, Santun, Mandiri dan Kreatif.</h3>
-            <img src="_root/img/icon/star3.png" alt="">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <footer class="esaturasi-footer-section dark-bg">
-    <div class="container">
-      <div class="esaturasi-footer-top esaturasi-section-padding">
-        <div class="row">
-          <div class="col-lg-7">
-            <div class="esaturasi-default-content light position-relative">
-              <h2>
-                <span class="esaturasi-title-animation">
-                  E-Saturasi
-                  <span class="esaturasi-title-icon">
-                    <img src="_root/img/icon/star2.png" alt="">
-                  </span>
-                </span>
-                Application
-              </h2>
-              <p>Lokasi : Jl. Lemahkembar, Sumberasih, Probolinggo, East Java 67251, Indonesia - SMK NEGERI 1 SUMBERASIH</p>
-              <div class="esaturasi-info-wrap">
-                <div class="esaturasi-info">
-                  <ul>
-                    <li>Hubungi Sekolah:</li>
-                    <li><a href="">(0335) 435952</a></li>
-                  </ul>
-                </div>
-                <div class="esaturasi-info">
-                  <ul>
-                    <li>Email Sekolah:</li>
-                    <li><a href="mailto:smknsumberasih@gmail.com">smknsumberasih@gmail.com</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="esaturasi-footer-bottom">
-        <div class="row">
-          <div class="col-lg-6">
-          </div>
-          <div class="col-lg-6">
-            <div class="esaturasi-copywright one">
-              <p> &copy; Copyright 2025 by @projectpintar</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">E-Saturasi</strong> <span>All Rights Reserved</span></p>
     </div>
   </footer>
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  <div id="preloader"></div>
 
-  <script src="{{ asset('_root/js/jquery-3.6.0.min.js')}}"></script>
-  <script src="{{ asset('_root/js/bootstrap.bundle.min.js')}}"></script>
-  <script src="{{ asset('_root/js/aos.js')}}"></script>
-  <script src="{{ asset('_root/js/menu/menu.js')}}"></script>
-  <script src="{{ asset('_root/js/gsap.min.js')}}"></script>
-  <script src="{{ asset('_root/js/isotope.pkgd.min.js')}}"></script>
-  <script src="{{ asset('_root/js/jquery.magnific-popup.min.js')}}"></script>
-  <script src="{{ asset('_root/js/swiper-bundle.min.js')}}"></script>
-  <script src="{{ asset('_root/js/wow.min.js')}}"></script>
-  <script src="{{ asset('_root/js/SplitText.min.js')}}"></script>
-  <script src="{{ asset('_root/js/ScrollTrigger.min.js')}}"></script>
-  <script src="{{ asset('_root/js/ScrollSmoother.min.js')}}"></script>
-  <script src="{{ asset('_root/js/skill-bar.js')}}"></script>
-  <script src="{{ asset('_root/js/scrollsmooth.js')}}"></script>
-  <script src="{{ asset('_root/js/app.js')}}"></script>
-
+  <script src="{{ asset('_root/vendor/bootstrap/js/bootstrap.bundle.min.js')}}assets/"></script>
+  <script src="{{ asset('_root/vendor/php-email-form/validate.js')}}"></script>
+  <script src="{{ asset('_root/vendor/aos/aos.js')}}"></script>
+  <script src="{{ asset('_root/vendor/glightbox/js/glightbox.min.js')}}"></script>
+  <script src="{{ asset('_root/vendor/swiper/swiper-bundle.min.js')}}"></script>
+  <script src="{{ asset('_root/vendor/waypoints/noframework.waypoints.js')}}"></script>
+  <script src="{{ asset('_root/vendor/imagesloaded/imagesloaded.pkgd.min.js')}}"></script>
+  <script src="{{ asset('_root/vendor/isotope-layout/isotope.pkgd.min.js')}}"></script>
+  <script src="{{ asset('_root/js/main.js')}}"></script>
 </body>
 </html>
