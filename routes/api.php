@@ -1,14 +1,13 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\mobile\SiswaAuthController;
-use App\Http\Controllers\AuthController;
-
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use App\Models\Siswa;
-use App\Http\Controllers\mobile\PengumumanController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\API\SiswaAuthController;
+use App\Http\Controllers\API\PengumumanController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
