@@ -39,7 +39,7 @@
                   </div>
                 @endif
 
-                <form method="POST" action="{{ url('/forgot-password') }}" class="needs-validation" novalidate="">
+                <form method="POST" action="{{ url('/lupa-password') }}" class="needs-validation" novalidate="">
                     @csrf
 
                     <div class="form-group">

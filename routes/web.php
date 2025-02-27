@@ -36,7 +36,7 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/register', [MainAuth::class, 'indexregister'])->name('register');
     Route::post('/register', [MainAuth::class, 'register']);
     Route::get('/verifikasi/{verify_token}', [MainAuth::class, 'verify']);
-    Route::get('/lupa-password', [MainAuth::class, 'indexForgotPassword'])->name('forgot-password');
+    Route::get('/lupa-password', [MainAuth::class, 'indexForgotPassword'])->name('lupa-password');
     Route::post('/lupa-password', [MainAuth::class, 'forgotPassword']);
     Route::get('/reset-password/{token}', [MainAuth::class, 'indexResetPassword'])->name('reset-password');
     Route::post('/reset-password', [MainAuth::class, 'resetPassword']);
