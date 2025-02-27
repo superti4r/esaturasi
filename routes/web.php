@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SatriaAI;
 use App\Http\Controllers\Session\MainAuth;
 use App\Http\Controllers\Administrator\DashboardAdministrator;
 use App\Http\Controllers\Administrator\DataProfile;
@@ -14,7 +15,6 @@ use App\Http\Controllers\Administrator\DataPengumuman;
 use App\Http\Controllers\Administrator\DataSiswa;
 use App\Http\Controllers\Administrator\DataArsip;
 use App\Http\Controllers\Guru\DashboardGuru;
-use App\Http\Controllers\SatriaAI;
 use Illuminate\Support\Facades\Route;
 
 /*
