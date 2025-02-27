@@ -48,8 +48,8 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::get('/administrator', [DashboardAdministrator::class, 'index'])->name('administrator');
     Route::post('/administrator/token', [DashboardAdministrator::class, 'updateRegisterToken'])->name('administrator.update.register.token');
     Route::post('/administrator/api', [DashboardAdministrator::class, 'updateGeminiApiKey'])->name('administrator.update.gemini.api');
-    Route::get('/administrator/token', [DashboardAdministrator::class, 'index'])->name('administrator');
-    Route::get('/administrator/api', [DashboardAdministrator::class, 'index'])->name('administrator');
+    Route::get('/administrator/token', [DashboardAdministrator::class, 'index']);
+    Route::get('/administrator/api', [DashboardAdministrator::class, 'index']);
     Route::get('/administrator/settings', [DataProfile::class, 'index'])->name('administrator.settings');
     Route::put('/administrator/settings', [DataProfile::class, 'update'])->name('administrator.settings.update');
 
