@@ -22,7 +22,6 @@ class SiswaExport implements FromCollection, WithHeadings, ShouldAutoSize, WithS
             'tanggal_lahir',
             'tempat_lahir',
             'kelas_id',
-            'jurusan_id',
             'jenis_kelamin',
             'alamat',
             'tahun_masuk',
@@ -31,7 +30,7 @@ class SiswaExport implements FromCollection, WithHeadings, ShouldAutoSize, WithS
             'created_at',
             'updated_at'
         )
-        ->with(['kelas', 'jurusan'])
+        ->with(['kelas'])
         ->get()
         ->map(function ($siswa) {
             return [
@@ -40,7 +39,6 @@ class SiswaExport implements FromCollection, WithHeadings, ShouldAutoSize, WithS
                 'Tanggal Lahir' => $siswa->tanggal_lahir,
                 'Tempat Lahir' => $siswa->tempat_lahir,
                 'Kelas' => $siswa->kelas->nama_kelas ?? '-',
-                'Jurusan' => $siswa->jurusan->nama_jurusan ?? '-',
                 'Jenis Kelamin' => ucfirst($siswa->jenis_kelamin),
                 'Alamat' => $siswa->alamat,
                 'Tahun Masuk' => $siswa->tahun_masuk,
@@ -60,7 +58,6 @@ class SiswaExport implements FromCollection, WithHeadings, ShouldAutoSize, WithS
             'Tanggal Lahir',
             'Tempat Lahir',
             'Kelas',
-            'Jurusan',
             'Jenis Kelamin',
             'Alamat',
             'Tahun Masuk',
@@ -108,7 +105,6 @@ class SiswaExport implements FromCollection, WithHeadings, ShouldAutoSize, WithS
             'J' => 12,
             'K' => 25,
             'L' => 18,
-            'M' => 18,
         ];
     }
 }

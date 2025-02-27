@@ -21,7 +21,6 @@ class SiswaImport implements ToCollection, WithHeadingRow
                 'tempat_lahir' => $row['tempat_lahir'] ?? null,
                 'alamat' => $row['alamat'] ?? null,
                 'kelas_id' => $row['kelas_id'] ?? null,
-                'jurusan_id' => $row['jurusan_id'] ?? null,
                 'tahun_masuk' => $row['tahun_masuk'] ?? null,
                 'jenis_kelamin' => $row['jenis_kelamin'] ?? null,
                 'status' => $row['status'] ?? null,

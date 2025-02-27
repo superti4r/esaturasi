@@ -68,17 +68,6 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="jurusan" class="col-sm-2 col-form-label">Jurusan</label>
-                        <div class="col-sm-10">
-                            <select name="jurusan_id" id="jurusan" class="form-control" required>
-                                <option value="">Pilih Jurusan</option>
-                                @foreach($jurusan as $item)
-                                    <option value="{{ $item->id }}">{{ $item->nama_jurusan }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
                         <label for="foto_profil" class="col-sm-2 col-form-label">Foto Profil</label>
                         <div class="col-sm-10">
                             <input type="file" name="foto_profil" id="foto_profil" class="form-control" accept="image/*">

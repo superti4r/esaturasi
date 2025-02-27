@@ -72,18 +72,6 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="jurusan" class="col-sm-2 col-form-label">Jurusan</label>
-                        <div class="col-sm-10">
-                            <select name="jurusan_id" id="jurusan" class="form-control" required>
-                                @foreach($jurusan as $item)
-                                    <option value="{{ $item->id }}" {{ $siswa->jurusan_id == $item->id ? 'selected' : '' }}>
-                                        {{ $item->nama_jurusan }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
                         <label for="jenis_kelamin" class="col-sm-2 col-form-label">Jenis Kelamin</label>
                         <div class="col-sm-10">
                             <select name="jenis_kelamin" id="jenis_kelamin" class="form-control" required>
