@@ -98,7 +98,7 @@ class MainAuth extends Controller
             'role' => $inforegister['role'],
             'datetime' => date('Y-m-d H:i:s'),
             'website' => 'E-Saturasi - Verifikasi',
-            'url' => url("/verify/{$inforegister['verify_token']}"),
+            'url' => url("/verifikasi/{$inforegister['verify_token']}"),
         ];
 
         Mail::to($inforegister['email'])->send(new AuthMail($details));
