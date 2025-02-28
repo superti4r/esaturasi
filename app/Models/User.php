@@ -47,4 +47,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function jadwal()
+    {
+        return $this->hasMany(PembagianJadwal::class, 'guru_id');
+    }
 }

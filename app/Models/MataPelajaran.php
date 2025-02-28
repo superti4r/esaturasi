@@ -18,4 +18,8 @@ class MataPelajaran extends Model
     public function arsip(){
         return $this->belongsTo(Arsip::class, 'arsip_id');
     }
+
+    public function jadwal(){
+        return $this->hasMany(PembagianJadwal::class);
+    }
 }

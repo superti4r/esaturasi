@@ -15,6 +15,7 @@ use App\Http\Controllers\Administrator\DataPengumuman;
 use App\Http\Controllers\Administrator\DataSiswa;
 use App\Http\Controllers\Administrator\DataArsip;
 use App\Http\Controllers\Guru\DashboardGuru;
+use App\Http\Controllers\Guru\DataJadwal;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -142,6 +143,7 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
     Route::redirect('/home', '/guru');
     Route::get('/guru', [DashboardGuru::class, 'index'])->name('guru');
+    Route::get('/guru/jadwal-saya', [DataJadwal::class, 'index'])->name('guru.jadwal');
 });
 
 Route::get('/logout', [MainAuth::class, 'logout'])->name('logout');
