@@ -1,18 +1,12 @@
 <?php
-<<<<<<< HEAD:app/Http/Controllers/mobile/PengumumanController.php
-=======
+
 namespace App\Http\Controllers\API;
->>>>>>> dbd2cc1526c0bbe74162f4a4add31b2a009062dd:app/Http/Controllers/API/PengumumanController.php
-
-namespace App\Http\Controllers\mobile; // Sesuaikan dengan lokasi file
-
-use App\Http\Controllers\Controller; // Tambahkan ini!
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pengumuman;
 
 class PengumumanController extends Controller
 {
-<<<<<<< HEAD:app/Http/Controllers/mobile/PengumumanController.php
     public function getPengumuman()
 {
     $pengumuman = Pengumuman::all()->map(function ($item) {
@@ -33,8 +27,6 @@ class PengumumanController extends Controller
 
     return response()->json($pengumuman);
 }
-
-=======
     public function index()
     {
         $pengumuman = Pengumuman::with('arsip')->orderBy('created_at', 'desc')->get();
@@ -50,5 +42,4 @@ class PengumumanController extends Controller
             'pengumuman' => $pengumuman
         ]);
     }
->>>>>>> dbd2cc1526c0bbe74162f4a4add31b2a009062dd:app/Http/Controllers/API/PengumumanController.php
 }

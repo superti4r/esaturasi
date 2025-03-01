@@ -1,23 +1,22 @@
 <?php
-namespace App\Http\Controllers\mobile;
-use App\Http\Controllers\Controller; // Tambahkan ini!
+
+
+namespace App\Http\Controllers\API;
+use App\Http\Controllers\Controller; 
 use Illuminate\Http\Request;
 use App\Models\Kelas;
+
 
 class KelasController extends Controller
 {
     public function getKelas($id)
     {
-        $kelas = Kelas::where('id', $id)->first();
-
-        if ($kelas) {
-            return response()->json([
-                'nama_kelas' => $kelas->nama_kelas
-            ]);
-        } else {
-            return response()->json([
-                'message' => 'Kelas tidak ditemukan'
-            ], 404);
+        $kelas = Kelas::find($id);
+        
+        if (!$kelas) {
+            return response()->json(['message' => 'Kelas tidak ditemukan'], 404);
         }
+        
+        return response()->json(['nama_kelas' => $kelas->nama_kelas]);
     }
 }

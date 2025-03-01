@@ -35,11 +35,6 @@ class SiswaAuthController extends Controller
             ], 401);
         }
 
-<<<<<<< HEAD:app/Http/Controllers/mobile/SiswaAuthController.php
-        
-        // Buat token otentikasi
-=======
->>>>>>> dbd2cc1526c0bbe74162f4a4add31b2a009062dd:app/Http/Controllers/API/SiswaAuthController.php
         $token = Str::random(80);
         $siswa->api_token = $token;
         $siswa->save();

@@ -8,6 +8,10 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\SiswaAuthController;
 use App\Http\Controllers\API\PengumumanController;
+use App\Http\Controllers\API\JurusanController;
+use App\Http\Controllers\API\KelasController;
+Use App\Http\Controllers\API\DataJadwal;
+use App\Http\Controllers\API\MataPelajaranController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -37,5 +41,8 @@ Route::prefix('siswa')->group(function () {
 
 Route::get('/pengumuman', [PengumumanController::class, 'getPengumuman']);
 
+Route::get('mata-pelajaran/{kelasId}', [MataPelajaranController::class, 'getMataPelajaran']);
+
 Route::get('/get-kelas/{id}', [KelasController::class, 'getKelas']);
 Route::get('/get-jurusan/{id}', [JurusanController::class, 'getJurusan']);
+Route::middleware('auth:api')->get('/jadwal/{idKelas}', [DataJadwal::class, 'getJadwalByKelas']);
