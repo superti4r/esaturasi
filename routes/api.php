@@ -36,4 +36,4 @@ Route::prefix('siswa')->group(function () {
 
 
 
-Route::get('/pengumuman', [PengumumanController::class, 'index']);
+Route::get('/pengumuman', [PengumumanController::class, 'getPengumuman']);

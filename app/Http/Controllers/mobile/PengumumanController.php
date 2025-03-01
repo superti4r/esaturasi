@@ -1,28 +1,25 @@
 <?php
-namespace App\Http\Controllers\mobile;
 
-use App\Http\Controllers\Controller;
-use App\Models\Pengumuman;
+namespace App\Http\Controllers\mobile; // Sesuaikan dengan lokasi file
+
+use App\Http\Controllers\Controller; // Tambahkan ini!
 use Illuminate\Http\Request;
+use App\Models\Pengumuman;
 
 class PengumumanController extends Controller
 {
-    public function index()
+    public function getPengumuman()
     {
-        $pengumuman = Pengumuman::with('arsip')->orderBy('created_at', 'desc')->get();
-        
-        // Transformasi data untuk memastikan semua informasi tersedia
-        $pengumuman = $pengumuman->map(function ($item) {
-            // Pastikan arsip data lengkap dengan path file jika ada
-            if ($item->arsip) {
-                $item->arsip->file_path = $item->arsip->file_path ?? null;
+        $pengumuman = Pengumuman::all();
+
+        foreach ($pengumuman as $item) {
+            if (preg_match('/<img src="data:image\/png;base64,([^"]+)"/', $item->content_pengumuman, $matches)) {
+                $item->content_pengumuman = $matches[1];
+            } else {
+                $item->content_pengumuman = null;
             }
-            return $item;
-        });
-        
-        return response()->json([
-            'status' => 'success',
-            'pengumuman' => $pengumuman
-        ]);
+        }
+
+        return response()->json($pengumuman);
     }
 }
