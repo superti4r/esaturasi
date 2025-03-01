@@ -37,7 +37,7 @@
             @if(auth()->user()->role === 'guru')
             <li class="menu-header">Guru</li>
             <li class="nav-item dropdown">
-                <a href="#" class="nav-link" data-toggle="dropdown"><i class="fas fa-list"></i> <span>Jadwal Saya</span></a>
+                <a href="{{ route ('guru.jadwal') }}" class="nav-link"><i class="fas fa-list"></i> <span>Jadwal Saya</span></a>
                 <a href="#" class="nav-link"><i class="fas fa-building"></i> <span>Kelas</span></a>
                 <a href="#" class="nav-link"><i class="fas fa-external-link-alt"></i> <span>Statistik</span></a>
             </li>

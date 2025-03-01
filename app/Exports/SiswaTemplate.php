@@ -15,7 +15,7 @@ class SiswaTemplate implements FromArray, WithHeadings, WithStyles
     public function array(): array
     {
         return [
-            ['1234567890', 'Nama Siswa', '2005-06-15', 'Jember', 'Jl. Contoh No.1', 1, 1, 2022, 'Laki-laki', 'Aktif', 'email@example.com', 'password123'],
+            ['1234567890', 'Nama Siswa', '2005-06-15', 'Jember', 'Jl. Contoh No.1', 1, 2022, 'Laki-laki', 'Aktif', 'email@example.com', 'password123'],
         ];
     }
 
@@ -23,7 +23,7 @@ class SiswaTemplate implements FromArray, WithHeadings, WithStyles
     {
         return [
             'NISN', 'Nama', 'Tanggal Lahir (YYYY-MM-DD)', 'Tempat Lahir', 'Alamat',
-            'Kelas ID', 'Jurusan ID', 'Tahun Masuk', 'Jenis Kelamin', 'Status',
+            'Kelas ID', 'Tahun Masuk', 'Jenis Kelamin', 'Status',
             'Email', 'Password'
         ];
     }

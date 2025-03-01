@@ -38,4 +38,8 @@ class PembagianJadwal extends Model
     public function arsip(){
         return $this->belongsTo(Arsip::class, 'arsip_id');
     }
+
+    public function jadwalMataPelajaran(){
+        return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id');
+    }
 }

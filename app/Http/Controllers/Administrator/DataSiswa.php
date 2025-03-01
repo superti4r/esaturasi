@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Administrator;
 
 use App\Models\Kelas;
 use App\Models\Siswa;
-use App\Models\Jurusan;
 use App\Exports\SiswaExport;
 use App\Imports\SiswaImport;
 use Illuminate\Http\Request;
@@ -20,7 +19,7 @@ class DataSiswa extends Controller
 {
     public function index()
     {
-        $data = Siswa::with(['kelas', 'jurusan'])->get();
+        $data = Siswa::with(['kelas'])->get();
         $kelas = Kelas::all();
         return view('administrator.siswa.index', compact('data', 'kelas'));
     }
@@ -28,8 +27,7 @@ class DataSiswa extends Controller
     public function add()
     {
         $kelas = Kelas::all();
-        $jurusan = Jurusan::all();
-        return view('administrator.siswa.add', compact('kelas', 'jurusan'));
+        return view('administrator.siswa.add', compact('kelas'));
     }
 
     public function store(Request $request)
@@ -40,7 +38,6 @@ class DataSiswa extends Controller
             'tanggal_lahir' => 'required|date',
             'tempat_lahir' => 'required|string',
             'kelas_id' => 'required|exists:kelas,id',
-            'jurusan_id' => 'required|exists:jurusan,id',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'alamat' => 'required|string',
             'tahun_masuk' => 'required|numeric|min:2000|max:' . date('Y'),
@@ -81,8 +78,7 @@ class DataSiswa extends Controller
     {
         $siswa = Siswa::findOrFail($id);
         $kelas = Kelas::all();
-        $jurusan = Jurusan::all();
-        return view('administrator.siswa.edit', compact('siswa', 'kelas', 'jurusan'));
+        return view('administrator.siswa.edit', compact('siswa', 'kelas'));
     }
 
     public function update(Request $request, $id)
@@ -95,7 +91,6 @@ class DataSiswa extends Controller
             'tanggal_lahir' => 'required|date',
             'tempat_lahir' => 'required|string',
             'kelas_id' => 'required|exists:kelas,id',
-            'jurusan_id' => 'required|exists:jurusan,id',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'alamat' => 'required|string',
             'tahun_masuk' => 'required|numeric|min:2000|max:' . date('Y'),
@@ -137,7 +132,7 @@ class DataSiswa extends Controller
 
     public function view($id)
     {
-        $siswa = Siswa::with(['kelas', 'jurusan'])->findOrFail($id);
+        $siswa = Siswa::with(['kelas'])->findOrFail($id);
         return view('administrator.siswa.view', compact('siswa'));
     }
 

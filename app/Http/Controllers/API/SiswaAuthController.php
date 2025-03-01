@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\mobile;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Siswa;
@@ -13,7 +13,6 @@ class SiswaAuthController extends Controller
 {
     public function login(Request $request)
     {
-        // Validasi input
         $validator = Validator::make($request->all(), [
             'nisn' => 'required',
             'password' => 'required',
@@ -27,10 +26,8 @@ class SiswaAuthController extends Controller
             ], 422);
         }
 
-        // Cari siswa berdasarkan NISN
         $siswa = Siswa::where('nisn', $request->nisn)->first();
 
-        // Jika siswa tidak ditemukan atau password tidak cocok
         if (!$siswa || !Hash::check($request->password, $siswa->password)) {
             return response()->json([
                 'status' => 'error',
@@ -38,12 +35,14 @@ class SiswaAuthController extends Controller
             ], 401);
         }
 
+<<<<<<< HEAD:app/Http/Controllers/mobile/SiswaAuthController.php
+        
         // Buat token otentikasi
+=======
+>>>>>>> dbd2cc1526c0bbe74162f4a4add31b2a009062dd:app/Http/Controllers/API/SiswaAuthController.php
         $token = Str::random(80);
         $siswa->api_token = $token;
         $siswa->save();
-
-        // Hapus informasi sensitif dari response
         $siswaData = $siswa->makeHidden(['password', 'remember_token', 'api_token']);
 
         return response()->json([
@@ -58,12 +57,9 @@ class SiswaAuthController extends Controller
     {
         $token = $request->header('Authorization');
         $token = str_replace('Bearer ', '', $token);
-
-        // Cari siswa berdasarkan token
         $siswa = Siswa::where('api_token', $token)->first();
 
         if ($siswa) {
-            // Hapus token
             $siswa->api_token = null;
             $siswa->save();
         }
@@ -78,8 +74,6 @@ class SiswaAuthController extends Controller
     {
         $token = $request->header('Authorization');
         $token = str_replace('Bearer ', '', $token);
-
-        // Cari siswa berdasarkan token
         $siswa = Siswa::with(['kelas', 'jurusan'])->where('api_token', $token)->first();
 
         if (!$siswa) {
@@ -89,7 +83,6 @@ class SiswaAuthController extends Controller
             ], 401);
         }
 
-        // Hapus informasi sensitif
         $siswaData = $siswa->makeHidden(['password', 'remember_token', 'api_token']);
 
         return response()->json([

@@ -15,6 +15,7 @@ use App\Http\Controllers\Administrator\DataPengumuman;
 use App\Http\Controllers\Administrator\DataSiswa;
 use App\Http\Controllers\Administrator\DataArsip;
 use App\Http\Controllers\Guru\DashboardGuru;
+use App\Http\Controllers\Guru\DataJadwal;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,10 +36,10 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/login', [MainAuth::class, 'login']);
     Route::get('/register', [MainAuth::class, 'indexregister'])->name('register');
     Route::post('/register', [MainAuth::class, 'register']);
-    Route::get('/verifikasi/?{verify_token}', [MainAuth::class, 'verify']);
-    Route::get('/lupa-password', [MainAuth::class, 'indexForgotPassword'])->name('forgot-password');
+    Route::get('/verifikasi/{verify_token}', [MainAuth::class, 'verify']);
+    Route::get('/lupa-password', [MainAuth::class, 'indexForgotPassword'])->name('lupa-password');
     Route::post('/lupa-password', [MainAuth::class, 'forgotPassword']);
-    Route::get('/reset-password/?{token}', [MainAuth::class, 'indexResetPassword'])->name('reset-password');
+    Route::get('/reset-password/{token}', [MainAuth::class, 'indexResetPassword'])->name('reset-password');
     Route::post('/reset-password', [MainAuth::class, 'resetPassword']);
 
 });
@@ -48,8 +49,8 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::get('/administrator', [DashboardAdministrator::class, 'index'])->name('administrator');
     Route::post('/administrator/token', [DashboardAdministrator::class, 'updateRegisterToken'])->name('administrator.update.register.token');
     Route::post('/administrator/api', [DashboardAdministrator::class, 'updateGeminiApiKey'])->name('administrator.update.gemini.api');
-    Route::get('/administrator/token', [DashboardAdministrator::class, 'index'])->name('administrator');
-    Route::get('/administrator/api', [DashboardAdministrator::class, 'index'])->name('administrator');
+    Route::get('/administrator/token', [DashboardAdministrator::class, 'index']);
+    Route::get('/administrator/api', [DashboardAdministrator::class, 'index']);
     Route::get('/administrator/settings', [DataProfile::class, 'index'])->name('administrator.settings');
     Route::put('/administrator/settings', [DataProfile::class, 'update'])->name('administrator.settings.update');
 
@@ -142,6 +143,7 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
     Route::redirect('/home', '/guru');
     Route::get('/guru', [DashboardGuru::class, 'index'])->name('guru');
+    Route::get('/guru/jadwal-saya', [DataJadwal::class, 'index'])->name('guru.jadwal');
 });
 
 Route::get('/logout', [MainAuth::class, 'logout'])->name('logout');

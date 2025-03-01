@@ -51,10 +51,6 @@
                                     <td>{{ $siswa->kelas->nama_kelas ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Jurusan</th>
-                                    <td>{{ $siswa->jurusan->nama_jurusan ?? '-' }}</td>
-                                </tr>
-                                <tr>
                                     <th>Tahun Masuk</th>
                                     <td>{{ $siswa->tahun_masuk }}</td>
                                 </tr>

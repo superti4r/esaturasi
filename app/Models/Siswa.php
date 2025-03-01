@@ -22,7 +22,6 @@ class Siswa extends Authenticatable
         'tanggal_lahir',
         'tempat_lahir',
         'kelas_id',
-        'jurusan_id',
         'jenis_kelamin',
         'alamat',
         'foto_profil',
@@ -48,9 +47,4 @@ class Siswa extends Authenticatable
         return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 
-
-    public function jurusan()
-    {
-        return $this->belongsTo(Jurusan::class, 'jurusan_id');
-    }
 }

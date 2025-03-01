@@ -18,7 +18,6 @@ return new class extends Migration
             $table->date('tanggal_lahir');
             $table->string('tempat_lahir');
             $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
-            $table->foreignId('jurusan_id')->constrained('jurusan')->onDelete('cascade');
             $table->enum('jenis_kelamin', ['laki-laki', 'perempuan']);
             $table->text('alamat');
             $table->string('foto_profil')->nullable();
