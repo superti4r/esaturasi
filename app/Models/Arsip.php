@@ -29,10 +29,6 @@ class Arsip extends Model
         return $this->hasMany(PembagianJadwal::class, 'arsip_id');
     }
 
-    public function bab(){
-        return $this->hasMany(Bab::class, 'arsip_id');
-    }
-
     public function pengumuman(){
         return $this->hasMany(Pengumuman::class, 'arsip_id');
     }

@@ -4,7 +4,6 @@ use App\Http\Controllers\SatriaAI;
 use App\Http\Controllers\Session\MainAuth;
 use App\Http\Controllers\Administrator\DashboardAdministrator;
 use App\Http\Controllers\Administrator\DataProfile;
-use App\Http\Controllers\Administrator\DataBab;
 use App\Http\Controllers\Administrator\DataUser;
 use App\Http\Controllers\Administrator\DataJurusan;
 use App\Http\Controllers\Administrator\DataKelas;
@@ -100,11 +99,6 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::put('/administrator/kelas/edit/{id}', [DataKelas::class, 'update'])->name('administrator.kelas.update');
     Route::delete('/administrator/kelas/delete/{id}', [DataKelas::class, 'delete'])->name('administrator.kelas.delete');
     Route::post('/administrator/kelas/delete/selected', [DataKelas::class, 'bulkdelete'])->name('administrator.kelas.bulkdelete');
-
-    Route::get('administrator/bab', [DataBab::class, 'index'])->name('administrator.bab');
-    Route::get('administrator/bab/add', [DataBab::class, 'add'])->name('administrator.bab.add');
-    Route::post('administrator/bab/add', [DataBab::class, 'store'])->name('administrator.bab.post');
-    Route::delete('administrator/bab/delete/{id}', [DataBab::class, 'delete'])->name('administrator.bab.delete');
 
     Route::get('/administrator/pengumuman', [DataPengumuman::class, 'index'])->name('administrator.pengumuman');
     Route::get('/administrator/pengumuman/add', [DataPengumuman::class, 'add'])->name('administrator.pengumuman.add');
