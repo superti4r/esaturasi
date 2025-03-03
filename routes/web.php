@@ -110,11 +110,8 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
     Route::post('/administrator/pengumuman/delete/selected', [DataPengumuman::class, 'bulkdelete'])->name('administrator.pengumuman.bulkdelete');
 
     Route::get('/administrator/pembagian-jadwal', [DataPembagianJadwal::class, 'index'])->name('administrator.jadwal');
-    Route::get('/administrator/pembagian-jadwal/add', [DataPembagianJadwal::class, 'add'])->name('administrator.jadwal.add');
-    Route::post('/administrator/pembagian-jadwal/add', [DataPembagianJadwal::class, 'store'])->name('administrator.jadwal.store');
     Route::get('/administrator/pembagian-jadwal/edit/{id}', [DataPembagianJadwal::class, 'edit'])->name('administrator.jadwal.edit');
     Route::put('/administrator/pembagian-jadwal/edit/{id}', [DataPembagianJadwal::class, 'update'])->name('administrator.jadwal.update');
-    Route::delete('/administrator/pembagian-jadwal/reset/{id}', [DataPembagianJadwal::class, 'reset'])->name('administrator.jadwal.reset');
     Route::post('/administrator/pembagian-jadwal/reset', [DataPembagianJadwal::class, 'resetall'])->name('administrator.jadwal.resetall');
     Route::post('/administrator/pembagian-jadwal/sinkronisasi', [DataPembagianJadwal::class, 'sinkronisasi'])->name('administrator.jadwal.sinkronisasi');
 

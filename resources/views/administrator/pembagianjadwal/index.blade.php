@@ -13,31 +13,20 @@
     <div class="section-body">
         <h2 class="section-title">Pembagian Jadwal</h2>
         <p class="section-lead">Data jadwal pelajaran berdasarkan kelas.</p>
-
-        <!-- Tombol Aksi -->
         <div class="d-flex justify-content-end mb-4">
-            <a href="{{ route('administrator.jadwal.add') }}" class="btn btn-success mr-2">
-                <i class="fas fa-plus"></i> Tambah Jadwal
-            </a>
             <button type="button" class="btn btn-primary mr-2" onclick="confirmSync()">
                 <i class="fas fa-sync"></i> Sinkronkan Jadwal
             </button>
             <button type="button" class="btn btn-danger" onclick="confirmResetAll()">
                 <i class="fas fa-trash-alt"></i> Reset Semua Jadwal
             </button>
-
-            <!-- Form Sinkronisasi -->
             <form id="sync-form" action="{{ route('administrator.jadwal.sinkronisasi') }}" method="POST" style="display:none;">
                 @csrf
             </form>
-
-            <!-- Form Reset Semua Jadwal -->
             <form id="reset-all-form" action="{{ route('administrator.jadwal.resetall') }}" method="POST" style="display:none;">
                 @csrf
             </form>
         </div>
-
-        <!-- Menampilkan Jadwal per Kelas -->
         <div class="row">
             @foreach ($kelas as $k)
             <div class="col-md-6 col-lg-4">
@@ -64,13 +53,6 @@
                                         <a href="{{ route('administrator.jadwal.edit', $j->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('administrator.jadwal.reset', $j->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="confirmDelete(event)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
                                     </div>
                                 </li>
                                 @endforeach
