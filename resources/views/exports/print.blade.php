@@ -85,7 +85,7 @@
 </head>
 <body>
 
-    <img src="_sys/img/logo.png" alt="Watermark" class="watermark">
+    <img src="module/Stisla/logo.png" alt="Watermark" class="watermark">
 
     <div class="header">
         <h1>SMK Negeri 1 Sumberasih</h1>

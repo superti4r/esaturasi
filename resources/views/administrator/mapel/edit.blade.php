@@ -49,7 +49,8 @@
 </section>
 @endsection
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ asset ('module/jQuery/jquery.min.js') }}"></script>
+<script src="{{ asset ('module/SweetAlert/sweetalert2.all.min.js') }}"></script>
 
 @section('scripts')
 @if(session('success'))

@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
   <title>Register &mdash; E-Saturasi</title>
-  <link rel="icon" href="{{ asset('_root/img/favicon.ico')}}" type="image/x-icon">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" href="{{ asset('_sys/css/module/style.css') }}">
-  <link rel="stylesheet" href="{{ asset('_sys/css/module/components.css') }}">
+  <link rel="icon" href="{{ asset('module/Stisla/favicon.ico')}}" type="image/x-icon">
+  <link rel="stylesheet" href="{{ asset ('module/Bootstrap/css/bootstrap.min.css')}}">
+  <link rel="stylesheet" href="{{ asset ('module/Stisla/style.css') }}">
+  <link rel="stylesheet" href="{{ asset ('module/Stisla/components.css') }}">
 </head>
 
 <body>
@@ -17,7 +17,7 @@
         <div class="row">
           <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
             <div class="login-brand">
-              <img src="{{ asset('_sys/img/esaturasi.svg') }}" alt="logo" width="120">
+              <img src="{{ asset('module/Stisla/esaturasi.svg') }}" alt="logo" width="120">
             </div>
 
             <div class="card card-primary">
@@ -92,13 +92,21 @@
     </section>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-  <script src="{{ asset('_sys/js/module/stisla.js') }}"></script>
-  <script src="{{ asset('_sys/js/module/scripts.js') }}"></script>
-  <script src="{{ asset('_sys/js/module/custom.js') }}"></script>
+  <script src="{{ asset ('module/jQuery/jquery.min.js') }}"></script>
+  <script src="{{ asset ('module/Bootstrap/js/bootstrap.min.js') }}"></script>
+  <script src="{{ asset ('module/jQueryNiceScroll/jquery.nicescroll.min.js') }}"></script>
+  <script src="{{ asset ('module/Bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ asset ('module/Moment/moment.min.js') }}"></script>
+  <script src="{{ asset ('module/SweetAlert/sweetalert2.all.min.js') }}"></script>
+  <script src="{{ asset ('module/Cropper/cropper.min.js') }}"></script>
+  <script src="{{ asset ('module/Summernote/summernote-bs4.min.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/jquery.dataTables.min.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/dataTables.bootstrap4.min.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/select.bootstrap4.min.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/stisla.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/scripts.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/custom.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/modules-datatables.js') }}"></script>
+  <script type="module" src="{{ asset ('module/Popper/popper.min.js') }}"></script>
 </body>
 </html>

@@ -137,9 +137,10 @@
 @endsection
 
 @section('scripts')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<link rel="stylesheet" href="{{ asset ('module/Cropper/cropper.min.css') }}">
+<script src="{{ asset ('module/jQuery/jquery.min.js') }}"></script>
+<script src="{{ asset ('module/SweetAlert/sweetalert2.all.min.js') }}"></script>
+<script src="{{ asset ('module/Cropper/cropper.min.js') }}"></script>
 
 <style>
     #crop-area {

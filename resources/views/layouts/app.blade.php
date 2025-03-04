@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
   <title>Panel &mdash; E-Saturasi</title>
-  <link rel="icon" href="{{ asset('_root/img/favicon.ico')}}" type="image/x-icon">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('_sys/css/module/dataTables.bootstrap4.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('_sys/css/module/select.bootstrap4.min.css') }}">
-  <link rel="stylesheet" href="{{ asset ('_sys/css/module/style.css') }}">
-  <link rel="stylesheet" href="{{ asset ('_sys/css/module/components.css') }}">
+  <link rel="icon" href="{{ asset('module/Stisla/favicon.ico')}}" type="image/x-icon">
+  <link rel="stylesheet" href="{{ asset ('module/Bootstrap/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ asset ('module/FontAwesome/css/all.css') }}">
+  <link rel="stylesheet" href="{{ asset ('module/Cropper/cropper.min.css') }}">
+  <link rel="stylesheet" href="{{ asset ('module/Summernote/summernote-bs4.min.css') }}">
+  <link rel="stylesheet" href="{{ asset ('module/Stisla/dataTables.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ asset ('module/Stisla/select.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ asset ('module/Stisla/style.css') }}">
+  <link rel="stylesheet" href="{{ asset ('module/Stisla/components.css') }}">
 </head>
 
 <body>
@@ -35,26 +35,26 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.js"></script>
-  <script src="{{ asset('_sys/js/module/jquery.dataTables.min.js') }}"></script>
-  <script src="{{ asset('_sys/js/module/dataTables.bootstrap4.min.js') }}"></script>
-  <script src="{{ asset('_sys/js/module/select.bootstrap4.min.js') }}"></script>
-  <script src="{{ asset ('_sys/js/module/stisla.js') }}"></script>
-  <script src="{{ asset ('_sys/js/module/scripts.js') }}"></script>
-  <script src="{{ asset ('_sys/js/module/custom.js') }}"></script>
-  <script src="{{ asset ('_sys/js/module/modules-datatables.js') }}"></script>
+  <script src="{{ asset ('module/jQuery/jquery.min.js') }}"></script>
+  <script src="{{ asset ('module/Bootstrap/js/bootstrap.min.js') }}"></script>
+  <script src="{{ asset ('module/jQueryNiceScroll/jquery.nicescroll.min.js') }}"></script>
+  <script src="{{ asset ('module/Bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ asset ('module/Moment/moment.min.js') }}"></script>
+  <script src="{{ asset ('module/SweetAlert/sweetalert2.all.min.js') }}"></script>
+  <script src="{{ asset ('module/Cropper/cropper.min.js') }}"></script>
+  <script src="{{ asset ('module/Summernote/summernote-bs4.min.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/jquery.dataTables.min.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/dataTables.bootstrap4.min.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/select.bootstrap4.min.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/stisla.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/scripts.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/custom.js') }}"></script>
+  <script src="{{ asset ('module/Stisla/modules-datatables.js') }}"></script>
+  <script type="module" src="{{ asset ('module/Popper/popper.min.js') }}"></script>
 
   @yield('scripts')
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="{{ asset ('module/SweetAlert/sweetalert2.all.min.js') }}"></script>
 <script>
     @if (session('success'))
         Swal.fire({
