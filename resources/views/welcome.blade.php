@@ -7,17 +7,17 @@
   <meta name="description" content="">
   <meta name="keywords" content="">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <link href="{{ asset('_root/img/favicon.ico')}}" rel="icon">
+  <link href="{{ asset('home/img/favicon.ico')}}" rel="icon">
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Jost:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-  <link href="{{ asset('_root/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-  <link href="{{ asset('_root/vendor/bootstrap-icons/bootstrap-icons.css')}}" rel="stylesheet">
-  <link href="{{ asset('_root/vendor/aos/aos.css')}}" rel="stylesheet">
-  <link href="{{ asset('_root/vendor/glightbox/css/glightbox.min.css')}}" rel="stylesheet">
-  <link href="{{ asset('_root/vendor/swiper/swiper-bundle.min.css')}}" rel="stylesheet">
-  <link href="{{ asset('_root/css/main.css')}}" rel="stylesheet">
-  <link href="{{ asset('_root/css/chatbot.css')}}" rel="stylesheet">
+  <link href="{{ asset('home/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+  <link href="{{ asset('home/vendor/bootstrap-icons/bootstrap-icons.css')}}" rel="stylesheet">
+  <link href="{{ asset('home/vendor/aos/aos.css')}}" rel="stylesheet">
+  <link href="{{ asset('home/vendor/glightbox/css/glightbox.min.css')}}" rel="stylesheet">
+  <link href="{{ asset('home/vendor/swiper/swiper-bundle.min.css')}}" rel="stylesheet">
+  <link href="{{ asset('home/css/main.css')}}" rel="stylesheet">
+  <link href="{{ asset('home/css/chatbot.css')}}" rel="stylesheet">
 </head>
 <body class="index-page">
   <header id="header" class="header d-flex align-items-center fixed-top">
@@ -111,12 +111,12 @@
             <h3>Teknologi yang dipakai :</h3>
           </div>
           <div class="swiper-wrapper align-items-center">
-            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/flutter.webp')}}" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/laravel.webp')}}" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/dart.webp')}}" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/php.webp')}}" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/mysql.webp')}}" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="{{ asset('_root/img/clients/bootstrap.webp')}}" class="img-fluid" alt=""></div>
+            <div class="swiper-slide"><img src="{{ asset('home/img/clients/flutter.webp')}}" class="img-fluid" alt=""></div>
+            <div class="swiper-slide"><img src="{{ asset('home/img/clients/laravel.webp')}}" class="img-fluid" alt=""></div>
+            <div class="swiper-slide"><img src="{{ asset('home/img/clients/dart.webp')}}" class="img-fluid" alt=""></div>
+            <div class="swiper-slide"><img src="{{ asset('home/img/clients/php.webp')}}" class="img-fluid" alt=""></div>
+            <div class="swiper-slide"><img src="{{ asset('home/img/clients/mysql.webp')}}" class="img-fluid" alt=""></div>
+            <div class="swiper-slide"><img src="{{ asset('home/img/clients/bootstrap.webp')}}" class="img-fluid" alt=""></div>
           </div>
       </div>
     </section>
@@ -301,14 +301,14 @@
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
   <div id="preloader"></div>
 
-  <script src="{{ asset('_root/vendor/bootstrap/js/bootstrap.bundle.min.js')}}assets/"></script>
-  <script src="{{ asset('_root/vendor/php-email-form/validate.js')}}"></script>
-  <script src="{{ asset('_root/vendor/aos/aos.js')}}"></script>
-  <script src="{{ asset('_root/vendor/glightbox/js/glightbox.min.js')}}"></script>
-  <script src="{{ asset('_root/vendor/swiper/swiper-bundle.min.js')}}"></script>
-  <script src="{{ asset('_root/vendor/waypoints/noframework.waypoints.js')}}"></script>
-  <script src="{{ asset('_root/vendor/imagesloaded/imagesloaded.pkgd.min.js')}}"></script>
-  <script src="{{ asset('_root/vendor/isotope-layout/isotope.pkgd.min.js')}}"></script>
-  <script src="{{ asset('_root/js/main.js')}}"></script>
+  <script src="{{ asset('home/vendor/bootstrap/js/bootstrap.bundle.min.js')}}assets/"></script>
+  <script src="{{ asset('home/vendor/php-email-form/validate.js')}}"></script>
+  <script src="{{ asset('home/vendor/aos/aos.js')}}"></script>
+  <script src="{{ asset('home/vendor/glightbox/js/glightbox.min.js')}}"></script>
+  <script src="{{ asset('home/vendor/swiper/swiper-bundle.min.js')}}"></script>
+  <script src="{{ asset('home/vendor/waypoints/noframework.waypoints.js')}}"></script>
+  <script src="{{ asset('home/vendor/imagesloaded/imagesloaded.pkgd.min.js')}}"></script>
+  <script src="{{ asset('home/vendor/isotope-layout/isotope.pkgd.min.js')}}"></script>
+  <script src="{{ asset('home/js/main.js')}}"></script>
 </body>
 </html>
