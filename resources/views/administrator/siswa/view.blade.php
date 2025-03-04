@@ -18,7 +18,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4 text-center">
-                        <img src="{{ $siswa->foto_profil ? asset('storage/' . $siswa->foto_profil) : asset('_sys/img/avatar/avatar-1.png') }}"
+                        <img src="{{ $siswa->foto_profil ? asset('storage/' . $siswa->foto_profil) : asset('module/Stisla/avatar.png') }}"
                              alt="Foto Profil" class="img-fluid rounded-circle mb-4" width="200">
                         <h5>{{ $siswa->nama }}</h5>
                         <p class="text-muted">{{ $siswa->kelas->nama_kelas ?? '-' }}</p>

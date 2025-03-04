@@ -56,7 +56,7 @@
                                         <td>{{ $user->nik }}</td>
                                         <td>{{ $user->nama }}</td>
                                         <td>
-                                            <img src="{{ $user->foto_profil ? asset('storage/' . $user->foto_profil) : asset('_sys/img/avatar/avatar-1.png') }}"
+                                            <img src="{{ $user->foto_profil ? asset('storage/' . $user->foto_profil) : asset('module/Stisla/avatar.png') }}"
                                                  alt="Foto Profil" class="rounded-circle" width="35">
                                         </td>
                                         <td>

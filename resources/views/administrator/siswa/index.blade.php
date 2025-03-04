@@ -66,7 +66,7 @@
                                         <td>{{ $siswa->nisn }}</td>
                                         <td>{{ $siswa->nama }}</td>
                                         <td>
-                                            <img src="{{ $siswa->foto_profil ? asset('storage/' . $siswa->foto_profil) : asset('_sys/img/avatar/avatar-1.png') }}"
+                                            <img src="{{ $siswa->foto_profil ? asset('storage/' . $siswa->foto_profil) : asset('module/Stisla/avatar.png') }}"
                                                  alt="Foto Profil" class="rounded-circle" width="35">
                                         </td>
                                         <td>{{ $siswa->kelas->nama_kelas }}</td>

@@ -18,7 +18,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4 text-center">
-                        <img src="{{ $user->foto_profil ? asset('storage/' . $user->foto_profil) : asset('_sys/img/avatar/avatar-1.png') }}"
+                        <img src="{{ $user->foto_profil ? asset('storage/' . $user->foto_profil) : asset('module/Stisla/avatar.png') }}"
                              alt="Foto Profil" class="img-fluid rounded-circle mb-4" width="200">
                         <h5>{{ $user->nama }}</h5>
                         <p class="text-muted">{{ $user->role === 'administrator' ? 'Administrator' : ucfirst($user->role) }}</p>
