@@ -1,16 +1,17 @@
 <?php
+
+use App\Http\Controllers\API\DataMataPelajaran;
+use App\Http\Controllers\API\SiswaAuthentication;
+use App\Http\Controllers\API\DataPengumuman;
+use App\Http\Controllers\API\DataJurusan;
+Use App\Http\Controllers\API\DataJadwal;
+use App\Http\Controllers\API\DataKelas;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\API\SiswaAuthController;
-use App\Http\Controllers\API\PengumumanController;
-use App\Http\Controllers\API\JurusanController;
-use App\Http\Controllers\API\KelasController;
-Use App\Http\Controllers\API\DataJadwal;
-use App\Http\Controllers\API\MataPelajaranController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -19,19 +20,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::prefix('siswa')->group(function () {
-    Route::post('/login', [SiswaAuthController::class, 'login']);
+    Route::post('/login', [SiswaAuthentication::class, 'login']);
     Route::middleware('auth:api')->group(function () {
-        Route::post('/logout', [SiswaAuthController::class, 'logout']);
-        Route::get('/profile', [SiswaAuthController::class, 'getProfile']);
+    Route::post('/logout', [SiswaAuthentication::class, 'logout']);
+    Route::get('/profile', [SiswaAuthentication::class, 'getProfile']);
     });
 });
 
-
-
-Route::get('/pengumuman', [PengumumanController::class, 'getPengumuman']);
-
-Route::get('mata-pelajaran/{kelasId}', [MataPelajaranController::class, 'getMataPelajaran']);
-
-Route::get('/get-kelas/{id}', [KelasController::class, 'getKelas']);
-Route::get('/get-jurusan/{id}', [JurusanController::class, 'getJurusan']);
+Route::get('/pengumuman', [DataPengumuman::class, 'getPengumuman']);
+Route::get('mata-pelajaran/{kelasId}', [DataMataPelajaran::class, 'getMataPelajaran']);
+Route::get('/get-kelas/{id}', [DataKelas::class, 'getKelas']);
+Route::get('/get-jurusan/{id}', [DataJurusan::class, 'getJurusan']);
 Route::middleware('auth:api')->get('/jadwal/{idKelas}', [DataJadwal::class, 'getJadwalByKelas']);
+
+
+
+

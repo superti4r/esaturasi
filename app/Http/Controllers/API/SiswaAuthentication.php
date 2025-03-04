@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
-class SiswaAuthController extends Controller
+class SiswaAuthentication extends Controller
 {
     public function login(Request $request)
     {
