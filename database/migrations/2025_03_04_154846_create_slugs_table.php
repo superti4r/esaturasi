@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('slugs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pembagian_jadwal_id')->constrained('pembagian_jadwal')->onDelete('cascade');
+            $table->foreignId('jadwal_id')->constrained('pembagian_jadwal')->onDelete('cascade');
+            $table->string('judul');
             $table->string('slug')->unique();
-            $table->string('judul')->nullable();
             $table->timestamps();
         });
     }

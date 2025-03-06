@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('slug_id')->constrained('slugs')->onDelete('cascade');
             $table->string('judul')->nullable();
             $table->text('deskripsi')->nullable();
-            $table->string('file')->nullable();
+            $table->string('file_path')->nullable();
             $table->dateTime('deadline')->nullable();
             $table->timestamps();
         });
