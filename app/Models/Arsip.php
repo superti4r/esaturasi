@@ -33,7 +33,12 @@ class Arsip extends Model
         return $this->hasMany(Pengumuman::class, 'arsip_id');
     }
 
+    public function jadwal(){
+        return $this->hasMany(PembagianJadwal::class, 'arsip_id');
+    }
+
     public function scopeAktif($query){
         return $query->where('status', 'aktif');
     }
+
 }

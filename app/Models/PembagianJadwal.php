@@ -42,4 +42,9 @@ class PembagianJadwal extends Model
     public function jadwalMataPelajaran(){
         return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id');
     }
+
+    public function slugs()
+    {
+        return $this->hasMany(Slugs::class, 'jadwal_id');
+    }
 }

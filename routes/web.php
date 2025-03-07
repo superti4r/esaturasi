@@ -1,21 +1,23 @@
 <?php
 
 use App\Http\Controllers\SatriaAI;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Guru\DataJadwal;
 use App\Http\Controllers\Session\MainAuth;
-use App\Http\Controllers\Administrator\DashboardAdministrator;
-use App\Http\Controllers\Administrator\DataProfile;
+use App\Http\Controllers\Guru\DashboardGuru;
 use App\Http\Controllers\Administrator\DataUser;
-use App\Http\Controllers\Administrator\DataJurusan;
+use App\Http\Controllers\Administrator\DataArsip;
 use App\Http\Controllers\Administrator\DataKelas;
+use App\Http\Controllers\Administrator\DataSiswa;
+use App\Http\Controllers\Administrator\DataJurusan;
+use App\Http\Controllers\Administrator\DataProfile;
+use App\Http\Controllers\Administrator\DataPengumuman;
 use App\Http\Controllers\Administrator\DataMapelPerkelas;
 use App\Http\Controllers\Administrator\DataMataPelajaran;
 use App\Http\Controllers\Administrator\DataPembagianJadwal;
-use App\Http\Controllers\Administrator\DataPengumuman;
-use App\Http\Controllers\Administrator\DataSiswa;
-use App\Http\Controllers\Administrator\DataArsip;
-use App\Http\Controllers\Guru\DashboardGuru;
-use App\Http\Controllers\Guru\DataJadwal;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Administrator\DashboardAdministrator;
+use App\Http\Controllers\Guru\DataTugasDanMateri;
+use App\Http\Controllers\Guru\DataTugasDanMateriController;
 
 /*
 |--------------------------------------------------------------------------
@@ -135,6 +137,12 @@ Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
     Route::redirect('/home', '/guru');
     Route::get('/guru', [DashboardGuru::class, 'index'])->name('guru');
     Route::get('/guru/jadwal-saya', [DataJadwal::class, 'index'])->name('guru.jadwal');
+
+    Route::get('/guru/kelola', [DataTugasDanMateri::class, 'index'])->name('guru.tugas-dan-materi.index');
+    Route::post('/guru/kelola/create', [DataTugasDanMateri::class, 'create'])->name('guru.tugas-dan-materi.create');
+    Route::get('/guru/kelola/{id}', [DataTugasDanMateri::class, 'show'])->name('guru.tugas-dan-materi.show');
+    Route::delete('/guru/tugas-dan-materi/{id}', [DataTugasDanMateri::class, 'destroy'])->name('guru.tugas-dan-materi.destroy');
+
 });
 
 Route::get('/logout', [MainAuth::class, 'logout'])->name('logout');
