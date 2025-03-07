@@ -6,8 +6,8 @@
         <h1>Detail Tugas dan Materi</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item"><a href="{{ route('guru') }}">Dashboard</a></div>
-            <div class="breadcrumb-item"><a href="{{ route('guru.tugas-dan-materi.index') }}">Tugas dan Materi</a></div>
-            <div class="breadcrumb-item active">Detail</div>
+            <div class="breadcrumb-item"><a href="{{ route('guru.tugas-dan-materi.index') }}">Kelola</a></div>
+            <div class="breadcrumb-item active">Tugas & Materi</div>
         </div>
     </div>
 
@@ -27,7 +27,7 @@
                     <a href="{{ route('guru.tugas-dan-materi.materi.index', $slugData->slug) }}" class="btn btn-success mb-3">
                         <i class="fas fa-book"></i> Kelola Materi
                     </a>
-                    <a href="#" class="btn btn-primary mb-3">
+                    <a href="{{ route('guru.tugas-dan-materi.tugas.index', $slugData->slug) }}" class="btn btn-primary mb-3">
                         <i class="fas fa-pen"></i> Kelola Tugas
                     </a>
                     <a href="#" class="btn btn-warning mb-3">

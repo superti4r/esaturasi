@@ -148,6 +148,93 @@ class DataTugasDanMateri extends Controller
             ->with('success', 'Materi berhasil diperbarui.');
     }
 
+    public function indexTugas($id)
+    {
+        $slugData = Slugs::with('jadwal.arsip')->where('slug', $id)->firstOrFail();
+
+        if ($slugData->jadwal->arsip->status !== 'aktif') {
+            return redirect()->route('guru.tugas-dan-materi.tugas.index')
+                ->with('error', 'Tugas tidak dapat diakses karena jadwal telah diarsipkan.');
+        }
+
+        $tugas = Tugas::where('slug_id', $slugData->id)->get();
+
+        return view('guru.tugas-dan-materi.tugas.index', compact('slugData', 'tugas'));
+    }
+
+    public function storeTugas(Request $request, $id)
+    {
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'file.*' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,ppt,pptx,mp4,mkv,mov|max:51200',
+            'deadline' => 'nullable|date',
+        ]);
+
+        $slugData = Slugs::where('slug', $id)->firstOrFail();
+        $fileData = [];
+
+        if ($request->hasFile('file')) {
+            foreach ($request->file('file') as $file) {
+                $fileData[] = [
+                    'original_name' => $file->getClientOriginalName(),
+                    'encrypted_name' => $file->store('file_tugas', 'public'),
+                ];
+            }
+        }
+
+        Tugas::create([
+            'slug_id' => $slugData->id,
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'file_path' => !empty($fileData) ? json_encode($fileData) : null,
+            'deadline' => $request->deadline,
+        ]);
+
+        return redirect()->route('guru.tugas-dan-materi.tugas.index', $id)
+            ->with('success', 'Tugas berhasil ditambahkan.');
+    }
+
+    public function updateTugas(Request $request, $id)
+    {
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'file.*' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,ppt,pptx,mp4,mkv,mov|max:51200',
+            'deadline' => 'nullable|date',
+        ]);
+
+        $tugas = Tugas::findOrFail($id);
+        $slug = $tugas->slug->slug;
+
+        if ($tugas->file_path) {
+            foreach (json_decode($tugas->file_path, true) as $oldFile) {
+                Storage::disk('public')->delete($oldFile['encrypted_name']);
+            }
+        }
+
+        $fileData = [];
+
+        if ($request->hasFile('file')) {
+            foreach ($request->file('file') as $file) {
+                $fileData[] = [
+                    'original_name' => $file->getClientOriginalName(),
+                    'encrypted_name' => $file->store('file_tugas', 'public'),
+                ];
+            }
+        }
+
+        $tugas->update([
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'file_path' => !empty($fileData) ? json_encode($fileData) : null,
+            'deadline' => $request->deadline,
+        ]);
+
+        return redirect()->route('guru.tugas-dan-materi.tugas.index', $slug)
+            ->with('success', 'Tugas berhasil diperbarui.');
+    }
+
     public function destroy($id)
     {
         $slug = Slugs::with('jadwal.arsip')->findOrFail($id);

@@ -6,7 +6,7 @@
         <h1>Tugas dan Materi</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="{{ route('guru') }}">Dashboard</a></div>
-            <div class="breadcrumb-item">Tugas dan Materi</div>
+            <div class="breadcrumb-item">Kelola</div>
         </div>
     </div>
 
