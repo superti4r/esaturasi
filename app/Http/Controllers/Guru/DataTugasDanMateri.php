@@ -10,6 +10,7 @@ use App\Models\PembagianJadwal;
 use App\Http\Controllers\Controller;
 use App\Models\Slugs;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class DataTugasDanMateri extends Controller
 {
@@ -62,6 +63,89 @@ class DataTugasDanMateri extends Controller
         $materi = Materi::where('slug_id', $slugData->id)->get();
 
         return view('guru.tugas-dan-materi.show', compact('slugData', 'tugas', 'materi'));
+    }
+
+    public function indexMateri($id)
+    {
+        $slugData = Slugs::with('jadwal.arsip')->where('slug', $id)->firstOrFail();
+
+        if ($slugData->jadwal->arsip->status !== 'aktif') {
+            return redirect()->route('guru.tugas-dan-materi.index')
+                ->with('error', 'Materi tidak dapat diakses karena jadwal telah diarsipkan.');
+        }
+
+        $materi = Materi::where('slug_id', $slugData->id)->get();
+
+        return view('guru.tugas-dan-materi.materi.index', compact('slugData', 'materi'));
+    }
+
+    public function storeMateri(Request $request, $id)
+    {
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'file.*' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,ppt,pptx,mp4,mkv,mov|max:51200',
+        ]);
+
+        $slugData = Slugs::where('slug', $id)->firstOrFail();
+        $fileData = [];
+
+        if ($request->hasFile('file')) {
+            foreach ($request->file('file') as $file) {
+                $fileData[] = [
+                    'original_name' => $file->getClientOriginalName(),
+                    'encrypted_name' => $file->store('file_materi', 'public'),
+                ];
+            }
+        }
+
+        Materi::create([
+            'slug_id' => $slugData->id,
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'file_path' => !empty($fileData) ? json_encode($fileData) : null,
+        ]);
+
+        return redirect()->route('guru.tugas-dan-materi.show', $id)
+            ->with('success', 'Materi berhasil ditambahkan.');
+    }
+
+    public function updateMateri(Request $request, $id)
+    {
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'file.*' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,ppt,pptx,mp4,mkv,mov|max:51200',
+        ]);
+
+        $materi = Materi::findOrFail($id);
+        $slug = $materi->slug->slug;
+
+        if ($materi->file_path) {
+            foreach (json_decode($materi->file_path, true) as $oldFile) {
+                Storage::disk('public')->delete($oldFile['encrypted_name']);
+            }
+        }
+
+        $fileData = [];
+
+        if ($request->hasFile('file')) {
+            foreach ($request->file('file') as $file) {
+                $fileData[] = [
+                    'original_name' => $file->getClientOriginalName(),
+                    'encrypted_name' => $file->store('file_materi', 'public'),
+                ];
+            }
+        }
+
+        $materi->update([
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'file_path' => !empty($fileData) ? json_encode($fileData) : null,
+        ]);
+
+        return redirect()->route('guru.tugas-dan-materi.show', $slug)
+            ->with('success', 'Materi berhasil diperbarui.');
     }
 
     public function destroy($id)

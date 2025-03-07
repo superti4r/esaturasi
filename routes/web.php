@@ -141,8 +141,12 @@ Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
     Route::get('/guru/kelola', [DataTugasDanMateri::class, 'index'])->name('guru.tugas-dan-materi.index');
     Route::post('/guru/kelola/create', [DataTugasDanMateri::class, 'create'])->name('guru.tugas-dan-materi.create');
     Route::get('/guru/kelola/{id}', [DataTugasDanMateri::class, 'show'])->name('guru.tugas-dan-materi.show');
-    Route::delete('/guru/tugas-dan-materi/{id}', [DataTugasDanMateri::class, 'destroy'])->name('guru.tugas-dan-materi.destroy');
+    Route::delete('/guru/kelola/{id}', [DataTugasDanMateri::class, 'destroy'])->name('guru.tugas-dan-materi.destroy');
+
+    Route::get('/guru/kelola/materi/{id}/set', [DataTugasDanMateri::class, 'indexMateri'])->name('guru.tugas-dan-materi.materi.index');
+    Route::post('/guru/kelola/materi/{id}/store', [DataTugasDanMateri::class, 'storeMateri'])->name('guru.tugas-dan-materi.materi.store');
+    Route::put('/guru/kelola/materi/{id}/edit', [DataTugasDanMateri::class, 'updateMateri'])->name('guru.tugas-dan-materi.materi.update');
 
 });
 
-Route::get('/logout', [MainAuth::class, 'logout'])->name('logout');
+    Route::get('/logout', [MainAuth::class, 'logout'])->name('logout');
