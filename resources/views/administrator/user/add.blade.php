@@ -81,8 +81,13 @@
                     </div>
                     <div class="form-group row">
                         <label for="password" class="col-sm-2 col-form-label">Password</label>
-                        <div class="col-sm-10">
+                        <div class="col-sm-10 input-group">
                             <input type="password" name="password" id="password" class="form-control" required placeholder="Masukkan Password Minimal 8 Karakter.">
+                            <div class="input-group-append">
+                                <button class="btn btn-light" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -172,6 +177,22 @@
                 });
             }
         });
+    });
+</script>
+
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        var passwordField = document.getElementById('password');
+        var icon = this.querySelector('i');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
     });
 </script>
 @endsection

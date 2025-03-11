@@ -87,7 +87,7 @@
     <div class="row">
         <div class="col-lg-4 col-md-12 col-sm-12 col-12">
             <div class="card">
-                <div class="card-header bg-info text-white">
+                <div class="card-header bg-primary text-white">
                     <h4 class="text-white"><i class="fas fa-server"></i> Status Server</h4>
                 </div>
                 <div class="card-body">
@@ -137,7 +137,7 @@
 
         <div class="col-lg-4 col-md-12 col-sm-12 col-12">
             <div class="card">
-                <div class="card-header bg-warning text-white">
+                <div class="card-header bg-primary text-white">
                     <h4 class="text-white"><i class="fas fa-key"></i> Manajemen Token & API</h4>
                 </div>
                 <div class="card-body">
@@ -147,7 +147,7 @@
                             <label for="register_token">Masukkan Token Register</label>
                             <input type="text" name="register_token" id="register_token" class="form-control" required placeholder="Masukkan token baru">
                         </div>
-                        <button type="submit" class="btn btn-warning btn-block">
+                        <button type="submit" class="btn btn-primary btn-block">
                             <i class="fas fa-save"></i> Update Token
                         </button>
                     </form>
@@ -158,7 +158,7 @@
                             <label for="gemini_api_key">Masukkan API untuk Satria AI</label>
                             <input type="text" name="gemini_api_key" id="gemini_api_key" class="form-control" required placeholder="Masukkan API baru">
                         </div>
-                        <button type="submit" class="btn btn-warning btn-block">
+                        <button type="submit" class="btn btn-primary btn-block">
                             <i class="fas fa-save"></i> Update API
                         </button>
                     </form>
