@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (result.isConfirmed) {
                 fetch("{{ route('administrator.siswa.bulkdelete') }}", {
                     method: "POST",
-                    body: JSON.stringify({ student_ids: selectedIds }),
+                    body: JSON.stringify({ ids: selectedIds }),
                     headers: {
                         "Content-Type": "application/json",
                         "X-CSRF-TOKEN": "{{ csrf_token() }}"
