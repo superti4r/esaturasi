@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="{{ asset ('module/Bootstrap/css/bootstrap.min.css')}}">
   <link rel="stylesheet" href="{{ asset ('module/Stisla/style.css') }}">
   <link rel="stylesheet" href="{{ asset ('module/Stisla/components.css') }}">
+  <link rel="stylesheet" href="{{ asset ('module/FontAwesome/css/all.css') }}">
 </head>
 
 <body>
@@ -64,9 +65,16 @@
                     </div>
 
                     <div class="form-group">
-                      <label for="token">Token</label>
-                      <input type="password" id="token" name="token" class="form-control" required>
-                    </div>
+                        <label for="token">Token</label>
+                        <div class="input-group">
+                          <input type="password" id="token" name="token" class="form-control" required>
+                          <div class="input-group-append">
+                            <button class="btn btn-light text-dark border-0 togglePassword" type="button" data-target="token">
+                              <i class="fas fa-eye"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
 
                     <div class="form-group">
                       <label for="email">Email</label>
@@ -74,9 +82,16 @@
                     </div>
 
                     <div class="form-group">
-                      <label for="password">Password</label>
-                      <input type="password" id="password" name="password" class="form-control" required>
-                    </div>
+                        <label for="password">Password</label>
+                        <div class="input-group">
+                          <input type="password" id="password" name="password" class="form-control" required>
+                          <div class="input-group-append">
+                            <button class="btn btn-light text-dark border-0 togglePassword" type="button" data-target="password">
+                              <i class="fas fa-eye"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
 
                     <button type="submit" class="btn btn-primary btn-block">Submit</button>
                   </form>
@@ -108,5 +123,24 @@
   <script src="{{ asset ('module/Stisla/custom.js') }}"></script>
   <script src="{{ asset ('module/Stisla/modules-datatables.js') }}"></script>
   <script type="module" src="{{ asset ('module/Popper/popper.min.js') }}"></script>
+
+  <script>
+    document.querySelectorAll('.togglePassword').forEach(button => {
+      button.addEventListener('click', function () {
+        let input = document.getElementById(this.getAttribute('data-target'));
+        let icon = this.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        } else {
+          input.type = 'password';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        }
+      });
+    });
+  </script>
+
 </body>
 </html>

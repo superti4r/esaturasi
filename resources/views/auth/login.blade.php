@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="{{ asset ('module/Bootstrap/css/bootstrap.min.css')}}">
   <link rel="stylesheet" href="{{ asset ('module/Stisla/style.css') }}">
   <link rel="stylesheet" href="{{ asset ('module/Stisla/components.css') }}">
+  <link rel="stylesheet" href="{{ asset ('module/FontAwesome/css/all.css') }}">
 </head>
 
 <body>
@@ -52,17 +53,20 @@
 
                   <div class="form-group">
                     <div class="d-block">
-                    	<label for="password" class="control-label">Password</label>
+                      <label for="password" class="control-label">Password</label>
                       <div class="float-right">
-                        <a href="/lupa-password" class="text-small">
-                          Lupa Password?
-                        </a>
+                        <a href="/lupa-password" class="text-small">Lupa Password?</a>
                       </div>
                     </div>
-                    <input id="password" type="password" class="form-control" name="password" tabindex="2" required>
-                    <div class="invalid-feedback">
-                      Silahkan isi password anda
-                    </div>
+                    <div class="input-group">
+                        <input id="password" type="password" class="form-control" name="password" tabindex="2" required>
+                        <div class="input-group-append">
+                          <button class="btn btn-light text-dark border-0" type="button" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                        </div>
+                      </div>
+                    <div class="invalid-feedback">Silahkan isi password anda</div>
                   </div>
 
                   <div class="form-group">
@@ -73,8 +77,8 @@
                   </div>
 
                   <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4">
-                      Login
+                    <button type="submit" class="btn btn-primary btn-lg btn-block d-flex align-items-center justify-content-center" tabindex="4">
+                      <i class="fas fa-fingerprint mr-2"></i> Login
                     </button>
                   </div>
                 </form>
@@ -105,5 +109,22 @@
   <script src="{{ asset ('module/Stisla/custom.js') }}"></script>
   <script src="{{ asset ('module/Stisla/modules-datatables.js') }}"></script>
   <script type="module" src="{{ asset ('module/Popper/popper.min.js') }}"></script>
+
+  <script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+      var passwordField = document.getElementById('password');
+      var icon = this.querySelector('i');
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passwordField.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    });
+  </script>
+
 </body>
 </html>
