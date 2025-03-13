@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Administrator;
 use App\Models\User;
 use App\Models\Kelas;
 use App\Models\Arsip;
-use App\Models\MapelPerKelas;
+use App\Models\MapelPerkelas;
 use App\Models\MataPelajaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
