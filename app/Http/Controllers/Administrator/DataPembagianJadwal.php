@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\Kelas;
 use App\Models\Arsip;
 use Illuminate\Http\Request;
-use App\Models\MapelPerKelas;
+use App\Models\MapelPerkelas;
 use App\Models\MataPelajaran;
 use App\Models\PembagianJadwal;
 use App\Http\Controllers\Controller;
@@ -83,7 +83,7 @@ class DataPembagianJadwal extends Controller
         $jumlahSinkronisasi = 0;
 
         foreach ($kelas as $k) {
-            $mapelKelas = MapelPerKelas::where('kelas_id', $k->id)
+            $mapelKelas = MapelPerkelas::where('kelas_id', $k->id)
                 ->where('arsip_id', $arsipAktif->id)
                 ->get();
 
