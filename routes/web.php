@@ -151,6 +151,8 @@ Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
     Route::post('/guru/kelola/tugas/{id}/store', [DataTugasDanMateri::class, 'storeTugas'])->name('guru.tugas-dan-materi.tugas.store');
     Route::put('/guru/kelola/tugas/{id}/edit', [DataTugasDanMateri::class, 'updateTugas'])->name('guru.tugas-dan-materi.tugas.update');
 
+    Route::get('/guru/kelola/pengumpulan-tugas/{id}/view', [DataTugasDanMateri::class, 'indexPengumpulanTugas'])->name('guru.tugas-dan-materi.pengumpulan.index');
+    Route::put('/guru/kelola/pengumpulan-tugas/{id}/update', [DataTugasDanMateri::class, 'beriNilai'])->name('guru.tugas-dan-materi.pengumpulan.update');
 });
 
     Route::get('/logout', [MainAuth::class, 'logout'])->name('logout');

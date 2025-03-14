@@ -22,4 +22,9 @@ class Tugas extends Model
     {
         return $this->belongsTo(Slugs::class);
     }
+
+    public function pengumpulan()
+    {
+        return $this->hasMany(PengumpulanTugas::class);
+    }
 }

@@ -47,4 +47,8 @@ class Siswa extends Authenticatable
         return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 
+    public function pengumpulan()
+    {
+        return $this->hasMany(PengumpulanTugas::class);
+    }
 }

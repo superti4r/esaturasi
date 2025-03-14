@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Slugs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\PengumpulanTugas;
 
 class DataTugasDanMateri extends Controller
 {
@@ -234,6 +235,30 @@ class DataTugasDanMateri extends Controller
         return redirect()->route('guru.tugas-dan-materi.tugas.index', $slug)
             ->with('success', 'Tugas berhasil diperbarui.');
     }
+
+    public function indexPengumpulanTugas($id)
+    {
+        $tugas = Tugas::with('pengumpulan.siswa')->find($id);
+
+        if (!$tugas) {
+            return redirect()->back()->with('error', 'Silahkan buat tugas terlebih dahulu.');
+        }
+
+        return view('guru.tugas-dan-materi.pengumpulan.index', compact('tugas'));
+    }
+
+    public function beriNilai(Request $request, $id)
+    {
+        $request->validate([
+            'nilai' => 'required|numeric|min:0|max:100',
+        ]);
+
+        $pengumpulan = PengumpulanTugas::findOrFail($id);
+        $pengumpulan->update(['nilai' => $request->nilai]);
+
+        return redirect()->back()->with('success', 'Nilai berhasil diberikan.');
+    }
+
 
     public function destroy($id)
     {

@@ -30,9 +30,11 @@
                     <a href="{{ route('guru.tugas-dan-materi.tugas.index', $slugData->slug) }}" class="btn btn-primary mb-3">
                         <i class="fas fa-pen"></i> Kelola Tugas
                     </a>
-                    <a href="#" class="btn btn-warning mb-3">
+                    @if(!$tugas->isEmpty())
+                    <a href="{{ route('guru.tugas-dan-materi.pengumpulan.index', ['id' => $tugas->first()->id]) }}" class="btn btn-warning mb-3">
                         <i class="fas fa-eye"></i> Pengumpulan
                     </a>
+                @endif
                 </div>
             </div>
         </div>
