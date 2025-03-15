@@ -85,12 +85,12 @@
                 <strong>File Tugas:</strong>
                 <ul class="list-group">
                     @foreach(json_decode($pengumpulan->file_path, true) ?? [] as $file)
-                        <li class="list-group-item">
-                            <a href="{{ Storage::url($file['file_path']) }}" target="_blank">
-                                <i class="fas fa-file"></i> {{ $file['original_name'] }}
-                            </a>
-                        </li>
-                    @endforeach
+                    <li class="list-group-item">
+                        <a href="{{ Storage::url($file['file_path']) }}" target="_blank">
+                            <i class="fas fa-file"></i> {{ $file['original_name'] }}
+                        </a>
+                    </li>
+                @endforeach
                 </ul>
 
                 <form action="{{ route('guru.tugas-dan-materi.pengumpulan.update', $pengumpulan->id) }}" method="POST" class="mt-3">
