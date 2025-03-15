@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Guru;
 
-use App\Models\Slug;
+use App\Models\Slugs;
 use App\Models\Tugas;
 use App\Models\Materi;
 use Illuminate\Http\Request;
 use App\Models\PembagianJadwal;
-use App\Http\Controllers\Controller;
-use App\Models\Slugs;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use App\Models\PengumpulanTugas;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
 
 class DataTugasDanMateri extends Controller
 {
@@ -242,6 +242,17 @@ class DataTugasDanMateri extends Controller
 
         if (!$tugas) {
             return redirect()->back()->with('error', 'Silahkan buat tugas terlebih dahulu.');
+        }
+
+        foreach ($tugas->pengumpulan as $pengumpulan) {
+            $fileData = json_decode($pengumpulan->file_path, true);
+
+            if ($fileData) {
+                foreach ($fileData as &$file) {
+                    $file['original_name'] = Crypt::decryptString($file['encrypted_name']);
+                }
+                $pengumpulan->file_path = $fileData;
+            }
         }
 
         return view('guru.tugas-dan-materi.pengumpulan.index', compact('tugas'));

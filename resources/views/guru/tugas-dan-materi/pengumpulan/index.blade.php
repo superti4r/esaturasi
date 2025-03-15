@@ -69,6 +69,7 @@
             </div>
             <div class="modal-body">
                 <p><h6>Nama:</h6> {{ $pengumpulan->siswa->nama }}</p>
+                <p>
                     <span class="badge badge-primary">
                         {{ \Carbon\Carbon::parse($pengumpulan->created_at)->translatedFormat('d F Y, H:i') }}
                     </span>
@@ -85,7 +86,7 @@
                 <ul class="list-group">
                     @foreach(json_decode($pengumpulan->file_path, true) ?? [] as $file)
                         <li class="list-group-item">
-                            <a href="{{ asset('storage/' . $file['encrypted_name']) }}" target="_blank">
+                            <a href="{{ Storage::url($file['file_path']) }}" target="_blank">
                                 <i class="fas fa-file"></i> {{ $file['original_name'] }}
                             </a>
                         </li>
