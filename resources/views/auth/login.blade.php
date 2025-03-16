@@ -45,7 +45,7 @@
 
                   <div class="form-group">
                     <label for="email">Email</label>
-                    <input id="email" type="email" value= "{{ old ('email') }}" class="form-control" name="email" tabindex="1" required autofocus>
+                    <input id="email" type="email" value= "{{ old ('email') }}" class="form-control" name="email" tabindex="1" required placeholder="Silahkan masukkan email anda">
                     <div class="invalid-feedback">
                       Silahkan isi email anda
                     </div>
@@ -59,7 +59,7 @@
                       </div>
                     </div>
                     <div class="input-group">
-                        <input id="password" type="password" class="form-control" name="password" tabindex="2" required>
+                        <input id="password" type="password" class="form-control" name="password" tabindex="2" required placeholder="Silahkan masukkan password anda">
                         <div class="input-group-append">
                           <button class="btn btn-light text-dark border-0" type="button" id="togglePassword">
                             <i class="fas fa-eye"></i>
@@ -67,13 +67,6 @@
                         </div>
                       </div>
                     <div class="invalid-feedback">Silahkan isi password anda</div>
-                  </div>
-
-                  <div class="form-group">
-                    <div class="custom-control custom-checkbox">
-                      <input type="checkbox" name="remember" class="custom-control-input" tabindex="3" id="remember-me">
-                      <label class="custom-control-label" for="remember-me">Ingat saya</label>
-                    </div>
                   </div>
 
                   <div class="form-group">

@@ -39,7 +39,7 @@
 
                     <div class="form-group">
                         <label for="password">Password Baru</label>
-                        <input id="password" type="password" class="form-control" name="password" required>
+                        <input id="password" type="password" class="form-control" name="password" required placeholder="Masukkan password baru">
                         <div class="invalid-feedback">
                           Silahkan isi password baru anda
                         </div>
@@ -47,7 +47,7 @@
 
                     <div class="form-group">
                         <label for="password-confirm">Konfirmasi Password</label>
-                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required placeholder="Konfirmasi password baru">
                         <div class="invalid-feedback">
                           Silahkan konfirmasi password baru anda
                         </div>

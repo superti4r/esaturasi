@@ -41,6 +41,9 @@
             <li class="nav-item dropdown">
                 <a href="{{ route ('guru.tugas-dan-materi.index')}}" class="nav-link"><i class="fas fa-window-restore"></i><span>Kelola</span></a>
             </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link"><i class="fas fa-file-signature"></i><span>Atur Ujian</span></a>
+            </li>
             @endif
         </ul>
     </aside>

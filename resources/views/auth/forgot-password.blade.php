@@ -44,7 +44,7 @@
 
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input id="email" type="email" value="{{ old('email') }}" class="form-control" name="email" tabindex="1" required autofocus>
+                        <input id="email" type="email" value="{{ old('email') }}" class="form-control" name="email" tabindex="1" required placeholder="Silahkan masukkan email anda">
                         <div class="invalid-feedback">
                           Silahkan isi email anda
                         </div>
