@@ -46,7 +46,7 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
-    Route::redirect('/', '/administrator');
+    Route::redirect('/home', '/');
     Route::get('/administrator', [DashboardAdministrator::class, 'index'])->name('administrator');
     Route::post('/administrator/token', [DashboardAdministrator::class, 'updateRegisterToken'])->name('administrator.update.register.token');
     Route::post('/administrator/api', [DashboardAdministrator::class, 'updateGeminiApiKey'])->name('administrator.update.gemini.api');
@@ -134,7 +134,7 @@ Route::middleware(['auth', 'roleaccess:administrator'])->group(function () {
 });
 
 Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
-    Route::redirect('/', '/guru');
+    Route::redirect('/home', '/');
     Route::get('/guru', [DashboardGuru::class, 'index'])->name('guru');
     Route::get('/guru/jadwal-saya', [DataJadwal::class, 'index'])->name('guru.jadwal');
 
