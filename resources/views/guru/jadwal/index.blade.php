@@ -9,6 +9,7 @@
             <div class="breadcrumb-item">Jadwal</div>
         </div>
     </div>
+
     <div class="section-body">
         <h2 class="section-title">List Jadwal</h2>
         <p class="section-lead">Jadwal mengajar Anda.</p>
@@ -31,24 +32,32 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($jadwal as $index => $item)
-                                    <tr class="jadwal-row" data-hari="{{ strtolower($item->hari) }}">
-                                        <td>
-                                            <span class="badge badge-primary">{{ $item->hari }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-info">{{ $item->mataPelajaran->nama_mapel }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-light">{{ $item->kelas->nama_kelas }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-success">{{ $item->jam_mulai }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-danger">{{ $item->jam_selesai }}</span>
-                                        </td>
-                                    </tr>
+                                    @foreach($jadwal as $item)
+                                        @php
+                                            $hariList = json_decode($item->hari, true) ?? [];
+                                            $jamMulai = json_decode($item->jam_mulai, true) ?? [];
+                                            $jamSelesai = json_decode($item->jam_selesai, true) ?? [];
+                                        @endphp
+
+                                        @foreach ($hariList as $hari)
+                                            <tr class="jadwal-row" data-hari="{{ strtolower($hari) }}">
+                                                <td>
+                                                    <span class="badge badge-primary">{{ $hari }}</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-info">{{ $item->mataPelajaran->nama_mapel }}</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-light">{{ $item->kelas->nama_kelas }}</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-success">{{ $jamMulai[$hari] ?? '-' }}</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-danger">{{ $jamSelesai[$hari] ?? '-' }}</span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     @endforeach
                                 </tbody>
                             </table>
