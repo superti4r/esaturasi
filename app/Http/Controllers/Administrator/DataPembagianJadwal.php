@@ -49,26 +49,28 @@ class DataPembagianJadwal extends Controller
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'guru_id' => 'required|exists:users,id',
             'hari' => 'required|array',
-            'hari.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'hari.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat',
             'jam_mulai' => 'nullable|array',
             'jam_selesai' => 'nullable|array',
         ]);
 
-        $jadwalData = [];
-        foreach ($request->hari as $h) {
-            if (isset($request->jam_mulai[$h]) && isset($request->jam_selesai[$h])) {
-                $jadwalData[$h] = [
-                    'mulai' => $request->jam_mulai[$h],
-                    'selesai' => $request->jam_selesai[$h]
-                ];
-            }
+        // Simpan masing-masing secara terpisah
+        $hari = $request->hari;
+        $jamMulai = [];
+        $jamSelesai = [];
+
+        foreach ($hari as $h) {
+            $jamMulai[$h] = $request->jam_mulai[$h] ?? null;
+            $jamSelesai[$h] = $request->jam_selesai[$h] ?? null;
         }
 
         $jadwal->update([
             'kelas_id' => $request->kelas_id,
             'mata_pelajaran_id' => $request->mata_pelajaran_id,
             'guru_id' => $request->guru_id,
-            'hari' => json_encode($jadwalData),
+            'hari' => json_encode($hari),
+            'jam_mulai' => json_encode($jamMulai),
+            'jam_selesai' => json_encode($jamSelesai),
         ]);
 
         return redirect()->route('administrator.jadwal')->with('success', 'Jadwal berhasil diperbarui.');

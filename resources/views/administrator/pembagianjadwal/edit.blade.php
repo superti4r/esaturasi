@@ -63,11 +63,13 @@
                             @php
                                 $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
                                 $selectedHari = json_decode($jadwal->hari, true) ?? [];
+                                $jamMulai = json_decode($jadwal->jam_mulai, true) ?? [];
+                                $jamSelesai = json_decode($jadwal->jam_selesai, true) ?? [];
                             @endphp
                             @foreach ($hariList as $h)
-                                <label class="btn hari-btn mr-2 mb-2 {{ array_key_exists($h, $selectedHari) ? 'btn-primary' : 'btn-outline-primary' }}">
+                                <label class="btn hari-btn mr-2 mb-2 {{ in_array($h, $selectedHari) ? 'btn-primary' : 'btn-outline-primary' }}">
                                     <input type="checkbox" name="hari[]" value="{{ $h }}" class="d-none"
-                                        {{ array_key_exists($h, $selectedHari) ? 'checked' : '' }}
+                                        {{ in_array($h, $selectedHari) ? 'checked' : '' }}
                                         onchange="toggleTimeInput('{{ $h }}')">
                                     {{ $h }}
                                 </label>
@@ -77,13 +79,13 @@
 
                     <div id="jamContainer">
                         @foreach ($hariList as $h)
-                            <div class="form-group jam-group" id="jam_{{ $h }}" style="{{ array_key_exists($h, $selectedHari) ? '' : 'display: none;' }}">
+                            <div class="form-group jam-group" id="jam_{{ $h }}" style="{{ in_array($h, $selectedHari) ? '' : 'display: none;' }}">
                                 <label for="jam_mulai_{{ $h }}">Jam untuk {{ $h }}</label>
                                 <div class="d-flex">
                                     <input type="time" name="jam_mulai[{{ $h }}]" class="form-control mr-2"
-                                        value="{{ $selectedHari[$h]['mulai'] ?? '' }}">
+                                        value="{{ $jamMulai[$h] ?? '' }}">
                                     <input type="time" name="jam_selesai[{{ $h }}]" class="form-control"
-                                        value="{{ $selectedHari[$h]['selesai'] ?? '' }}">
+                                        value="{{ $jamSelesai[$h] ?? '' }}">
                                 </div>
                             </div>
                         @endforeach

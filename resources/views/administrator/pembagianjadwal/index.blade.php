@@ -13,6 +13,7 @@
     <div class="section-body">
         <h2 class="section-title">Pembagian Jadwal</h2>
         <p class="section-lead">Data jadwal pelajaran berdasarkan kelas.</p>
+
         <div class="d-flex justify-content-end mb-4">
             <button type="button" class="btn btn-primary mr-2" onclick="confirmSync()">
                 <i class="fas fa-sync"></i> Sinkronkan Jadwal
@@ -27,6 +28,7 @@
                 @csrf
             </form>
         </div>
+
         <div class="row">
             @foreach ($kelas as $k)
             <div class="col-md-6 col-lg-4">
@@ -45,21 +47,23 @@
                             <ul class="list-group">
                                 @foreach ($jadwalKelas as $j)
                                 @php
-                                    $jadwalHari = json_decode($j->hari, true);
+                                    $hariList = json_decode($j->hari, true) ?? [];
+                                    $jamMulai = json_decode($j->jam_mulai, true) ?? [];
+                                    $jamSelesai = json_decode($j->jam_selesai, true) ?? [];
                                 @endphp
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong>{{ $j->mataPelajaran->nama_mapel }}</strong> <br>
                                         <small>{{ $j->guru->nama }}</small> <br>
-                                        @if(is_array($jadwalHari))
-                                            @foreach($jadwalHari as $hari => $waktu)
+                                        @if (!empty($hariList))
+                                            @foreach ($hariList as $hari)
                                                 <small>
                                                     <strong>{{ $hari }}:</strong>
-                                                    {{ $waktu['mulai'] ?? '-' }} - {{ $waktu['selesai'] ?? '-' }}
+                                                    {{ $jamMulai[$hari] ?? '-' }} - {{ $jamSelesai[$hari] ?? '-' }}
                                                 </small><br>
                                             @endforeach
                                         @else
-                                            <small>Tidak ada data jadwal.</small>
+                                            <small class="text-muted">Tidak ada jadwal.</small>
                                         @endif
                                     </div>
                                     <div>
@@ -82,24 +86,6 @@
 
 @section('scripts')
 <script>
-    function confirmDelete(event) {
-        event.preventDefault();
-        Swal.fire({
-            title: 'Apakah Anda yakin?',
-            text: "Data jadwal ini akan dihapus!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                event.target.closest('form').submit();
-            }
-        });
-    }
-
     function confirmResetAll() {
         Swal.fire({
             title: 'Reset Semua Jadwal?',
