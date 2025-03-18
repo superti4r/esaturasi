@@ -23,7 +23,7 @@
 
                     <div class="form-group">
                         <label for="kelas_id">Kelas</label>
-                        <select name="kelas_id" id="kelas_id" class="form-control" required>
+                        <select id="kelas_id" class="form-control" required disabled>
                             <option value="">-- Pilih Kelas --</option>
                             @foreach ($kelas as $k)
                                 <option value="{{ $k->id }}" {{ $k->id == $jadwal->kelas_id ? 'selected' : '' }}>
@@ -31,11 +31,12 @@
                                 </option>
                             @endforeach
                         </select>
+                        <input type="hidden" name="kelas_id" value="{{ $jadwal->kelas_id }}">
                     </div>
 
                     <div class="form-group">
                         <label for="mata_pelajaran_id">Mata Pelajaran</label>
-                        <select name="mata_pelajaran_id" id="mata_pelajaran_id" class="form-control" required>
+                        <select id="mata_pelajaran_id" class="form-control" required disabled>
                             <option value="">-- Pilih Mata Pelajaran --</option>
                             @foreach ($mataPelajaran as $mp)
                                 <option value="{{ $mp->id }}" {{ $mp->id == $jadwal->mata_pelajaran_id ? 'selected' : '' }}>
@@ -43,11 +44,12 @@
                                 </option>
                             @endforeach
                         </select>
+                        <input type="hidden" name="mata_pelajaran_id" value="{{ $jadwal->mata_pelajaran_id }}">
                     </div>
 
                     <div class="form-group">
                         <label for="guru_id">Guru</label>
-                        <select name="guru_id" id="guru_id" class="form-control" required>
+                        <select id="guru_id" class="form-control" required disabled>
                             <option value="">-- Pilih Guru --</option>
                             @foreach ($guru as $g)
                                 <option value="{{ $g->id }}" {{ $g->id == $jadwal->guru_id ? 'selected' : '' }}>
@@ -55,6 +57,7 @@
                                 </option>
                             @endforeach
                         </select>
+                        <input type="hidden" name="guru_id" value="{{ $jadwal->guru_id }}">
                     </div>
 
                     <div class="form-group">
