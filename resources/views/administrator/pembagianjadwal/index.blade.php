@@ -44,10 +44,23 @@
                         @else
                             <ul class="list-group">
                                 @foreach ($jadwalKelas as $j)
+                                @php
+                                    $jadwalHari = json_decode($j->hari, true);
+                                @endphp
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong>{{ $j->mataPelajaran->nama_mapel }}</strong> <br>
-                                        <small>{{ $j->guru->nama }} | {{ $j->hari }}, {{ $j->jam_mulai }} - {{ $j->jam_selesai }}</small>
+                                        <small>{{ $j->guru->nama }}</small> <br>
+                                        @if(is_array($jadwalHari))
+                                            @foreach($jadwalHari as $hari => $waktu)
+                                                <small>
+                                                    <strong>{{ $hari }}:</strong>
+                                                    {{ $waktu['mulai'] ?? '-' }} - {{ $waktu['selesai'] ?? '-' }}
+                                                </small><br>
+                                            @endforeach
+                                        @else
+                                            <small>Tidak ada data jadwal.</small>
+                                        @endif
                                     </div>
                                     <div>
                                         <a href="{{ route('administrator.jadwal.edit', $j->id) }}" class="btn btn-sm btn-warning">

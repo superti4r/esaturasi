@@ -48,12 +48,28 @@ class DataPembagianJadwal extends Controller
             'kelas_id' => 'required|exists:kelas,id',
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'guru_id' => 'required|exists:users,id',
-            'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
-            'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'hari' => 'required|array',
+            'hari.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'jam_mulai' => 'nullable|array',
+            'jam_selesai' => 'nullable|array',
         ]);
 
-        $jadwal->update($request->all());
+        $jadwalData = [];
+        foreach ($request->hari as $h) {
+            if (isset($request->jam_mulai[$h]) && isset($request->jam_selesai[$h])) {
+                $jadwalData[$h] = [
+                    'mulai' => $request->jam_mulai[$h],
+                    'selesai' => $request->jam_selesai[$h]
+                ];
+            }
+        }
+
+        $jadwal->update([
+            'kelas_id' => $request->kelas_id,
+            'mata_pelajaran_id' => $request->mata_pelajaran_id,
+            'guru_id' => $request->guru_id,
+            'hari' => json_encode($jadwalData),
+        ]);
 
         return redirect()->route('administrator.jadwal')->with('success', 'Jadwal berhasil diperbarui.');
     }

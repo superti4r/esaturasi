@@ -20,6 +20,7 @@
                 <form action="{{ route('administrator.jadwal.update', $jadwal->id) }}" method="POST">
                     @csrf
                     @method('PUT')
+
                     <div class="form-group">
                         <label for="kelas_id">Kelas</label>
                         <select name="kelas_id" id="kelas_id" class="form-control" required>
@@ -31,6 +32,7 @@
                             @endforeach
                         </select>
                     </div>
+
                     <div class="form-group">
                         <label for="mata_pelajaran_id">Mata Pelajaran</label>
                         <select name="mata_pelajaran_id" id="mata_pelajaran_id" class="form-control" required>
@@ -42,6 +44,7 @@
                             @endforeach
                         </select>
                     </div>
+
                     <div class="form-group">
                         <label for="guru_id">Guru</label>
                         <select name="guru_id" id="guru_id" class="form-control" required>
@@ -53,25 +56,39 @@
                             @endforeach
                         </select>
                     </div>
+
                     <div class="form-group">
                         <label for="hari">Hari</label>
-                        <select name="hari" id="hari" class="form-control" required>
+                        <div class="d-flex flex-wrap">
                             @php
-                                $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+                                $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+                                $selectedHari = json_decode($jadwal->hari, true) ?? [];
                             @endphp
                             @foreach ($hariList as $h)
-                                <option value="{{ $h }}" {{ $h == $jadwal->hari ? 'selected' : '' }}>{{ $h }}</option>
+                                <label class="btn hari-btn mr-2 mb-2 {{ array_key_exists($h, $selectedHari) ? 'btn-primary' : 'btn-outline-primary' }}">
+                                    <input type="checkbox" name="hari[]" value="{{ $h }}" class="d-none"
+                                        {{ array_key_exists($h, $selectedHari) ? 'checked' : '' }}
+                                        onchange="toggleTimeInput('{{ $h }}')">
+                                    {{ $h }}
+                                </label>
                             @endforeach
-                        </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="jam_mulai">Jam Mulai</label>
-                        <input type="time" name="jam_mulai" id="jam_mulai" class="form-control" value="{{ $jadwal->jam_mulai }}" required>
+
+                    <div id="jamContainer">
+                        @foreach ($hariList as $h)
+                            <div class="form-group jam-group" id="jam_{{ $h }}" style="{{ array_key_exists($h, $selectedHari) ? '' : 'display: none;' }}">
+                                <label for="jam_mulai_{{ $h }}">Jam untuk {{ $h }}</label>
+                                <div class="d-flex">
+                                    <input type="time" name="jam_mulai[{{ $h }}]" class="form-control mr-2"
+                                        value="{{ $selectedHari[$h]['mulai'] ?? '' }}">
+                                    <input type="time" name="jam_selesai[{{ $h }}]" class="form-control"
+                                        value="{{ $selectedHari[$h]['selesai'] ?? '' }}">
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="form-group">
-                        <label for="jam_selesai">Jam Selesai</label>
-                        <input type="time" name="jam_selesai" id="jam_selesai" class="form-control" value="{{ $jadwal->jam_selesai }}" required>
-                    </div>
+
                     <div class="d-flex justify-content-end">
                         <a href="{{ route('administrator.jadwal') }}" class="btn btn-danger mr-2">Batal</a>
                         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
@@ -82,4 +99,37 @@
         </div>
     </div>
 </section>
+
+<script>
+    function toggleTimeInput(hari) {
+        let jamDiv = document.getElementById("jam_" + hari);
+        let checkbox = document.querySelector(`input[value='${hari}']`);
+        let label = checkbox.closest('.hari-btn');
+        let inputs = jamDiv.querySelectorAll("input");
+
+        if (checkbox.checked) {
+            jamDiv.style.display = "block";
+            inputs.forEach(input => input.setAttribute("required", "required"));
+            label.classList.add("btn-primary");
+            label.classList.remove("btn-outline-primary");
+        } else {
+            jamDiv.style.display = "none";
+            inputs.forEach(input => {
+                input.removeAttribute("required");
+                input.value = "";
+            });
+            label.classList.remove("btn-primary");
+            label.classList.add("btn-outline-primary");
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".hari-btn input").forEach(checkbox => {
+            toggleTimeInput(checkbox.value);
+            checkbox.addEventListener("change", function () {
+                toggleTimeInput(checkbox.value);
+            });
+        });
+    });
+</script>
 @endsection
