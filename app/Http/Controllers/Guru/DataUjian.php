@@ -49,7 +49,6 @@ class DataUjian extends Controller
         ]);
 
         Ujian::create([
-            'identitas' => Str::random(10),
             'jenis' => $request->jenis,
             'mata_pelajaran_id' => $request->mata_pelajaran_id,
             'kelas_id' => $request->kelas_id,

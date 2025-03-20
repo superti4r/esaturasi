@@ -13,7 +13,6 @@ class Ujian extends Model
     protected $table = 'ujian';
 
     protected $fillable = [
-        'identitas',
         'jenis',
         'mata_pelajaran_id',
         'kelas_id',
@@ -28,7 +27,6 @@ class Ujian extends Model
         parent::boot();
 
         static::creating(function ($ujian) {
-            $ujian->identitas = Str::random(10);
             $ujian->token = Str::random(8);
         });
     }

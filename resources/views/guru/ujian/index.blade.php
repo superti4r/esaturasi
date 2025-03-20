@@ -54,7 +54,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <button class="btn btn-primary btn-sm" onclick="openManageModal({{ $item->id }}, '{{ $item->token }}', '{{ route('guru.ujian.edit', $item->id) }}', '{{ route('guru.ujian.delete', $item->id) }}')">
+                                                <button class="btn btn-primary btn-sm" onclick="openManageModal({{ $item->id }}, '{{ $item->token }}', '{{ route('guru.ujian.edit', $item->id) }}', '{{ route('guru.ujian.delete', $item->id) }}', '{{ route('guru.soal.index', $item->id) }}')">
                                                     <i class="fas fa-cog"></i> Kelola
                                                 </button>
                                             </td>
@@ -86,6 +86,9 @@
                 </button>
                 <a href="#" class="btn btn-warning btn-lg btn-block mb-3" id="editUjianBtn">
                     <i class="fas fa-edit"></i> Edit Ujian
+                </a>
+                <a href="#" class="btn btn-success btn-lg btn-block mb-3" id="kelolaSoalBtn">
+                    <i class="fas fa-book"></i> Kelola Soal
                 </a>
                 <form id="deleteUjianForm" method="POST" style="display:inline;">
                     @csrf
@@ -138,9 +141,10 @@
         $('#table-ujian').DataTable();
     });
 
-    function openManageModal(id, token, editUrl, deleteUrl) {
+    function openManageModal(id, token, editUrl, deleteUrl, soalUrl) {
         $('#editUjianBtn').attr('href', editUrl);
         $('#deleteUjianForm').attr('action', deleteUrl);
+        $('#kelolaSoalBtn').attr('href', soalUrl);
         $('#lihatTokenBtn').off('click').on('click', function() {
             lihatToken(token);
         });

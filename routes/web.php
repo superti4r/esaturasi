@@ -16,6 +16,7 @@ use App\Http\Controllers\Administrator\DataMapelPerkelas;
 use App\Http\Controllers\Administrator\DataMataPelajaran;
 use App\Http\Controllers\Administrator\DataPembagianJadwal;
 use App\Http\Controllers\Administrator\DashboardAdministrator;
+use App\Http\Controllers\Guru\DataSoalUjian;
 use App\Http\Controllers\Guru\DataTugasDanMateri;
 use App\Http\Controllers\Guru\DataTugasDanMateriController;
 use App\Http\Controllers\Guru\DataUjian;
@@ -162,6 +163,11 @@ Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
     Route::get('/guru/ujian/edit/{id}', [DataUjian::class, 'edit'])->name('guru.ujian.edit');
     Route::put('guru/ujian/update/{id}', [DataUjian::class, 'update'])->name('guru.ujian.update');
     Route::delete('/guru/ujian/{id}', [DataUjian::class, 'destroy'])->name('guru.ujian.delete');
+
+    Route::get('/guru/ujian/soal/{id}', [DataSoalUjian::class, 'index'])->name('guru.soal.index');
+    Route::post('/guru/ujian/soal/{id}/store', [DataSoalUjian::class, 'store'])->name('guru.soal.store');
+    Route::put('/guru/ujian/soal/{id}/update', [DataSoalUjian::class, 'update'])->name('guru.soal.update');
+    Route::delete('/guru/ujian/soal/{id}/reset', [DataSoalUjian::class, 'reset'])->name('guru.soal.reset');
 
 });
 

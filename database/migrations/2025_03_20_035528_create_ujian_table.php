@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('ujian', function (Blueprint $table) {
             $table->id();
-            $table->string('identitas', 10)->unique();
             $table->enum('jenis', ['UTS', 'UAS']);
             $table->foreignId('mata_pelajaran_id')->constrained('mata_pelajaran')->onDelete('cascade');
             $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
