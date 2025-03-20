@@ -18,6 +18,8 @@ use App\Http\Controllers\Administrator\DataPembagianJadwal;
 use App\Http\Controllers\Administrator\DashboardAdministrator;
 use App\Http\Controllers\Guru\DataTugasDanMateri;
 use App\Http\Controllers\Guru\DataTugasDanMateriController;
+use App\Http\Controllers\Guru\DataUjian;
+use FontLib\Table\Type\name;
 
 /*
 |--------------------------------------------------------------------------
@@ -153,6 +155,14 @@ Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
 
     Route::get('/guru/kelola/pengumpulan-tugas/{id}/view', [DataTugasDanMateri::class, 'indexPengumpulanTugas'])->name('guru.tugas-dan-materi.pengumpulan.index');
     Route::put('/guru/kelola/pengumpulan-tugas/{id}/update', [DataTugasDanMateri::class, 'beriNilai'])->name('guru.tugas-dan-materi.pengumpulan.update');
+
+    Route::get('/guru/ujian', [DataUjian::class, 'index'])->name('guru.ujian.index');
+    Route::get('/guru/ujian/add', [DataUjian::class, 'add'])->name('guru.ujian.add');
+    Route::post('/guru/ujian/store', [DataUjian::class, 'store'])->name('guru.ujian.store');
+    Route::get('/guru/ujian/edit/{id}', [DataUjian::class, 'edit'])->name('guru.ujian.edit');
+    Route::put('guru/ujian/update/{id}', [DataUjian::class, 'update'])->name('guru.ujian.update');
+    Route::delete('/guru/ujian/{id}', [DataUjian::class, 'destroy'])->name('guru.ujian.delete');
+
 });
 
     Route::get('/logout', [MainAuth::class, 'logout'])->name('logout');

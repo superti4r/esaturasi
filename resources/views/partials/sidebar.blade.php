@@ -37,12 +37,8 @@
             <li class="menu-header">Guru</li>
             <li class="nav-item dropdown">
                 <a href="{{ route ('guru.jadwal') }}" class="nav-link"><i class="fas fa-clipboard-list"></i> <span>Jadwal Saya</span></a>
-            </li>
-            <li class="nav-item dropdown">
-                <a href="{{ route ('guru.tugas-dan-materi.index')}}" class="nav-link"><i class="fas fa-window-restore"></i><span>Kelola</span></a>
-            </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link"><i class="fas fa-file-signature"></i><span>Atur Ujian</span></a>
+                <a href="{{ route ('guru.tugas-dan-materi.index') }}" class="nav-link"><i class="fas fa-window-restore"></i><span>Kelola</span></a>
+                <a href="{{ route ('guru.ujian.index') }}" class="nav-link"><i class="fas fa-file-signature"></i><span>Manajemen Ujian</span></a>
             </li>
             @endif
         </ul>

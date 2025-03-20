@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('jenis', ['UTS', 'UAS']);
             $table->foreignId('mata_pelajaran_id')->constrained('mata_pelajaran')->onDelete('cascade');
             $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
+            $table->foreignId('guru_id')->constrained('users')->onDelete('cascade');
             $table->integer('waktu_pengerjaan');
             $table->boolean('status')->default(true);
             $table->string('token', 8)->unique();
