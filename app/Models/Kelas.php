@@ -22,4 +22,9 @@ class Kelas extends Model
     public function jadwal(){
         return $this->belongsTo(PembagianJadwal::class);
     }
+
+    public function ujian()
+    {
+        return $this->hasMany(Ujian::class, 'kelas_id');
+    }
 }

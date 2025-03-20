@@ -22,4 +22,9 @@ class MataPelajaran extends Model
     public function jadwal(){
         return $this->hasMany(PembagianJadwal::class);
     }
+
+    public function ujian()
+    {
+        return $this->hasMany(Ujian::class, 'mata_pelajaran_id');
+    }
 }
