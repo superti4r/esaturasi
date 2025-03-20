@@ -54,19 +54,9 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <button class="btn btn-primary btn-sm" onclick="lihatToken('{{ $item->token }}')">
-                                                    <i class="fas fa-eye"></i> Lihat Token
+                                                <button class="btn btn-primary btn-sm" onclick="openManageModal({{ $item->id }}, '{{ $item->token }}', '{{ route('guru.ujian.edit', $item->id) }}', '{{ route('guru.ujian.delete', $item->id) }}')">
+                                                    <i class="fas fa-cog"></i> Kelola
                                                 </button>
-                                                <a href="{{ route('guru.ujian.edit', $item->id) }}" class="btn btn-warning btn-sm">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </a>
-                                                <form action="{{ route('guru.ujian.delete', $item->id) }}" method="POST" style="display:inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="confirmDelete(event)">
-                                                        <i class="fas fa-trash"></i> Hapus
-                                                    </button>
-                                                </form>
                                             </td>
                                         </tr>
                                         @endforeach
@@ -81,12 +71,45 @@
     </div>
 </section>
 
+<div class="modal fade" id="manageUjianModal" tabindex="-1" role="dialog" aria-labelledby="manageUjianModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-black">
+                <h5 class="modal-title"><i class="fas fa-cog"></i> Kelola Ujian</h5>
+                <button type="button" class="close text-black" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <button class="btn btn-primary btn-lg btn-block mb-3" id="lihatTokenBtn">
+                    <i class="fas fa-eye"></i> Lihat Token
+                </button>
+                <a href="#" class="btn btn-warning btn-lg btn-block mb-3" id="editUjianBtn">
+                    <i class="fas fa-edit"></i> Edit Ujian
+                </a>
+                <form id="deleteUjianForm" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-lg btn-block" onclick="confirmDelete(event)">
+                        <i class="fas fa-trash"></i> Hapus Ujian
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="tokenUjian" tabindex="-1" role="dialog" aria-labelledby="tokenModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="tokenModalLabel"><i class="fas fa-key"></i> Token Ujian</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <div class="modal-header text-black">
+                <h5 class="modal-title"><i class="fas fa-key"></i> Token Ujian</h5>
+                <button type="button" class="close text-black" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -106,6 +129,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('scripts')
@@ -113,6 +137,15 @@
     $(document).ready(function() {
         $('#table-ujian').DataTable();
     });
+
+    function openManageModal(id, token, editUrl, deleteUrl) {
+        $('#editUjianBtn').attr('href', editUrl);
+        $('#deleteUjianForm').attr('action', deleteUrl);
+        $('#lihatTokenBtn').off('click').on('click', function() {
+            lihatToken(token);
+        });
+        $('#manageUjianModal').modal('show');
+    }
 
     function lihatToken(token) {
         $('#ujianToken').text(token);
@@ -132,7 +165,7 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                event.target.closest('form').submit();
+                $('#deleteUjianForm').submit();
             }
         });
     }
