@@ -47,4 +47,9 @@ class Ujian extends Model
     {
         return $this->belongsTo(User::class, 'guru_id');
     }
+
+    public function soal()
+    {
+        return $this->hasMany(SoalUjian::class, 'ujian_id');
+    }
 }
