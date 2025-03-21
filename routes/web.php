@@ -166,6 +166,7 @@ Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
 
     Route::get('/guru/ujian/soal/{id}', [DataSoalUjian::class, 'index'])->name('guru.soal.index');
     Route::post('/guru/ujian/soal/{id}/store', [DataSoalUjian::class, 'store'])->name('guru.soal.store');
+    Route::get('/guru/soal/edit/{id}', [DataSoalUjian::class, 'edit'])->name('guru.soal.edit');
     Route::put('/guru/ujian/soal/{id}/update', [DataSoalUjian::class, 'update'])->name('guru.soal.update');
     Route::delete('/guru/ujian/soal/{id}/reset', [DataSoalUjian::class, 'reset'])->name('guru.soal.reset');
 
