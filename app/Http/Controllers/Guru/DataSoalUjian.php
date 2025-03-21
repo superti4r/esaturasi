@@ -70,6 +70,7 @@ class DataSoalUjian extends Controller
     public function update(Request $request, $id)
     {
         $ujian = Ujian::findOrFail($id);
+
         if (!$request->has('pertanyaan')) {
             return redirect()->back()->with('error', 'Tidak ada soal yang dikirim.');
         }
@@ -91,8 +92,12 @@ class DataSoalUjian extends Controller
             ]);
 
             if ($request->hasFile("file_path.$index")) {
+                if ($soal->file_path && Storage::disk('public')->exists($soal->file_path)) {
+                    Storage::disk('public')->delete($soal->file_path);
+                }
+
                 $file = $request->file("file_path.$index");
-                $path = $file->store('soal_images', 'public');
+                $path = $file->store('file_soal', 'public');
                 $soal->update(['file_path' => $path]);
             }
         }
