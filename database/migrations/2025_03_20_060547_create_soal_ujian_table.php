@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('soal_ujian', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ujian_id')->constrained('ujian')->onDelete('cascade');
-            $table->text('soal');
-            $table->string('file_path')->nullable();
+            $table->foreignId('ujian_id')->constrained('ujian')->onDelete('cascade')->index();
+            $table->text('pertanyaan');
+            $table->text('file_path')->nullable();
             $table->string('pilihan_a');
             $table->string('pilihan_b');
             $table->string('pilihan_c');
             $table->string('pilihan_d');
-            $table->enum('kunci_jawaban', ['A', 'B', 'C', 'D']);
-            $table->integer('bobot_jawaban')->default(10);
+            $table->enum('jawaban', ['A', 'B', 'C', 'D']);
+            $table->integer('skor')->default(0);
             $table->timestamps();
         });
     }

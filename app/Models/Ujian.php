@@ -27,7 +27,11 @@ class Ujian extends Model
         parent::boot();
 
         static::creating(function ($ujian) {
-            $ujian->token = Str::random(8);
+            do {
+                $token = Str::random(8);
+            } while (self::where('token', $token)->exists());
+
+            $ujian->token = $token;
         });
     }
 
@@ -49,5 +53,15 @@ class Ujian extends Model
     public function soal()
     {
         return $this->hasMany(SoalUjian::class, 'ujian_id');
+    }
+
+    public function jumlahSoal()
+    {
+        return $this->soal()->count();
+    }
+
+    public function isAktif()
+    {
+        return $this->status;
     }
 }
