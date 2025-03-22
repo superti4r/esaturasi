@@ -22,7 +22,7 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right">
                 <div class="dropdown-title">Menu</div>
-                <a href="/administrator/settings" class="dropdown-item has-icon">
+                <a href="{{ auth()->user()->role == 'administrator' ? route('administrator.settings') : route('guru.settings') }}" class="dropdown-item has-icon">
                     <i class="fas fa-cog"></i> Pengaturan
                 </a>
                 <div class="dropdown-divider"></div>

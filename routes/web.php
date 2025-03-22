@@ -140,6 +140,8 @@ Route::middleware(['auth', 'roleaccess:guru'])->group(function () {
     Route::redirect('/home', '/');
     Route::get('/guru', [DashboardGuru::class, 'index'])->name('guru');
     Route::get('/guru/jadwal-saya', [DataJadwal::class, 'index'])->name('guru.jadwal');
+    Route::get('/guru/settings', [DataProfile::class, 'index'])->name('guru.settings');
+    Route::put('/guru/settings', [DataProfile::class, 'update'])->name('guru.settings.update');
 
     Route::get('/guru/kelola', [DataTugasDanMateri::class, 'index'])->name('guru.tugas-dan-materi.index');
     Route::post('/guru/kelola/create', [DataTugasDanMateri::class, 'create'])->name('guru.tugas-dan-materi.create');
