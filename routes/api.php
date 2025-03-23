@@ -17,8 +17,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-
 Route::prefix('siswa')->group(function () {
     Route::post('/login', [SiswaAuthentication::class, 'login']);
     Route::middleware('auth:api')->group(function () {

@@ -22,7 +22,6 @@ use App\Http\Controllers\Guru\DataTugasDanMateriController;
 use App\Http\Controllers\Guru\DataUjian;
 use FontLib\Table\Type\name;
 
-
 Route::middleware(['guest'])->group(function () {
     Route::get('/', function () {return view('welcome');});
     Route::post('/', [SatriaAI::class, 'chat'])->name('chatbot');
