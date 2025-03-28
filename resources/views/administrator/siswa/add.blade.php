@@ -12,7 +12,7 @@
     </div>
 
     <div class="section-body">
-        <h2 class="section-title">Formulir Tambah Data Siswa</h2>
+        <h2 class="section-title">Tambah Data Siswa</h2>
         <div class="card">
             <div class="card-body">
                 <form action="{{ route('administrator.siswa.store') }}" method="POST" enctype="multipart/form-data">
