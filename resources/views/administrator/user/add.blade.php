@@ -12,7 +12,7 @@
     </div>
 
     <div class="section-body">
-        <h2 class="section-title">Formulir Tambah Data User</h2>
+        <h2 class="section-title">Tambah User</h2>
         <div class="card">
             <div class="card-body">
                 <form action="{{ route('administrator.user.add.post') }}" method="POST" enctype="multipart/form-data">
