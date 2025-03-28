@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">Form Edit Jurusan</h2>
+        <h2 class="section-title">Edit Jurusan</h2>
         <p class="section-lead">Silakan isi form di bawah ini untuk mengedit jurusan.</p>
         <div class="row">
             <div class="col-12">

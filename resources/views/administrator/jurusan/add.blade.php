@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">Form Tambah Jurusan</h2>
+        <h2 class="section-title">Tambah Jurusan</h2>
         <p class="section-lead">Silakan isi form di bawah ini untuk menambahkan jurusan baru.</p>
         <div class="row">
             <div class="col-12">
