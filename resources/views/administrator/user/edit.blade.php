@@ -12,7 +12,6 @@
     </div>
 
     <div class="section-body">
-        <h2 class="section-title">Edit User</h2>
         <div class="card">
             <div class="card-body">
                 <form action="{{ route('administrator.user.edit.post', $user->id) }}" method="POST" enctype="multipart/form-data">
