@@ -3,7 +3,7 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Data Siswa</h1>
+        <h1>Siswa</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
             <div class="breadcrumb-item">Siswa</div>
@@ -11,8 +11,8 @@
     </div>
 
     <div class="section-body">
-        <h2 class="section-title">List Data</h2>
-        <p class="section-lead">Data Siswa yang Terdaftar.</p>
+        <h2 class="section-title">Kelola Siswa</h2>
+        <p class="section-lead">Kelola identitas dan akun untuk Siswa, bila Siswa lupa dengan password nya, anda bisa mengubahnya disini.</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">

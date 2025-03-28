@@ -3,15 +3,15 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Data Pengumuman</h1>
+        <h1>Pengumuman</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
             <div class="breadcrumb-item">Pengumuman</div>
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">List Data</h2>
-        <p class="section-lead">Data Pengumuman.</p>
+        <h2 class="section-title">Kelola Pengumuman</h2>
+        <p class="section-lead">Pengumuman ini akan ditampilkan di menu Pengumuman pada Aplikasi Mobile yang terintegrasi.</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">

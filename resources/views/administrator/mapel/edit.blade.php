@@ -11,14 +11,9 @@
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">Form Edit Mata Pelajaran</h2>
-        <p class="section-lead">Silakan ubah form berikut untuk mengedit mata pelajaran.</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h4>Form Edit Mata Pelajaran</h4>
-                    </div>
                     <div class="card-body">
                         <form action="{{ route('administrator.mapel.update', $mataPelajaran->id) }}" method="POST">
                             @csrf

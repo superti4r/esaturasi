@@ -11,14 +11,9 @@
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">Form Edit Pengumuman</h2>
-        <p class="section-lead">Silakan edit form di bawah ini untuk mengubah pengumuman.</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h4>Form Edit Pengumuman</h4>
-                    </div>
                     <div class="card-body">
                         <form action="{{ route('administrator.pengumuman.update', $pengumuman->id) }}" method="POST">
                             @csrf
@@ -56,23 +51,24 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    $('.summernote').summernote({
-        height: 200,
-        minHeight: 100,
-        maxHeight: 300,
-        toolbar: [
-            ['style', ['style']],
-            ['font', ['bold', 'italic', 'underline', 'clear']],
-            ['fontname', ['fontname']],
-            ['color', ['color']],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['height', ['height']],
-            ['table', ['table']],
-            ['insert', ['link', 'picture', 'hr']],
-            ['view', ['codeview']]
-        ]
+    $(document).ready(function() {
+        $('.summernote').summernote({
+            placeholder: 'Masukkan isi artikel untuk Pengumuman di sini...',
+            height: 200,
+            minHeight: 100,
+            maxHeight: 300,
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']],
+            ]
+        });
     });
-});
-</script>
+    </script>
 @endpush

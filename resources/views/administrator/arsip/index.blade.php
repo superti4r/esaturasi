@@ -3,15 +3,15 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Data Arsip</h1>
+        <h1>Arsip</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
             <div class="breadcrumb-item">Arsip</div>
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">List Data</h2>
-        <p class="section-lead">Data Arsip.</p>
+        <h2 class="section-title">Kelola Arsip</h2>
+        <p class="section-lead">Arsip adalah inisialisasi awal dari semua data yang ada pada Sistem, silahkan set terlebih dahulu. </p>
         <div class="row">
             <div class="col-12">
                 <div class="card">

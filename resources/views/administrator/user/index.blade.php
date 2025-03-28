@@ -3,15 +3,15 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Data User</h1>
+        <h1>User</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
             <div class="breadcrumb-item">User</div>
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">List Data</h2>
-        <p class="section-lead">Data Administrator dan Guru.</p>
+        <h2 class="section-title">Kelola User</h2>
+        <p class="section-lead">Kelola semua Akun, baik itu Administrator maupun Guru.</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">

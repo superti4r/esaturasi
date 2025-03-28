@@ -3,16 +3,16 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Mapel Perkelas</h1>
+        <h1>Mata Pelajaran Perkelas</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
-            <div class="breadcrumb-item">Mapel Perkelas</div>
+            <div class="breadcrumb-item">Mata Pelajaran Perkelas</div>
         </div>
     </div>
 
     <div class="section-body">
-        <h2 class="section-title">Mapel Perkelas</h2>
-        <p class="section-lead">Data mata pelajaran yang diajarkan di setiap kelas.</p>
+        <h2 class="section-title">Kelola Mata Pelajaran Perkelas</h2>
+        <p class="section-lead">Atur Jadwal Mata Pelajaran untuk setiap Kelas yang terdaftar.</p>
 
         <div class="d-flex justify-content-end mb-4">
             <a href="{{ route('administrator.mapelperkelas.add') }}" class="btn btn-success mr-2">

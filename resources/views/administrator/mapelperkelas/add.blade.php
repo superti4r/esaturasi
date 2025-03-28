@@ -3,10 +3,10 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Tambah Mapel Perkelas</h1>
+        <h1>Tambah Mata Pelajaran Perkelas</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item"><a href="/administrator">Dashboard</a></div>
-            <div class="breadcrumb-item"><a href="{{ route('administrator.mapelperkelas') }}">Mapel Perkelas</a></div>
+            <div class="breadcrumb-item"><a href="{{ route('administrator.mapelperkelas') }}">Mata Pelajaran Perkelas</a></div>
             <div class="breadcrumb-item">Tambah</div>
         </div>
     </div>

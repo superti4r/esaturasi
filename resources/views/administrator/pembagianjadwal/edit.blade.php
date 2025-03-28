@@ -12,9 +12,6 @@
     </div>
 
     <div class="section-body">
-        <h2 class="section-title">Edit Jadwal</h2>
-        <p class="section-lead">Gunakan form ini untuk mengedit data jadwal pelajaran.</p>
-
         <div class="card">
             <div class="card-body">
                 <form action="{{ route('administrator.jadwal.update', $jadwal->id) }}" method="POST">

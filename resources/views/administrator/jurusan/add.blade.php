@@ -11,14 +11,9 @@
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">Tambah Jurusan</h2>
-        <p class="section-lead">Silakan isi form di bawah ini untuk menambahkan jurusan baru.</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h4>Form Tambah Jurusan</h4>
-                    </div>
                     <div class="card-body">
                         <form action="{{ route('administrator.jurusan.add.post') }}" method="POST">
                             @csrf

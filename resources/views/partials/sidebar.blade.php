@@ -29,7 +29,7 @@
                 <a href="{{ route ('administrator.mapel') }}" class="nav-link"><i class="fas fa-book"></i> <span>Mata Pelajaran</span></a>
                 <a href="{{ route ('administrator.mapelperkelas') }}" class="nav-link"><i class="fas fa-list"></i> <span>Mapel Perkelas</span></a>
                 <a href="{{ route ('administrator.jadwal') }}" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> <span>Pembagian Jadwal</span></a>
-                <a href="{{ route ('administrator.arsip') }}" class="nav-link"><i class="fas fa-archive"></i> <span>Data Arsip</span></a>
+                <a href="{{ route ('administrator.arsip') }}" class="nav-link"><i class="fas fa-archive"></i> <span>Arsip</span></a>
                 <a href="{{ route ('administrator.pengumuman') }}" class="nav-link"><i class="fas fa-volume-up"></i> <span>Pengumuman</span></a>
             </li>
             @endif

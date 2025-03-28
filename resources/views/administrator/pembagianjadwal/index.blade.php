@@ -11,8 +11,8 @@
     </div>
 
     <div class="section-body">
-        <h2 class="section-title">Pembagian Jadwal</h2>
-        <p class="section-lead">Data jadwal pelajaran berdasarkan kelas.</p>
+        <h2 class="section-title"> Kelola Pembagian Jadwal</h2>
+        <p class="section-lead">Kelola guru, hari, waktu untuk setiap data yang sudah di sinkronkan dari Mata Pelajaran Perkelas</p>
 
         <div class="d-flex justify-content-end mb-4">
             <button type="button" class="btn btn-primary mr-2" onclick="confirmSync()">

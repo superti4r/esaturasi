@@ -11,8 +11,6 @@
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">Tambah Kelas</h2>
-        <p class="section-lead">Silakan isi form di bawah ini untuk menambahkan kelas baru.</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">

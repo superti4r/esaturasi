@@ -11,8 +11,6 @@
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">Edit Kelas</h2>
-        <p class="section-lead">Silakan isi form di bawah ini untuk mengedit kelas.</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">

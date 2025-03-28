@@ -3,15 +3,15 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Data Jurusan</h1>
+        <h1>Jurusan</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
             <div class="breadcrumb-item">Jurusan</div>
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">List Data</h2>
-        <p class="section-lead">Data Jurusan.</p>
+        <h2 class="section-title">Kelola Jurusan</h2>
+        <p class="section-lead">Tambahkan Jurusan sesuai dengan data yang ada di Sekolah, dan terapkan ke Kelas guna membentuk relasi</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">

@@ -11,14 +11,9 @@
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">Edit Jurusan</h2>
-        <p class="section-lead">Silakan isi form di bawah ini untuk mengedit jurusan.</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h4>Form Edit Jurusan</h4>
-                    </div>
                     <div class="card-body">
                         <form action="{{ route('administrator.jurusan.update', $jurusan->id) }}" method="POST">
                             @csrf

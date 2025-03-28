@@ -3,7 +3,7 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Tambah Data Siswa</h1>
+        <h1>Tambah Siswa</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
             <div class="breadcrumb-item active"><a href="/administrator/siswa">Siswa</a></div>
@@ -12,7 +12,6 @@
     </div>
 
     <div class="section-body">
-        <h2 class="section-title">Tambah Data Siswa</h2>
         <div class="card">
             <div class="card-body">
                 <form action="{{ route('administrator.siswa.store') }}" method="POST" enctype="multipart/form-data">

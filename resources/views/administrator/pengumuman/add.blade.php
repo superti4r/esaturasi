@@ -11,14 +11,9 @@
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">Form Tambah Pengumuman</h2>
-        <p class="section-lead">Silakan isi form di bawah ini untuk menambahkan pengumuman baru.</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h4>Form Tambah Pengumuman</h4>
-                    </div>
                     <div class="card-body">
                         <form action="{{ route('administrator.pengumuman.post') }}" method="POST">
                             @csrf
@@ -55,25 +50,24 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    $('.summernote').summernote({
-        inheritPlaceholder: true
-        placeholder: 'Masukkan isi artikel untuk Pengumuman nya disini...'
-        height: 200,
-        minHeight: 100,
-        maxHeight: 300,
-        toolbar: [
-            ['style', ['style']],
-            ['font', ['bold', 'italic', 'underline', 'clear']],
-            ['fontname', ['fontname']],
-            ['color', ['color']],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['height', ['height']],
-            ['table', ['table']],
-            ['insert', ['link', 'picture', 'hr']],
-            ['view', ['codeview']]
-        ]
+    $(document).ready(function() {
+        $('.summernote').summernote({
+            placeholder: 'Masukkan isi artikel untuk Pengumuman di sini...',
+            height: 200,
+            minHeight: 100,
+            maxHeight: 300,
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']],
+            ]
+        });
     });
-});
-</script>
+    </script>
 @endpush
