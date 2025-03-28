@@ -11,14 +11,11 @@
         </div>
     </div>
     <div class="section-body">
-        <h2 class="section-title">Form Edit Kelas</h2>
+        <h2 class="section-title">Edit Kelas</h2>
         <p class="section-lead">Silakan isi form di bawah ini untuk mengedit kelas.</p>
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h4>Form Edit Kelas</h4>
-                    </div>
                     <div class="card-body">
                         <form action="{{ route('administrator.kelas.update', $kelas->id) }}" method="POST">
                             @csrf
