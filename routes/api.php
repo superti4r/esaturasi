@@ -30,6 +30,7 @@ Route::get('/pengumuman', [DataPengumuman::class, 'getPengumuman']);
 Route::get('mata-pelajaran/{kelasId}', [DataMataPelajaran::class, 'getMataPelajaran']);
 Route::get('/get-kelas/{id}', [DataKelas::class, 'getKelas']);
 Route::get('/get-jurusan/{id}', [DataJurusan::class, 'getJurusan']);
+Route::get('/jadwal/kelas/{id}', [DataJadwal::class, 'getJadwalByKelas']);
 Route::middleware('auth:api')->get('/jadwal/{idKelas}', [DataJadwal::class, 'getJadwalByKelas']);
 
 Route::get('/tugas', [TugasController::class, 'getTugas']);

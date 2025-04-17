@@ -10,12 +10,13 @@ class DataJadwal extends Controller
 {
     public function getJadwalByKelas($idKelas)
     {
-        $jadwal = PembagianJadwal::where('kelas_id', $idKelas)->get();
+        $jadwal = PembagianJadwal::with(['kelas', 'guru', 'mataPelajaran'])
+            ->where('kelas_id', $idKelas)
+            ->get();
 
         \Log::info('Fetched jadwal: ', ['jadwal' => $jadwal]);
 
         return response()->json($jadwal);
     }
-
-
 }
+
