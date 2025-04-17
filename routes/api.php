@@ -6,6 +6,7 @@ use App\Http\Controllers\API\DataPengumuman;
 use App\Http\Controllers\API\DataJurusan;
 Use App\Http\Controllers\API\DataJadwal;
 use App\Http\Controllers\API\DataKelas;
+use App\Http\Controllers\API\TugasController;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -31,6 +32,6 @@ Route::get('/get-kelas/{id}', [DataKelas::class, 'getKelas']);
 Route::get('/get-jurusan/{id}', [DataJurusan::class, 'getJurusan']);
 Route::middleware('auth:api')->get('/jadwal/{idKelas}', [DataJadwal::class, 'getJadwalByKelas']);
 
-
+Route::get('/tugas', [TugasController::class, 'getTugas']);
 
 
