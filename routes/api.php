@@ -29,7 +29,7 @@ Route::prefix('siswa')->group(function () {
 Route::get('/pengumuman', [DataPengumuman::class, 'getPengumuman']);
 Route::get('mata-pelajaran/{kelasId}', [DataMataPelajaran::class, 'getMataPelajaran']);
 Route::get('/get-kelas/{id}', [DataKelas::class, 'getKelas']);
-Route::get('/get-jurusan/{id}', [DataJurusan::class, 'getJurusan']);
+Route::get('/get-jurusan-by-kelas/{id_kelas}', [DataJurusan::class, 'getJurusanByKelas']);
 Route::get('/jadwal/kelas/{id}', [DataJadwal::class, 'getJadwalByKelas']);
 Route::middleware('auth:api')->get('/jadwal/{idKelas}', [DataJadwal::class, 'getJadwalByKelas']);
 
