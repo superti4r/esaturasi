@@ -10,7 +10,11 @@ class TugasController extends Controller
 {
     public function getTugas()
     {
-        $tugas = Tugas::all(); // Mengambil semua data tugas
-        return response()->json($tugas); // Mengembalikan data dalam format JSON
+        $tugas = Tugas::with([
+            'slug.jadwal.guru',
+            'slug.jadwal.mataPelajaran' 
+        ])->get();
+
+        return response()->json($tugas);
     }
 }

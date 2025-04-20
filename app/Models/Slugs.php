@@ -18,7 +18,7 @@ class Slugs extends Model
 
     public function jadwal()
     {
-        return $this->belongsTo(PembagianJadwal::class, 'jadwal_id');
+        return $this->belongsTo(PembagianJadwal::class);
     }
 
     public function tugas()
