@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Api\PengumpulanTugasController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -35,4 +36,4 @@ Route::middleware('auth:api')->get('/jadwal/{idKelas}', [DataJadwal::class, 'get
 
 Route::get('/tugas', [TugasController::class, 'getTugas']);
 
-
+Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'store']);
