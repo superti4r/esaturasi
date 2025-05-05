@@ -3,11 +3,11 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Edit Arsip</h1>
+        <h1>Edit Tahun Pelajaran</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
-            <div class="breadcrumb-item active"><a href="/administrator/arsip">Arsip</a></div>
-            <div class="breadcrumb-item">Edit Arsip</div>
+            <div class="breadcrumb-item active"><a href="/administrator/arsip">Tahun Pelajaran</a></div>
+            <div class="breadcrumb-item">Edit Tahun Pelajaran</div>
         </div>
     </div>
     <div class="section-body">
@@ -19,7 +19,7 @@
                             @csrf
                             @method('PUT')
                             <div class="form-group">
-                                <label for="nama">Nama Arsip</label>
+                                <label for="nama">Nama Tahun Pelajaran</label>
                                 <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama', $arsip->nama) }}" required>
                                 @error('nama')
                                     <div class="invalid-feedback">

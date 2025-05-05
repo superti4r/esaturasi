@@ -16,7 +16,6 @@ class DataSoalUjian extends Controller
         $soalList = SoalUjian::where('ujian_id', $id)->get();
         return view('guru.soal.index', compact('ujian', 'soalList'));
     }
-
     public function store(Request $request, $id)
     {
         $request->validate([
@@ -58,7 +57,6 @@ class DataSoalUjian extends Controller
 
         return redirect()->route('guru.soal.index', $id)->with('success', 'Soal berhasil ditambahkan!');
     }
-
     public function edit($id)
     {
         $ujian = Ujian::findOrFail($id);

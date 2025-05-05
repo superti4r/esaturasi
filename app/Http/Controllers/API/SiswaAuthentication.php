@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
@@ -8,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class SiswaAuthentication extends Controller
 {
@@ -85,4 +85,48 @@ class SiswaAuthentication extends Controller
             'data' => $siswaData
         ]);
     }
+
+    public function deletePhoto(Request $request)
+    {
+        $siswa = $request->user(); // Pastikan ini siswa (gunakan guard sesuai kebutuhan)
+    
+        if ($siswa->foto_profil && Storage::exists('public/' . $siswa->foto_profil)) {
+            Storage::delete('public/' . $siswa->foto_profil);
+            $siswa->foto_profil = null;
+            $siswa->save();
+    
+            return response()->json(['message' => 'Foto profil berhasil dihapus.']);
+        }
+    
+        return response()->json(['message' => 'Foto profil tidak ditemukan.'], 404);
+    }
+
+    
+    public function deleteFotoProfil(Request $request)
+{
+    // Ambil data siswa yang sedang login
+    $siswa = $request->user(); // jika kamu pakai guard 'siswa', sesuaikan di middleware
+
+    if ($siswa->foto_profil) {
+        $path = 'public/' . $siswa->foto_profil;
+
+        // Hapus file dari storage jika ada
+        if (Storage::exists($path)) {
+            Storage::delete($path);
+        }
+
+        // Set kolom foto_profil ke null dan simpan
+        $siswa->foto_profil = null;
+        $siswa->save();
+
+        return response()->json([
+            'message' => 'Foto profil berhasil dihapus.',
+        ], 200);
+    }
+
+    return response()->json([
+        'message' => 'Foto profil tidak ditemukan.',
+    ], 404);
+}
+
 }

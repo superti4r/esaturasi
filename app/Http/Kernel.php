@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'roleaccess' => \App\Http\Middleware\RoleAccess::class,
+        'auth.siswa' => \App\Http\Middleware\AuthSiswa::class,
     ];
 }

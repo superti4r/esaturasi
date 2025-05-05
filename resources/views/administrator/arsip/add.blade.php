@@ -3,11 +3,11 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h1>Tambah Arsip</h1>
+        <h1>Tambah Tahun Pelajaran</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="/administrator">Dashboard</a></div>
             <div class="breadcrumb-item active"><a href="/administrator/arsip">Arsip</a></div>
-            <div class="breadcrumb-item">Tambah Arsip</div>
+            <div class="breadcrumb-item">Tambah Tahun Pelajajran</div>
         </div>
     </div>
     <div class="section-body">
@@ -18,7 +18,7 @@
                         <form action="{{ route('administrator.arsip.store') }}" method="POST">
                             @csrf
                             <div class="form-group">
-                                <label for="nama">Nama Arsip</label>
+                                <label for="nama">Nama Tahun Pelajaran</label>
                                 <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama') }}" required placeholder="Masukan Nama Arsip">
                                 @error('nama')
                                     <div class="invalid-feedback">

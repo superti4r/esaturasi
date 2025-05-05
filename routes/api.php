@@ -37,3 +37,8 @@ Route::middleware('auth:api')->get('/jadwal/{idKelas}', [DataJadwal::class, 'get
 Route::get('/tugas', [TugasController::class, 'getTugas']);
 
 Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'store']);
+Route::middleware('auth.siswa')->delete('/delete-profile-photo', [SiswaAuthentication::class, 'deleteFotoProfil']);
+
+
+
+
