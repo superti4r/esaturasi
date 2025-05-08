@@ -35,15 +35,16 @@ class SiswaAuthentication extends Controller
             ], 401);
         }
 
-        $token = Str::random(80);
-        $siswa->api_token = $token;
+        $plainToken = Str::random(80);
+        $siswa->api_token = hash('sha256', $plainToken);
         $siswa->save();
         $siswaData = $siswa->makeHidden(['password', 'remember_token', 'api_token']);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Login berhasil',
-            'token' => $token,
+            'siswa' => $siswaData,
+            'token' => $plainToken,
             'siswa' => $siswaData
         ]);
     }
@@ -61,7 +62,8 @@ class SiswaAuthentication extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Logout berhasil'
+            'message' => 'Logout berhasil',
+
         ]);
     }
 

@@ -17,8 +17,18 @@ use App\Http\Controllers\Api\PengumpulanTugasController;
 use App\Http\Controllers\Api\MateriController;
 use App\Http\Controllers\Api\SlugController;
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::post('/api/refresh', [AuthController::class, 'refresh']);
+
+Route::middleware('auth:sanctum')->get('/api/user', function (Request $request) {
+    return $request->user();
+});
+
+Route::middleware('auth:sanctum')->get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()]);
 });
 
 Route::prefix('siswa')->group(function () {
@@ -38,7 +48,8 @@ Route::middleware('auth:api')->get('/jadwal/{idKelas}', [DataJadwal::class, 'get
 
 Route::get('/tugas', [TugasController::class, 'getTugas']);
 
-Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'store']);
+Route::middleware('auth:api')->post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'store']);
+
 Route::middleware('auth.siswa')->delete('/delete-profile-photo', [SiswaAuthentication::class, 'deleteFotoProfil']);
 Route::get('/materi/mapel/{id}', [MateriController::class, 'getBabByMapelId']);
 Route::get('/slugs/jadwal/{id}', [SlugController::class, 'getByJadwal']);

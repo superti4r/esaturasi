@@ -15,10 +15,12 @@ class PengumpulanTugasController extends Controller
     }
 
     public function store(Request $request)
-    {
+    { 
+        $siswa = auth()->user();
+
         // Validasi input
         $request->validate([
-            'siswa_id' => 'required|integer|exists:siswas,id', // Pastikan siswa_id ada
+            'siswa_id' => 'required|integer|exists:siswa,id', // Pastikan siswa_id ada
             'tugas_id' => 'required|integer|exists:tugas,id',  // Pastikan tugas_id ada
             'file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
         ]);
