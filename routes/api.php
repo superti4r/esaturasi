@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\PengumpulanTugasController;
+use App\Http\Controllers\Api\MateriController;
+use App\Http\Controllers\Api\SlugController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -38,7 +40,8 @@ Route::get('/tugas', [TugasController::class, 'getTugas']);
 
 Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'store']);
 Route::middleware('auth.siswa')->delete('/delete-profile-photo', [SiswaAuthentication::class, 'deleteFotoProfil']);
-
-
+Route::get('/materi/mapel/{id}', [MateriController::class, 'getBabByMapelId']);
+Route::get('/slugs/jadwal/{id}', [SlugController::class, 'getByJadwal']);
+Route::get('/materials/slug/{id}', [MateriController::class, 'getBySlug']);
 
 

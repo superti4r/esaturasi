@@ -129,4 +129,34 @@ class SiswaAuthentication extends Controller
     ], 404);
 }
 
+public function uploadFotoProfil(Request $request)
+{
+    $siswa = $request->user();
+
+    if ($request->hasFile('foto_profil')) {
+        $file = $request->file('foto_profil');
+        $filename = 'siswa_' . time() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('public/foto_siswa', $filename);
+
+        // Hapus foto lama jika ada
+        if ($siswa->foto_profil && Storage::exists('public/' . $siswa->foto_profil)) {
+            Storage::delete('public/' . $siswa->foto_profil);
+        }
+
+        // Simpan nama file ke database (tanpa "public/")
+        $siswa->foto_profil = 'foto_siswa/' . $filename;
+        $siswa->save();
+
+        return response()->json([
+            'message' => 'Foto profil berhasil diupload.',
+            'foto_profil' => asset('storage/' . $siswa->foto_profil)
+        ]);
+    }
+
+    return response()->json([
+        'message' => 'Tidak ada file foto yang dikirim.'
+    ], 400);
+}
+
+
 }
