@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('siswa', function (Blueprint $table) {
-            //
+            $table->dropColumn('api_token');
         });
-    }
+    }    
 };
