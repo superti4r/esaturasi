@@ -12,42 +12,48 @@ use Illuminate\Support\Facades\Storage;
 class SiswaAuthentication extends Controller
 {
     public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'nisn' => 'required',
-            'password' => 'required',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'nisn' => 'required',
+        'password' => 'required',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $siswa = Siswa::where('nisn', $request->nisn)->first();
-
-        if (!$siswa || !Hash::check($request->password, $siswa->password)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'NISN atau password salah'
-            ], 401);
-        }
-
-        $plainToken = Str::random(80);
-        $siswa->api_token = hash('sha256', $plainToken);
-        $siswa->save();
-        $siswaData = $siswa->makeHidden(['password', 'remember_token', 'api_token']);
-
+    if ($validator->fails()) {
         return response()->json([
-            'status' => 'success',
-            'message' => 'Login berhasil',
-            'siswa' => $siswaData,
-            'token' => $plainToken,
-            'siswa' => $siswaData
-        ]);
+            'status' => 'error',
+            'message' => 'Validasi gagal',
+            'errors' => $validator->errors()
+        ], 422);
     }
+
+    $siswa = Siswa::where('nisn', $request->nisn)->first();
+
+    if (!$siswa || !Hash::check($request->password, $siswa->password)) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'NISN atau password salah'
+        ], 401);
+    }
+
+    $plainAccessToken = Str::random(80);
+    $plainRefreshToken = Str::random(100);
+
+    $siswa->api_token = hash('sha256', $plainAccessToken);
+    $siswa->refresh_token = hash('sha256', $plainRefreshToken);
+    $siswa->refresh_token_expired_at = now()->addDays(7);
+    $siswa->save();
+
+    $siswaData = $siswa->makeHidden(['password', 'remember_token', 'api_token', 'refresh_token']);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Login berhasil',
+        'siswa' => $siswaData,
+        'token' => $plainAccessToken,
+        'refresh_token' => $plainRefreshToken,
+        'refresh_token_expired_at' => $siswa->refresh_token_expired_at
+    ]);
+}
 
     public function logout(Request $request)
     {

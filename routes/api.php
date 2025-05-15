@@ -11,21 +11,24 @@ use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\API\AuthController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\PengumpulanTugasController;
 use App\Http\Controllers\Api\MateriController;
 use App\Http\Controllers\Api\SlugController;
 
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/api/refresh', [AuthController::class, 'refresh']);
-
 Route::middleware('auth:sanctum')->get('/api/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/refresh-token', [AuthController::class, 'refreshToken'])
+    ->middleware('throttle:refresh-token');
+
 
 Route::middleware('auth:sanctum')->get('/csrf-token', function () {
     return response()->json(['csrf_token' => csrf_token()]);
