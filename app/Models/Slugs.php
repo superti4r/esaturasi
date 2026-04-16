@@ -44,4 +44,9 @@ class Slugs extends Model
     {
         return $this->hasOne(Task::class, 'slug_id');
     }
+
+    public function pretests()
+{
+    return $this->hasMany(Pretest::class, 'slug_id');
+}
 }

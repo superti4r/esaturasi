@@ -16,6 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use App\Filament\Resources\SlugResource\Pages;
 use App\Filament\Resources\SlugResource\RelationManagers\SubjectMatterRelationManager;
 use App\Filament\Resources\SlugResource\RelationManagers\TaskRelationManager;
+use App\Filament\Resources\SlugResource\RelationManagers\PretestsRelationManager;
 
 class SlugResource extends Resource
 {
@@ -97,6 +98,7 @@ class SlugResource extends Resource
         return [
             SubjectMatterRelationManager::class,
             TaskRelationManager::class,
+            PretestsRelationManager::class,
         ];
     }
 
