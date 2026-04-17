@@ -13,7 +13,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\TaskController;
 use App\Http\Controllers\API\SubmissiontaskController;
 use App\Http\Controllers\Api\PasswordController;
-
+use App\Http\Controllers\API\PretestController;
 
 Route::get('/tugas', [TaskController::class, 'getTugas']);
 
@@ -44,5 +44,5 @@ Route::middleware('auth:sanctum')->delete('/delete-profile-photo', [StudentContr
 Route::middleware('auth:sanctum')->post('/update-profile-photo', [StudentController::class, 'updateProfilePhoto']);
 Route::post('/change-password', [PasswordController::class, 'changePassword']);
 Route::get('/tasks/{classroomId}/pending/{studentId}', [TaskController::class, 'getPendingTasks']);
-
+Route::get('/pretest/slug/{slugId}', [PretestController::class, 'getBySlugId']);
 
