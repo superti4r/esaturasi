@@ -2,23 +2,23 @@
 
 namespace App\Imports;
 
-use App\Models\SoalPretest;
+use App\Models\SoalPosttest;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class SoalPretestImport implements ToModel, WithHeadingRow
+class SoalPosttestImport implements ToModel, WithHeadingRow
 {
-    protected $pretest_id;
+    protected $posttest_id;
 
-    public function __construct($pretest_id)
+    public function __construct($posttest_id)
     {
-        $this->pretest_id = $pretest_id;
+        $this->posttest_id = $posttest_id;
     }
 
     public function model(array $row)
 {
-    return new SoalPretest([
-        'pretest_id' => $this->pretest_id,
+    return new SoalPosttest([
+        'posttest_id' => $this->posttest_id,
         'soal' => $row['soal'] ?? null,
         'opsi_a' => $row['opsi_a'] ?? null,
         'opsi_b' => $row['opsi_b'] ?? null,

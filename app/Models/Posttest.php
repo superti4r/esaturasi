@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Pretest extends Model
+class Posttest extends Model
 {
-    protected $table = 'pretests';
+    protected $table = 'posttests';
 
     protected $fillable = [
         'slug_id',
@@ -26,17 +26,12 @@ class Pretest extends Model
     //relasi ke soal
     public function soal()
     {
-        return $this->hasMany(SoalPretest::class);
+        return $this->hasMany(SoalPosttest::class);
     }
 
     //relasi ke hasil siswa
     public function hasil()
     {
-        return $this->hasMany(HasilPretest::class);
+        return $this->hasMany(HasilPosttest::class);
     }
-
-    public function jawabanSiswa()
-{
-    return $this->hasMany(JawabanPretest::class);
-}
 }

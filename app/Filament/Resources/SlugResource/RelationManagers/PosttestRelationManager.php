@@ -8,12 +8,12 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\SoalPretestImport;
+use App\Imports\SoalPosttestImport;
 use Illuminate\Support\Facades\Storage;
 
-class PretestsRelationManager extends RelationManager
+class PosttestsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'pretests';
+    protected static string $relationship = 'posttests';
 
     public function form(Form $form): Form
     {
@@ -41,16 +41,15 @@ class PretestsRelationManager extends RelationManager
             Forms\Components\Repeater::make('soal')
                 ->relationship()
                 ->label('Daftar Soal')
+                ->columnSpanFull()
 
-                ->columnSpanFull() // full lebar
-
-                //grid
+               // grid
                 ->grid([
                     'md' => 2,
                     'xl' => 3,
                 ])
 
-                //nomor otomatis
+                // nomor otomatis
                 ->itemLabel(function (array $state, \Filament\Forms\Components\Repeater $component) {
                     $items = $component->getState() ?? [];
 
@@ -93,10 +92,9 @@ class PretestsRelationManager extends RelationManager
                 ])
                 ->columns(2)
                 ->collapsible()
-                ->collapsed() //
                 ->createItemButtonLabel('Tambah Soal')
 
-                // validasi total poin tidak boleh lebih dari 100
+                // val total poin tidak boleh lebih dari 100
                 ->rule(function () {
                     return function ($attribute, $value, $fail) {
                         $total = collect($value)->sum(function ($item) {
@@ -109,7 +107,7 @@ class PretestsRelationManager extends RelationManager
                     };
                 }),
 
-           // placeholder total poin
+            // poin total
             Forms\Components\Placeholder::make('total_poin')
                 ->label('Total Poin')
                 ->content(function ($get) {
@@ -150,7 +148,7 @@ class PretestsRelationManager extends RelationManager
 
                             if (file_exists($path)) {
                                 Excel::import(
-                                    new SoalPretestImport($record->id),
+                                    new SoalPosttestImport($record->id),
                                     $path
                                 );
                             }
@@ -165,7 +163,7 @@ class PretestsRelationManager extends RelationManager
 
                             if (file_exists($path)) {
                                 Excel::import(
-                                    new SoalPretestImport($record->id),
+                                    new SoalPosttestImport($record->id),
                                     $path
                                 );
                             }

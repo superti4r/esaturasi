@@ -49,4 +49,9 @@ class Slugs extends Model
 {
     return $this->hasMany(Pretest::class, 'slug_id');
 }
+
+    public function posttests()
+    {
+        return $this->hasMany(Posttest::class, 'slug_id');
+    }
 }

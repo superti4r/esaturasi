@@ -17,6 +17,7 @@ use App\Filament\Resources\SlugResource\Pages;
 use App\Filament\Resources\SlugResource\RelationManagers\SubjectMatterRelationManager;
 use App\Filament\Resources\SlugResource\RelationManagers\TaskRelationManager;
 use App\Filament\Resources\SlugResource\RelationManagers\PretestsRelationManager;
+use App\Filament\Resources\SlugResource\RelationManagers\PosttestsRelationManager;
 
 class SlugResource extends Resource
 {
@@ -83,9 +84,11 @@ class SlugResource extends Resource
             ])
             ->filters([])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
+    Tables\Actions\EditAction::make(),
+
+    
+    Tables\Actions\DeleteAction::make(),
+])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -99,6 +102,7 @@ class SlugResource extends Resource
             SubjectMatterRelationManager::class,
             TaskRelationManager::class,
             PretestsRelationManager::class,
+            PosttestsRelationManager::class,
         ];
     }
 
