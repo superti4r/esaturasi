@@ -17,6 +17,11 @@ class Pretest extends Model
         'waktu_selesai'
     ];
 
+    protected $casts = [
+        'waktu_mulai'   => 'datetime',
+        'waktu_selesai' => 'datetime',
+    ];
+
     // relasi ke slug (bab/materi)
     public function slug()
     {

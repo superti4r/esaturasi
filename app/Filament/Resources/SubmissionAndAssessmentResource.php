@@ -16,6 +16,9 @@ use App\Filament\Resources\SubmissionAndAssessmentResource\Pages;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\Action as TablesAction;
 use Filament\Tables\Actions\ActionGroup;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\Classroom;
+
 
 class SubmissionAndAssessmentResource extends Resource
 {
@@ -75,13 +78,33 @@ class SubmissionAndAssessmentResource extends Resource
                 TextColumn::make('created_at')->label('Dikirim')->since(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('task_id')
-                    ->label('Tugas')
-                    ->relationship('task', 'title'),
-                Tables\Filters\SelectFilter::make('student_id')
-                    ->label('Siswa')
-                    ->relationship('student', 'name'),
-            ])
+    Tables\Filters\SelectFilter::make('task_id')
+        ->label('Tugas')
+        ->relationship('task', 'title')
+        ->searchable()
+        ->preload(),
+
+    Tables\Filters\SelectFilter::make('student_id')
+        ->label('Siswa')
+        ->relationship('student', 'name')
+        ->searchable()
+        ->preload(),
+
+    Tables\Filters\SelectFilter::make('classroom')
+        ->label('Kelas')
+        ->options(Classroom::pluck('name', 'id'))
+        ->searchable()
+        ->query(
+            fn (Builder $query, array $data) =>
+                $query->when(
+                    $data['value'],
+                    fn ($q, $v) => $q->whereHas(
+                        'student',
+                        fn ($q) => $q->where('classroom_id', $v)
+                    )
+                )
+        ),
+])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),     

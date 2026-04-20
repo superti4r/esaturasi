@@ -24,7 +24,11 @@ class AssessmentPrinting extends Controller
             }
         }
 
-        $assessments = $query->get();
+        $assessments = $query->with(['student', 'task'])
+    ->join('students', 'assessments.student_id', '=', 'students.id')
+    ->orderBy('students.name', 'asc')
+    ->select('assessments.*')
+    ->get();
 
         $fileName = 'penilaian_tugas_siswa-' . now()->format('Y-m-d_H-i-s') . '.pdf';
 
