@@ -14,6 +14,9 @@ use App\Http\Controllers\API\TaskController;
 use App\Http\Controllers\API\SubmissiontaskController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\API\PretestController;
+use App\Http\Controllers\API\HasilPretestController;
+use App\Http\Controllers\API\PosttestController;
+use App\Http\Controllers\API\HasilPosttestController;
 
 Route::get('/tugas', [TaskController::class, 'getTugas']);
 
@@ -44,5 +47,11 @@ Route::middleware('auth:sanctum')->delete('/delete-profile-photo', [StudentContr
 Route::middleware('auth:sanctum')->post('/update-profile-photo', [StudentController::class, 'updateProfilePhoto']);
 Route::post('/change-password', [PasswordController::class, 'changePassword']);
 Route::get('/tasks/{classroomId}/pending/{studentId}', [TaskController::class, 'getPendingTasks']);
-Route::get('/pretest/slug/{slugId}', [PretestController::class, 'getBySlugId']);
 
+Route::get('/pretest/slug/{slugId}', [PretestController::class, 'getBySlugId']);
+Route::post('/hasil-pretest', [HasilPretestController::class, 'simpan']);
+Route::get('/hasil-pretest/{studentId}/{pretestId}', [HasilPretestController::class, 'cekHasil']);
+
+Route::get('/posttest/slug/{slugId}', [PosttestController::class, 'getBySlugId']);
+Route::post('/hasil-posttest', [HasilPosttestController::class, 'simpan']);
+Route::get('/hasil-posttest/{studentId}/{posttestId}', [HasilPosttestController::class, 'cekHasil']);
