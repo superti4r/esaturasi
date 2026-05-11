@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class Schedule extends Model
 {
@@ -39,5 +41,10 @@ class Schedule extends Model
     public function archive(): BelongsTo
     {
         return $this->belongsTo(Archive::class);
+    }
+
+    public function slugs(): HasMany
+    {
+        return $this->hasMany(Slugs::class);
     }
 }

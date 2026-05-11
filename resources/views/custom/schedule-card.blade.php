@@ -5,27 +5,22 @@
                 <h2 class="text-lg font-semibold text-primary dark:text-primary-400 mb-4">
                     {{ $className }}
                 </h2>
-
                 @php
                     $groupedBySubjectAndTeacher = collect($schedules)->groupBy(fn ($schedule) => $schedule->subject_id . '-' . $schedule->teacher_id);
                 @endphp
-
                 <div class="space-y-4">
                     @foreach ($groupedBySubjectAndTeacher as $group)
                         @php
                             $first = $group->first();
                             $items = [];
-
                             foreach ($group as $schedule) {
                                 foreach ($schedule->schedule as $item) {
                                     $items[] = $item;
                                 }
                             }
-
                             $groupedByDay = collect($items)->groupBy('day');
                             $isOwnSchedule = auth()->id() === $first->teacher_id;
                         @endphp
-
                         <div class="p-4 rounded-md bg-gray-50 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200">
                             <div class="flex items-center justify-between mb-2">
                                 <div>
@@ -36,22 +31,24 @@
                                         {{ $first->teacher->name }}
                                     </div>
                                 </div>
-
                                 @if ($isOwnSchedule)
                                     <x-filament::badge color="success">
                                         Jadwal Kamu
                                     </x-filament::badge>
                                 @endif
                             </div>
-
                             <hr class="border-gray-300 dark:border-gray-700 my-2">
-                            
+
                             <div class="space-y-1">
                                 @foreach ($groupedByDay as $day => $dayItems)
                                     @foreach ($dayItems as $item)
+                                        @php
+                                            $jamMulai   = $item['start'] ?? (($item['start_hour'] ?? '00') . ':' . ($item['start_minute'] ?? '00'));
+                                            $jamSelesai = $item['end']   ?? (($item['end_hour']   ?? '00') . ':' . ($item['end_minute']   ?? '00'));
+                                        @endphp
                                         <div class="flex items-center gap-2">
                                             <x-heroicon-o-calendar class="w-4 h-4 text-primary" />
-                                            <span>{{ ucfirst($day) }} ({{ $item['start'] }} - {{ $item['end'] }})</span>
+                                            <span>{{ ucfirst($day) }} ({{ $jamMulai }} - {{ $jamSelesai }})</span>
                                         </div>
                                     @endforeach
                                 @endforeach
@@ -64,7 +61,6 @@
                                     Kelola
                                 </a>
                             </div>
-                            
                         </div>
                     @endforeach
                 </div>

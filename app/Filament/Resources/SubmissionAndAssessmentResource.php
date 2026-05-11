@@ -30,6 +30,7 @@ class SubmissionAndAssessmentResource extends Resource
     protected static ?string $navigationLabel = 'Penilaian Tugas Siswa';
     protected static ?string $pluralModelLabel = 'Penilaian Tugas Siswa';
     protected static ?string $modelLabel = 'Penilaian Tugas Siswa';
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
     {

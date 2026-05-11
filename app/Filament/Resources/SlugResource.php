@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Slugs;
 use App\Models\Schedule;
+use App\Models\Classroom;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -13,6 +14,7 @@ use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Get;
 use App\Filament\Resources\SlugResource\Pages;
 use App\Filament\Resources\SlugResource\RelationManagers\SubjectMatterRelationManager;
 use App\Filament\Resources\SlugResource\RelationManagers\TaskRelationManager;
@@ -24,38 +26,62 @@ class SlugResource extends Resource
     protected static ?string $model = Slugs::class;
     protected static ?string $navigationGroup = 'Master Data';
     protected static ?int $navigationSort = 9;
-
     protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
     protected static ?string $navigationLabel = 'Manajemen Tugas & Materi';
     protected static ?string $pluralModelLabel = 'Manajemen Tugas & Materi';
     protected static ?string $modelLabel = 'Manajemen Tugas & Materi';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()?->hasRole('guru') ?? false;
+    }
+
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Card::make()->columns(2)->schema([
-                    Select::make('schedule_id')
-                        ->label('Jadwal')
-                        ->options(function () {
-                            return Schedule::with(['classroom', 'subject'])
-                                ->get()
-                                ->mapWithKeys(function ($schedule) {
-                                    return [
-                                        $schedule->id => $schedule->classroom->name . ' - ' . $schedule->subject->name,
-                                    ];
-                                });
-                        })
-                        ->searchable()
-                        ->preload()
-                        ->required(),
+        $isEdit = $form->getOperation() === 'edit';
 
-                    TextInput::make('title')
-                        ->label('Judul')
-                        ->placeholder('Masukkan judul')
-                        ->required(),
-                ]),
-            ]);
+        if ($isEdit) {
+            return $form->schema([]);
+        }
+
+        $activeArchive = null;
+
+        return $form->schema([
+            Card::make()->columns(2)->schema([
+                Select::make('classroom_id')
+                    ->label('Kelas')
+                    ->options(fn() => Classroom::orderBy('name')->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(fn($set) => $set('schedule_id', null)),
+
+                Select::make('schedule_id')
+                    ->label('Mata Pelajaran')
+                    ->options(function (Get $get) {
+                        $classroomId = $get('classroom_id');
+                        if (!$classroomId) return [];
+
+                        return Schedule::with('subject')
+                            ->where('classroom_id', $classroomId)
+                            ->get()
+                            ->mapWithKeys(fn($s) => [$s->id => $s->subject->name ?? '-']);
+                    })
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->live()
+                    ->disabled(fn(Get $get) => !$get('classroom_id'))
+                    ->hint(fn(Get $get) => !$get('classroom_id') ? 'Pilih kelas terlebih dahulu' : null),
+
+                TextInput::make('title')
+                    ->label('Judul')
+                    ->placeholder('Masukkan judul')
+                    ->required()
+                    ->columnSpanFull(),
+            ]),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -73,7 +99,7 @@ class SlugResource extends Resource
                     ->searchable(),
 
                 TextColumn::make('title')
-                    ->label('Judul')
+                    ->label('Bab')
                     ->sortable()
                     ->searchable(),
 
@@ -84,11 +110,9 @@ class SlugResource extends Resource
             ])
             ->filters([])
             ->actions([
-    Tables\Actions\EditAction::make(),
-
-    
-    Tables\Actions\DeleteAction::make(),
-])
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -109,9 +133,9 @@ class SlugResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSlugs::route('/'),
+            'index'  => Pages\ListSlugs::route('/'),
             'create' => Pages\CreateSlug::route('/create'),
-            'edit' => Pages\EditSlug::route('/{record}/edit'),
+            'edit'   => Pages\EditSlug::route('/{record}/edit'),
         ];
     }
 }

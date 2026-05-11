@@ -24,16 +24,14 @@ class AssessmentPrinting extends Controller
             }
         }
 
-        $assessments = $query->with(['student', 'task'])
-    ->join('students', 'assessments.student_id', '=', 'students.id')
-    ->orderBy('students.name', 'asc')
-    ->select('assessments.*')
-    ->get();
+        $assessments = $query->get()
+            ->sortBy(fn($item) => $item->student?->name)
+            ->values();
 
         $fileName = 'penilaian_tugas_siswa-' . now()->format('Y-m-d_H-i-s') . '.pdf';
 
         $pdf = Pdf::loadView('print.assessments', compact('assessments'))
-                  ->setPaper('A4', 'potrait');
+                  ->setPaper('A4', 'portrait');
 
         return $pdf->download($fileName);
     }

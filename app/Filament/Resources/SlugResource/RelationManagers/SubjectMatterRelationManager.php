@@ -24,7 +24,7 @@ class SubjectMatterRelationManager extends RelationManager
         return $form
             ->schema([
                 TextInput::make('title')
-                    ->label('Judul')
+                    ->label('Bab')
                     ->placeholder('Masukkan judul materi')
                     ->required()
                     ->maxLength(255),
@@ -54,7 +54,7 @@ class SubjectMatterRelationManager extends RelationManager
             ->recordTitleAttribute('title')
             ->columns([
                 TextColumn::make('title')
-                    ->label('Judul'),
+                    ->label('Bab'),
 
                 TextColumn::make('description')
                     ->label('Deskripsi'),

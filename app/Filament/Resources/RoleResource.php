@@ -24,6 +24,10 @@ class RoleResource extends Resource implements HasShieldPermissions
     use HasShieldFormComponents;
 
     protected static ?string $recordTitleAttribute = 'name';
+    public static function shouldRegisterNavigation(): bool
+{
+    return false;
+}
 
     public static function getPermissionPrefixes(): array
     {
@@ -160,10 +164,7 @@ class RoleResource extends Resource implements HasShieldPermissions
         return __('filament-shield::filament-shield.resource.label.roles');
     }
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return Utils::isResourceNavigationRegistered();
-    }
+   
 
     public static function getNavigationGroup(): ?string
     {

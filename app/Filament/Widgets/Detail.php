@@ -6,6 +6,8 @@ use App\Models\Classroom;
 use App\Models\Student;
 use App\Models\Schedule;
 use App\Models\Announcement;
+use App\Models\Major;
+use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -20,7 +22,7 @@ class Detail extends BaseWidget
     {
         $user = Auth::user();
 
-        if ($user->hasRole('admin')) {
+        if ($user->hasRole('Administrator')) {
             return $this->statsAdmin();
         }
 
@@ -28,45 +30,45 @@ class Detail extends BaseWidget
     }
 
     protected function statsAdmin(): array
-    {
-        return [
-            Stat::make('Total Guru', User::role('guru')->count())
-                ->description('Guru terdaftar')
-                ->descriptionIcon('heroicon-m-user')
-                ->chart([1, 2, 3, User::role('guru')->count()])
-                ->color('primary')
-                ->icon('heroicon-o-user'),
+{
+    return [
+        Stat::make('Total Siswa', Student::count())
+            ->description('Seluruh siswa terdaftar')
+            ->descriptionIcon('heroicon-m-users')
+            ->chart([10, 20, 30, Student::count()])
+            ->color('info')
+            ->icon('heroicon-o-users'),
 
-            Stat::make('Total Siswa', Student::count())
-                ->description('Seluruh siswa')
-                ->descriptionIcon('heroicon-m-academic-cap')
-                ->chart([50, 100, 150, Student::count()])
-                ->color('info')
-                ->icon('heroicon-o-academic-cap'),
+        Stat::make('Kelas Aktif', Classroom::count())
+            ->description('Semua kelas aktif')
+            ->descriptionIcon('heroicon-m-building-office-2')
+            ->chart([1, 2, 3, Classroom::count()])
+            ->color('warning')
+            ->icon('heroicon-o-building-office-2'),
 
-            Stat::make('Total Kelas', Classroom::count())
-                ->description('Semua kelas aktif')
-                ->descriptionIcon('heroicon-m-building-library')
-                ->chart([1, 2, 3, Classroom::count()])
-                ->color('warning')
-                ->icon('heroicon-o-building-library'),
+        Stat::make('Mata Pelajaran', Subject::count())
+            ->description('Total mata pelajaran')
+            ->descriptionIcon('heroicon-m-book-open')
+            ->chart([1, 2, 3, Subject::count()])
+            ->color('success')
+            ->icon('heroicon-o-book-open'),
 
-            Stat::make('Pengumuman', Announcement::count())
-                ->description('Total pengumuman')
-                ->descriptionIcon('heroicon-m-megaphone')
-                ->chart([1, 2, 3, Announcement::count()])
-                ->color('success')
-                ->icon('heroicon-o-megaphone'),
-        ];
-    }
+        Stat::make('Jurusan', Major::count())
+            ->description('Total jurusan')
+            ->descriptionIcon('heroicon-m-briefcase')
+            ->chart([1, 2, 3, Major::count()])
+            ->color('danger')
+            ->icon('heroicon-o-briefcase'),
+    ];
+}
 
     protected function statsGuru($user): array
     {
-        $jadwalGuru    = Schedule::where('teacher_id', $user->id)->get();
-        $classroomIds  = $jadwalGuru->pluck('classroom_id')->unique();
-        $kelasCount    = $classroomIds->count();
-        $siswaCount    = Student::whereIn('classroom_id', $classroomIds)->count();
-        $jadwalCount   = $jadwalGuru->count();
+        $jadwalGuru      = Schedule::where('teacher_id', $user->id)->get();
+        $classroomIds    = $jadwalGuru->pluck('classroom_id')->unique();
+        $kelasCount      = $classroomIds->count();
+        $siswaCount      = Student::whereIn('classroom_id', $classroomIds)->count();
+        $jadwalCount     = $jadwalGuru->count();
         $pengumumanCount = Announcement::count();
 
         return [
