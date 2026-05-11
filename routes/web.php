@@ -19,3 +19,4 @@ Route::get('/pdf/rekap-test', [PdfTestController::class, 'cetakSemua'])->name('p
 Route::get('/pdf/rekap-posttest', [PdfTestController::class, 'cetakSemuaPosttest'])->name('pdf.rekap-posttest');
 Route::get('/pdf/rekap-test/siswa/{studentId}', [PdfTestController::class, 'cetakSiswa'])->name('pdf.rekap-siswa');
 Route::get('/pdf/rekap-posttest/siswa/{studentId}', [PdfTestController::class, 'cetakSiswaPosttest'])->name('pdf.rekap-siswa-posttest');
+
