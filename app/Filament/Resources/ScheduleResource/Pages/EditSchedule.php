@@ -13,6 +13,12 @@ class EditSchedule extends EditRecord
 {
     protected static string $resource = ScheduleResource::class;
 
+    // ✅ Hilangkan breadcrumb otomatis Filament (penyebab double)
+    public function getBreadcrumbs(): array
+    {
+        return [];
+    }
+
     public function mount($record): void
     {
         parent::mount($record);
@@ -44,7 +50,12 @@ class EditSchedule extends EditRecord
 
     protected function validateJadwalBentrok(array $jadwalBaru, ?int $excludeId): void
     {
-        $allSchedules = Schedule::when($excludeId, fn($q) => $q->where('id', '!=', $excludeId))->get();
+        // ✅ Filter hanya guru yang sama agar tidak false alarm antar guru berbeda
+        $guruId = $this->record->teacher_id;
+
+        $allSchedules = Schedule::where('teacher_id', $guruId)
+            ->when($excludeId, fn($q) => $q->where('id', '!=', $excludeId))
+            ->get();
 
         foreach ($jadwalBaru as $baru) {
             $hariB    = $baru['day'];
@@ -52,17 +63,13 @@ class EditSchedule extends EditRecord
             $selesaiB = strtotime($baru['end']);
 
             foreach ($allSchedules as $schedule) {
-                $existingList = $schedule->schedule ?? [];
-
-                foreach ($existingList as $existing) {
+                foreach ($schedule->schedule ?? [] as $existing) {
                     if ($existing['day'] !== $hariB) continue;
 
                     $mulaiE   = strtotime($existing['start']);
                     $selesaiE = strtotime($existing['end']);
 
-                    $bentrok = $mulaiB < $selesaiE && $selesaiB > $mulaiE;
-
-                    if ($bentrok) {
+                    if ($mulaiB < $selesaiE && $selesaiB > $mulaiE) {
                         Notification::make()
                             ->title('Jadwal Bentrok!')
                             ->body("Guru sudah memiliki jadwal di hari {$hariB} jam {$existing['start']} - {$existing['end']}.")

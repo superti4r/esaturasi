@@ -15,10 +15,10 @@ class SoalPretest extends Model
         'opsi_b',
         'opsi_c',
         'opsi_d',
-        'jawaban'
+        'jawaban',
+        'poin', // ✅ Sebelumnya tidak ada — menyebabkan poin tidak tersimpan
     ];
 
-    // relasi ke pretest
     public function pretest()
     {
         return $this->belongsTo(Pretest::class);

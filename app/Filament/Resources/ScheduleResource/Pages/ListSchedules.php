@@ -16,6 +16,18 @@ class ListSchedules extends ListRecords
     protected static string $resource = ScheduleResource::class;
     protected static string $view = 'custom.schedule-card';
 
+    // ✅ Hilangkan breadcrumb otomatis Filament (penyebab double)
+    public function getBreadcrumbs(): array
+    {
+        return [];
+    }
+
+    // ✅ Hilangkan title otomatis Filament (penyebab double)
+    public function getTitle(): string|\Illuminate\Contracts\Support\Htmlable
+    {
+        return '';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
@@ -26,7 +38,6 @@ class ListSchedules extends ListRecords
                 ->color('success')
                 ->url(route('print.schedules'))
                 ->openUrlInNewTab(),
-
         ];
     }
 
@@ -50,8 +61,8 @@ class ListSchedules extends ListRecords
 
         return [
             'groupedSchedules' => $schedules->groupBy(fn($item) => $item->classroom->name ?? 'Tanpa Kelas'),
-            'recordPageUrl' => fn(Schedule $schedule) => ScheduleResource::getUrl('edit', ['record' => $schedule]),
-            'headerActions' => $this->getHeaderActions(),
+            'recordPageUrl'    => fn(Schedule $schedule) => ScheduleResource::getUrl('edit', ['record' => $schedule]),
+            'headerActions'    => $this->getHeaderActions(),
         ];
     }
 }

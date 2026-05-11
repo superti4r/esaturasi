@@ -9,6 +9,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\SoalPretestImport;
+use App\Models\SoalPretest;
 use Illuminate\Support\Facades\Storage;
 
 class PretestsRelationManager extends RelationManager
@@ -37,32 +38,23 @@ class PretestsRelationManager extends RelationManager
                 ->after('waktu_mulai')
                 ->required(),
 
-            // repeater soal
             Forms\Components\Repeater::make('soal')
                 ->relationship()
                 ->label('Daftar Soal')
-
-                ->columnSpanFull() // full lebar
-
-                //grid
+                ->columnSpanFull()
                 ->grid([
                     'md' => 2,
                     'xl' => 3,
                 ])
-
-                //nomor otomatis
                 ->itemLabel(function (array $state, \Filament\Forms\Components\Repeater $component) {
                     $items = $component->getState() ?? [];
-
                     foreach (array_values($items) as $index => $item) {
                         if ($item === $state) {
                             return 'Pertanyaan ' . ($index + 1);
                         }
                     }
-
                     return 'Pertanyaan';
                 })
-
                 ->schema([
                     Forms\Components\Textarea::make('soal')
                         ->label('Pertanyaan')
@@ -76,12 +68,7 @@ class PretestsRelationManager extends RelationManager
 
                     Forms\Components\Select::make('jawaban')
                         ->label('Jawaban Benar')
-                        ->options([
-                            'A' => 'A',
-                            'B' => 'B',
-                            'C' => 'C',
-                            'D' => 'D',
-                        ])
+                        ->options(['A' => 'A', 'B' => 'B', 'C' => 'C', 'D' => 'D'])
                         ->required(),
 
                     Forms\Components\TextInput::make('poin')
@@ -93,45 +80,33 @@ class PretestsRelationManager extends RelationManager
                 ])
                 ->columns(2)
                 ->collapsible()
-                ->collapsed() //
+                ->collapsed()
                 ->createItemButtonLabel('Tambah Soal')
-
-                // validasi total poin tidak boleh lebih dari 100
                 ->rule(function () {
                     return function ($attribute, $value, $fail) {
-                        $total = collect($value)->sum(function ($item) {
-                            return (int) ($item['poin'] ?? 0);
-                        });
-
+                        $total = collect($value)->sum(fn($item) => (int) ($item['poin'] ?? 0));
                         if ($total > 100) {
                             $fail("Total poin melebihi batas (100). Sekarang: $total");
                         }
                     };
                 }),
 
-           // placeholder total poin
             Forms\Components\Placeholder::make('total_poin')
                 ->label('Total Poin')
                 ->content(function ($get) {
-                    $soal = $get('soal') ?? [];
-
-                    $total = collect($soal)->sum(function ($item) {
-                        return (int) ($item['poin'] ?? 0);
-                    });
-
+                    $total = collect($get('soal') ?? [])->sum(fn($item) => (int) ($item['poin'] ?? 0));
                     return $total > 100
                         ? "Total poin: $total (Melebihi batas!)"
                         : "Total poin: $total / 100";
                 }),
 
-            // upload soal via excel
             Forms\Components\FileUpload::make('file_soal')
                 ->label('Upload Soal via Excel')
                 ->directory('bank-soal')
                 ->acceptedFileTypes([
-                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 ])
-                ->helperText('Format kolom: soal, opsi_a, opsi_b, opsi_c, opsi_d, jawaban'),
+                ->helperText('Format kolom: soal, opsi_a, opsi_b, opsi_c, opsi_d, jawaban, poin'),
         ]);
     }
 
@@ -145,31 +120,16 @@ class PretestsRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->after(function ($record) {
-                        if ($record->file_soal) {
-                            $path = Storage::disk('public')->path($record->file_soal);
-
-                            if (file_exists($path)) {
-                                Excel::import(
-                                    new SoalPretestImport($record->id),
-                                    $path
-                                );
-                            }
-                        }
+                        $this->importExcelIfExists($record);
                     }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->after(function ($record) {
-                        if ($record->file_soal) {
-                            $path = Storage::disk('public')->path($record->file_soal);
-
-                            if (file_exists($path)) {
-                                Excel::import(
-                                    new SoalPretestImport($record->id),
-                                    $path
-                                );
-                            }
-                        }
+                        // ✅ Hanya import jika ada file Excel baru di-upload
+                        // Repeater sudah handle delete via relationship sync otomatis
+                        // Excel import di sini untuk kasus upload-only (tanpa edit repeater)
+                        $this->importExcelIfExists($record);
                     }),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -178,5 +138,20 @@ class PretestsRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * ✅ Import Excel dan hapus soal lama sebelum insert
+     * Logika delete sudah ada di SoalPretestImport::registerEvents()
+     */
+    private function importExcelIfExists($record): void
+    {
+        if (empty($record->file_soal)) return;
+
+        $path = Storage::disk('public')->path($record->file_soal);
+
+        if (!file_exists($path)) return;
+
+        Excel::import(new SoalPretestImport($record->id), $path);
     }
 }
