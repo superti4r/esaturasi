@@ -130,7 +130,7 @@ class ListRekapNilai extends Page
      * Data rekap: Collection of siswa dengan nilai per bab (kolom dinamis).
      * Tiap item: ['nisn', 'nama', 'kelas', 'nilai' => [bab1 => val, bab2 => val, ...], 'rata']
      */
-    public function getRekapData(): array
+   public function getRekapData(): array
     {
         $siswaList = $this->getSiswaList();
         $slugIds   = $this->getSlugIds();
@@ -139,7 +139,6 @@ class ListRekapNilai extends Page
             return ['columns' => [], 'rows' => []];
         }
 
-        // Ambil kolom (bab) sesuai tab
         $columns = match ($this->activeTab) {
             'tugas' => Task::whereIn('slug_id', $slugIds)
                 ->orderBy('created_at')
@@ -161,36 +160,35 @@ class ListRekapNilai extends Page
             return ['columns' => [], 'rows' => []];
         }
 
-        // Ambil semua nilai sekaligus (efficient)
-        $nilaiMap = match ($this->activeTab) {
-            'tugas' => SubmissionAndAssessment::whereIn('task_id', $columns->pluck('id'))
-                ->get()
-                ->groupBy('student_id')
-                ->map(fn ($items) => $items->keyBy('task_id')),
+        $colIds = $columns->pluck('id')->toArray();
 
-            'posttest' => HasilPosttest::whereIn('posttest_id', $columns->pluck('id'))
-                ->get()
-                ->groupBy('student_id')
-                ->map(fn ($items) => $items->keyBy('posttest_id')),
+        // Ambil nilai mentah, simpan sebagai array biasa [student_id][col_id] => nilai
+        $nilaiFlat = [];
 
-            default => HasilPretest::whereIn('pretest_id', $columns->pluck('id'))
-                ->get()
-                ->groupBy('student_id')
-                ->map(fn ($items) => $items->keyBy('pretest_id')),
-        };
+        if ($this->activeTab === 'tugas') {
+            $records = SubmissionAndAssessment::whereIn('task_id', $colIds)->get();
+            foreach ($records as $r) {
+                $nilaiFlat[$r->student_id][$r->task_id] = $r->assignment;
+            }
+        } elseif ($this->activeTab === 'posttest') {
+            $records = HasilPosttest::whereIn('posttest_id', $colIds)->get();
+            foreach ($records as $r) {
+                $nilaiFlat[$r->student_id][$r->posttest_id] = $r->nilai;
+            }
+        } else {
+            $records = HasilPretest::whereIn('pretest_id', $colIds)->get();
+            foreach ($records as $r) {
+                $nilaiFlat[$r->student_id][$r->pretest_id] = $r->nilai;
+            }
+        }
 
-        $rows = $siswaList->map(function ($siswa) use ($columns, $nilaiMap) {
-            $nilaiSiswa = $nilaiMap->get($siswa->id, collect());
+        $rows = $siswaList->map(function ($siswa) use ($columns, $nilaiFlat) {
             $nilaiPerBab = [];
             $total = 0;
             $count = 0;
 
             foreach ($columns as $col) {
-                $record = $nilaiSiswa->get($col['id']);
-                $nilai  = match ($this->activeTab) {
-                    'tugas'    => $record?->assignment,
-                    default    => $record?->nilai,
-                };
+                $nilai = $nilaiFlat[$siswa->id][$col['id']] ?? null;
                 $nilaiPerBab[$col['id']] = $nilai;
                 if ($nilai !== null) {
                     $total += $nilai;
@@ -232,15 +230,47 @@ class ListRekapNilai extends Page
         );
     }
 
-    public function getHeaderActions(): array
-    {
-        return [
-            \Filament\Actions\Action::make('export')
-                ->label('Export Excel')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->color('success')
-                ->visible(fn () => $this->level === 'rekap')
-                ->action(fn () => $this->exportExcel()),
-        ];
-    }
+    public function exportExcelTab(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+{
+    $kelasLabel = $this->selectedKelasLabel;
+    $mapelLabel = $this->selectedMapelLabel;
+    $tabLabel   = match($this->activeTab) {
+        'tugas'    => 'Tugas',
+        'posttest' => 'Post Test',
+        default    => 'Pre Test',
+    };
+
+    $filename = 'Rekap_' . $tabLabel . '_' . str_replace(' ', '_', $kelasLabel) . '_' . str_replace(' ', '_', $mapelLabel) . '.xlsx';
+
+    $slugIds   = Schedule::find($this->selectedScheduleId)?->slugs()->pluck('id')->toArray() ?? [];
+    $siswaList = \App\Models\Student::where('classroom_id', $this->selectedClassroomId)->orderBy('name')->get();
+
+    return Excel::download(
+        new \App\Exports\RekapNilaiSheetExport($siswaList, $slugIds, $this->activeTab, $tabLabel),
+        $filename
+    );
+}
+
+   public function getHeaderActions(): array
+{
+    return [
+        \Filament\Actions\Action::make('export_tab')
+            ->label(fn () => 'Export ' . match($this->activeTab) {
+                'tugas'    => 'Tugas',
+                'posttest' => 'Post Test',
+                default    => 'Pre Test',
+            })
+            ->icon('heroicon-o-arrow-down-tray')
+            ->color('info')
+            ->visible(fn () => $this->level === 'rekap')
+            ->action(fn () => $this->exportExcelTab()),
+
+        \Filament\Actions\Action::make('export_semua')
+            ->label('Export Semua')
+            ->icon('heroicon-o-table-cells')
+            ->color('success')
+            ->visible(fn () => $this->level === 'rekap')
+            ->action(fn () => $this->exportExcel()),
+    ];
+}
 }
