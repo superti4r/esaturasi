@@ -78,44 +78,47 @@ class ListRekapNilai extends Page
     // -------------------------------------------------------
 
     /** Daftar kelas yang diajar guru ini */
-    public function getKelasData(): \Illuminate\Support\Collection
-    {
-        return Schedule::with('classroom')
-            ->where('teacher_id', Auth::id())
-            ->get()
-            ->pluck('classroom')
-            ->filter()
-            ->unique('id')
-            ->values()
-            ->map(fn ($c) => [
-                'id'    => $c->id,
-                'label' => $c->name,
-            ]);
-    }
+   public function getKelasData(): \Illuminate\Support\Collection
+{
+    return Schedule::with('classroom')
+        ->where('teacher_id', Auth::id())
+        ->whereHas('archive', fn($q) => $q->where('status', 'Active'))
+        ->get()
+        ->pluck('classroom')
+        ->filter()
+        ->unique('id')
+        ->values()
+        ->map(fn ($c) => [
+            'id'    => $c->id,
+            'label' => $c->name,
+        ]);
+}
 
-    /** Daftar mapel di kelas yang dipilih */
-    public function getMapelData(): \Illuminate\Support\Collection
-    {
-        if (!$this->selectedClassroomId) return collect();
+public function getMapelData(): \Illuminate\Support\Collection
+{
+    if (!$this->selectedClassroomId) return collect();
 
-        return Schedule::with('subject')
-            ->where('teacher_id', Auth::id())
-            ->where('classroom_id', $this->selectedClassroomId)
-            ->get()
-            ->map(fn ($s) => [
-                'schedule_id' => $s->id,
-                'label'       => $s->subject?->name ?? '-',
-            ]);
-    }
+    return Schedule::with('subject')
+        ->where('teacher_id', Auth::id())
+        ->where('classroom_id', $this->selectedClassroomId)
+        ->whereHas('archive', fn($q) => $q->where('status', 'Active'))
+        ->get()
+        ->unique('subject_id')
+        ->values()
+        ->map(fn ($s) => [
+            'schedule_id' => $s->id,
+            'label'       => $s->subject?->name ?? '-',
+        ]);
+}
 
     /** Siswa di kelas yang dipilih */
     private function getSiswaList(): \Illuminate\Support\Collection
-    {
-        return Student::where('classroom_id', $this->selectedClassroomId)
-            ->orderBy('name')
-            ->get();
-    }
-
+{
+    return Student::where('classroom_id', $this->selectedClassroomId)
+        ->whereHas('archive', fn($q) => $q->where('status', 'Active'))
+        ->orderBy('name')
+        ->get();
+}
     /** Semua slug/bab pada schedule yang dipilih */
     private function getSlugIds(): array
     {

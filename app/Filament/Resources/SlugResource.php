@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Slugs;
+use App\Models\Archive;
 use App\Models\Schedule;
 use App\Models\Classroom;
 use Filament\Forms\Form;
@@ -44,15 +45,18 @@ class SlugResource extends Resource
             return $form->schema([]);
         }
 
-        $activeArchive = null;
-
         return $form->schema([
             Card::make()->columns(2)->schema([
                 Select::make('classroom_id')
                     ->label('Kelas')
-                    ->options(fn() => Classroom::orderBy('name')->pluck('name', 'id'))
+                    ->options(function () {
+                        $guruId = auth()->id();
+                        return Classroom::whereHas('schedules', function ($q) use ($guruId) {
+                            $q->where('teacher_id', $guruId)
+                              ->whereHas('archive', fn($q) => $q->where('status', 'Active'));
+                        })->orderBy('name')->pluck('name', 'id');
+                    })
                     ->searchable()
-                    ->preload()
                     ->required()
                     ->live()
                     ->afterStateUpdated(fn($set) => $set('schedule_id', null)),
@@ -61,15 +65,17 @@ class SlugResource extends Resource
                     ->label('Mata Pelajaran')
                     ->options(function (Get $get) {
                         $classroomId = $get('classroom_id');
+                        $guruId = auth()->id();
                         if (!$classroomId) return [];
 
                         return Schedule::with('subject')
                             ->where('classroom_id', $classroomId)
+                            ->where('teacher_id', $guruId)
+                            ->whereHas('archive', fn($q) => $q->where('status', 'Active'))
                             ->get()
                             ->mapWithKeys(fn($s) => [$s->id => $s->subject->name ?? '-']);
                     })
                     ->searchable()
-                    ->preload()
                     ->required()
                     ->live()
                     ->disabled(fn(Get $get) => !$get('classroom_id'))

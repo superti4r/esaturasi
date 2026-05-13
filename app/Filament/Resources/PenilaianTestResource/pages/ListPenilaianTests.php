@@ -10,6 +10,7 @@ use App\Models\JawabanPosttest;
 use App\Models\Posttest;
 use App\Models\Pretest;
 use App\Models\Schedule;
+use App\Models\Classroom;
 use App\Models\SoalPretest;
 use App\Models\SoalPosttest;
 use App\Models\SubmissionAndAssessment;
@@ -24,27 +25,39 @@ class ListPenilaianTests extends Page
     protected static string $resource = PenilaianTestResource::class;
     protected ?string $heading = 'Penilaian';
     protected static ?string $title = 'Penilaian';
+    protected static string $view = 'filament.resources.penilaian-test-resource.pages.list-penilaian-tests';
 
-    protected static string $view     = 'filament.resources.penilaian-test-resource.pages.list-penilaian-tests';
+    public string $level = 'kelas';
 
-    public string $level = 'mapel';
+    public ?int   $selectedClassroomId = null;
+    public string $selectedKelasLabel  = '';
+    public ?int   $selectedScheduleId  = null;
+    public string $selectedMapelLabel  = '';
+    public string $activeTab           = 'pretest';
+    public ?int   $selectedSlugId      = null;
+    public string $selectedSlugLabel   = '';
+    public ?int   $selectedId          = null;
+    public string $selectedLabel       = '';
+    public ?int   $selectedStudentId   = null;
+    public string $selectedSiswaLabel  = '';
+    public ?int   $editNilai           = null;
+    public bool   $nilaiSaved          = false;
 
-    public ?int   $selectedScheduleId = null;
-    public string $selectedMapelLabel = '';
+    // -------------------------------------------------------
+    // NAVIGASI
+    // -------------------------------------------------------
 
-    public string $activeTab = 'pretest';
-
-    public ?int   $selectedSlugId    = null;
-    public string $selectedSlugLabel = '';
-
-    public ?int   $selectedId    = null;
-    public string $selectedLabel = '';
-
-    public ?int   $selectedStudentId  = null;
-    public string $selectedSiswaLabel = '';
-
-    public ?int  $editNilai  = null;
-    public bool  $nilaiSaved = false;
+    public function selectKelas(int $classroomId, string $label): void
+    {
+        $this->selectedClassroomId = $classroomId;
+        $this->selectedKelasLabel  = $label;
+        $this->level               = 'mapel';
+        $this->selectedScheduleId  = null;
+        $this->selectedMapelLabel  = '';
+        $this->resetSlug();
+        $this->resetDetail();
+        $this->resetSiswa();
+    }
 
     public function selectMapel(int $scheduleId, string $label): void
     {
@@ -90,6 +103,18 @@ class ListPenilaianTests extends Page
         $this->level              = 'siswa';
         $this->editNilai          = null;
         $this->nilaiSaved         = false;
+    }
+
+    public function backToKelas(): void
+    {
+        $this->level               = 'kelas';
+        $this->selectedClassroomId = null;
+        $this->selectedKelasLabel  = '';
+        $this->selectedScheduleId  = null;
+        $this->selectedMapelLabel  = '';
+        $this->resetSlug();
+        $this->resetDetail();
+        $this->resetSiswa();
     }
 
     public function backToMapel(): void
@@ -143,59 +168,43 @@ class ListPenilaianTests extends Page
         $this->nilaiSaved         = false;
     }
 
-    public function saveNilai(): void
-    {
-        $this->validate([
-            'editNilai' => 'required|numeric|min:0|max:100',
-        ]);
+    // -------------------------------------------------------
+    // DATA GETTERS
+    // -------------------------------------------------------
 
-        SubmissionAndAssessment::where('task_id', $this->selectedId)
-            ->where('student_id', $this->selectedStudentId)
-            ->update([
-                'assignment' => $this->editNilai,
-                'status'     => 'graded',
+    public function getKelasData(): \Illuminate\Support\Collection
+    {
+        return Schedule::with('classroom')
+            ->where('teacher_id', Auth::id())
+            ->whereHas('archive', fn($q) => $q->where('status', 'Active'))
+            ->get()
+            ->pluck('classroom')
+            ->filter()
+            ->unique('id')
+            ->values()
+            ->map(fn ($c) => [
+                'id'    => $c->id,
+                'label' => $c->name,
             ]);
-
-        $this->nilaiSaved = true;
-
-        Notification::make()
-            ->title('Nilai berhasil disimpan!')
-            ->success()
-            ->send();
-    }
-
-    public function getHeaderActions(): array
-    {
-        return [
-            Action::make('cetak_pdf')
-                ->label('Cetak PDF')
-                ->icon('heroicon-o-printer')
-                ->color('primary')
-                ->visible(fn () => $this->level === 'detail')
-                ->action(function () {
-                    $url = match ($this->activeTab) {
-                        'tugas'    => route('print.assessment'),
-                        'posttest' => route('pdf.rekap-posttest', ['posttest_id' => $this->selectedId]),
-                        default    => route('pdf.rekap-test', ['pretest_id' => $this->selectedId]),
-                    };
-                    $this->redirect($url, navigate: false);
-                }),
-        ];
     }
 
     public function getMapelData(): \Illuminate\Support\Collection
     {
+        if (!$this->selectedClassroomId) return collect();
+
         return Schedule::with(['subject', 'classroom'])
             ->where('teacher_id', Auth::id())
+            ->where('classroom_id', $this->selectedClassroomId)
+            ->whereHas('archive', fn($q) => $q->where('status', 'Active'))
             ->get()
-            ->groupBy(fn ($s) => $s->subject_id . '-' . $s->classroom_id)
-            ->map(fn ($group) => [
-                'schedule_id' => $group->first()->id,
-                'label'       => ($group->first()->subject?->name ?? '-') . ' - ' . ($group->first()->classroom?->name ?? '-'),
-                'mapel'       => $group->first()->subject?->name ?? '-',
-                'kelas'       => $group->first()->classroom?->name ?? '-',
-            ])
-            ->values();
+            ->unique('subject_id')
+            ->values()
+            ->map(fn ($s) => [
+                'schedule_id' => $s->id,
+                'label'       => $s->subject?->name ?? '-',
+                'mapel'       => $s->subject?->name ?? '-',
+                'kelas'       => $s->classroom?->name ?? '-',
+            ]);
     }
 
     public function getSlugData(): \Illuminate\Support\Collection
@@ -394,6 +403,54 @@ class ListPenilaianTests extends Page
             'nilai' => $hasil?->nilai ?? 0,
             'lulus' => $hasil?->lulus ?? false,
             'soal'  => $soalData,
+        ];
+    }
+
+    // -------------------------------------------------------
+    // SAVE NILAI
+    // -------------------------------------------------------
+
+    public function saveNilai(): void
+    {
+        $this->validate([
+            'editNilai' => 'required|numeric|min:0|max:100',
+        ]);
+
+        SubmissionAndAssessment::where('task_id', $this->selectedId)
+            ->where('student_id', $this->selectedStudentId)
+            ->update([
+                'assignment' => $this->editNilai,
+                'status'     => 'graded',
+            ]);
+
+        $this->nilaiSaved = true;
+
+        Notification::make()
+            ->title('Nilai berhasil disimpan!')
+            ->success()
+            ->send();
+    }
+
+    // -------------------------------------------------------
+    // HEADER ACTIONS
+    // -------------------------------------------------------
+
+    public function getHeaderActions(): array
+    {
+        return [
+            Action::make('cetak_pdf')
+                ->label('Cetak PDF')
+                ->icon('heroicon-o-printer')
+                ->color('primary')
+                ->visible(fn () => $this->level === 'detail')
+                ->action(function () {
+                    $url = match ($this->activeTab) {
+                        'tugas'    => route('print.assessment'),
+                        'posttest' => route('pdf.rekap-posttest', ['posttest_id' => $this->selectedId]),
+                        default    => route('pdf.rekap-test', ['pretest_id' => $this->selectedId]),
+                    };
+                    $this->redirect($url, navigate: false);
+                }),
         ];
     }
 }

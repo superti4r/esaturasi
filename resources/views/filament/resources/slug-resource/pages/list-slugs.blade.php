@@ -47,7 +47,7 @@
                 </button>
             @empty
                 <div style="grid-column:1/-1;background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:60px 20px;text-align:center;">
-                    <p style="color:#6b7280;font-weight:500;">Belum ada kelas dengan data.</p>
+                    <p style="color:#6b7280;font-weight:500;">Belum ada kelas yang diampu.</p>
                 </div>
             @endforelse
         </div>
@@ -75,21 +75,31 @@
                 </button>
             @empty
                 <div style="grid-column:1/-1;background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:60px 20px;text-align:center;">
-                    <p style="color:#6b7280;font-weight:500;">Belum ada mata pelajaran dengan data.</p>
+                    <p style="color:#6b7280;font-weight:500;">Belum ada mata pelajaran.</p>
                 </div>
             @endforelse
         </div>
 
     {{-- STEP 3: DAFTAR BAB --}}
     @else
-        {{-- Label sekunder mapel/kelas --}}
-        <p style="font-size:13px;font-weight:600;color:#6b7280;margin:0 0 20px;">
-            Mata Pelajaran
-            <span style="color:#d1d5db;margin:0 6px;">/</span>
-            <span style="color:#1f2937;">{{ $selectedSchedule->subject->name }} – {{ $selectedClassroom->name }}</span>
-        </p>
+        {{-- Header bab + tombol tambah --}}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <p style="font-size:13px;font-weight:600;color:#6b7280;margin:0;">
+                <span style="color:#1f2937;">{{ $selectedSchedule->subject->name }}</span>
+                <span style="color:#d1d5db;margin:0 6px;">–</span>
+                <span style="color:#1f2937;">{{ $selectedClassroom->name }}</span>
+            </p>
+            <button wire:click="openCreateModal"
+                style="display:flex;align-items:center;gap:8px;background:#2563eb;color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:14px;font-weight:600;cursor:pointer;"
+                onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+                <svg xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                </svg>
+                Tambah Bab
+            </button>
+        </div>
 
-        {{-- Kartu bab dengan ikon folder ungu --}}
+        {{-- Kartu bab --}}
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">
             @forelse ($slugs as $slug)
                 <a href="{{ route('filament.m.resources.slugs.edit', $slug) }}"
@@ -107,9 +117,52 @@
                 </a>
             @empty
                 <div style="grid-column:1/-1;background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:60px 20px;text-align:center;">
-                    <p style="color:#6b7280;font-weight:500;">Belum ada bab.</p>
+                    <p style="color:#6b7280;font-weight:500;">Belum ada bab. Klik "Tambah Bab" untuk mulai.</p>
                 </div>
             @endforelse
+        </div>
+    @endif
+
+    {{-- MODAL TAMBAH BAB --}}
+    @if ($showCreateModal)
+        <div style="position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:50;display:flex;align-items:center;justify-content:center;">
+            <div style="background:#fff;border-radius:16px;padding:28px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(0,0,0,0.15);">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                    <h3 style="font-size:16px;font-weight:700;color:#1f2937;margin:0;">Tambah Bab Baru</h3>
+                    <button wire:click="closeCreateModal"
+                        style="background:none;border:none;cursor:pointer;color:#9ca3af;font-size:20px;line-height:1;"
+                        onmouseover="this.style.color='#374151'" onmouseout="this.style.color='#9ca3af'">✕</button>
+                </div>
+
+                <p style="font-size:13px;color:#6b7280;margin:0 0 16px;">
+                    {{ $selectedSchedule->subject->name }} – {{ $selectedClassroom->name }}
+                </p>
+
+                <div style="margin-bottom:20px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Judul Bab</label>
+                    <input
+                        wire:model="newTitle"
+                        type="text"
+                        placeholder="Contoh: Bab 1 - Pengenalan"
+                        style="width:100%;border:1.5px solid #d1d5db;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;box-sizing:border-box;"
+                        onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#d1d5db'"
+                        wire:keydown.enter="createSlug"
+                    />
+                </div>
+
+                <div style="display:flex;gap:10px;justify-content:flex-end;">
+                    <button wire:click="closeCreateModal"
+                        style="padding:9px 18px;border:1.5px solid #e5e7eb;border-radius:8px;background:#fff;color:#6b7280;font-size:14px;font-weight:600;cursor:pointer;"
+                        onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='#fff'">
+                        Batal
+                    </button>
+                    <button wire:click="createSlug"
+                        style="padding:9px 18px;border:none;border-radius:8px;background:#2563eb;color:#fff;font-size:14px;font-weight:600;cursor:pointer;"
+                        onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+                        Simpan & Lanjut
+                    </button>
+                </div>
+            </div>
         </div>
     @endif
 
