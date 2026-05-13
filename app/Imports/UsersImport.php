@@ -2,15 +2,14 @@
 
 namespace App\Imports;
 
-use App\Models\Archive;
-use App\Models\Student;
-use App\Models\Classroom;
+use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 
-class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
+class UsersImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 {
     public int $importedCount = 0;
     public int $skippedCount  = 0;
@@ -22,48 +21,28 @@ class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
     public function collection(Collection $rows)
     {
-        $activeArchive = Archive::where('status', 'Active')->first();
-
         foreach ($rows as $row) {
-            $nama = trim((string) ($row['nama'] ?? ''));
-            $nisn = trim((string) ($row['nisn'] ?? ''));
+            $nama      = trim((string) ($row['nama'] ?? ''));
+            $nip       = trim((string) ($row['nip']  ?? ''));
+            $kodeGuru  = trim((string) ($row['no']   ?? ''));
 
-            // Skip jika nama atau NISN kosong
-            if (empty($nama) || empty($nisn)) {
+            if (empty($nama) || empty($nip)) {
                 $this->skippedCount++;
                 continue;
             }
 
-            // Skip jika NISN sudah ada
-            if (Student::where('nisn', $nisn)->exists()) {
+            if (User::where('nip', $nip)->exists()) {
                 $this->skippedCount++;
                 continue;
             }
 
-            // Cari kelas berdasarkan nama rombel
-            $rombelNama  = trim((string) ($row['rombel_saat_ini'] ?? ''));
-            $classroom   = Classroom::where('name', $rombelNama)->first();
-
-            // Tanggal lahir
-            $tanggalLahir = null;
-            if (!empty($row['tanggal_lahir'])) {
-                try {
-                    $tanggalLahir = \Carbon\Carbon::parse($row['tanggal_lahir'])->format('Y-m-d');
-                } catch (\Exception $e) {
-                    $tanggalLahir = null;
-                }
-            }
-
-            Student::create([
-                'nisn'          => $nisn,
-                'nipd'          => !empty($row['nipd']) ? trim($row['nipd']) : null,
-                'name'          => $nama,
-                'gender'        => strtoupper(trim((string) ($row['jk'] ?? ''))) === 'L' ? 'Male' : 'Female',
-                'place_of_birth'=> !empty($row['tempat_lahir']) ? trim($row['tempat_lahir']) : null,
-                'date_of_birth' => $tanggalLahir,
-                'classroom_id'  => $classroom?->id,
-                'archive_id'    => $activeArchive?->id,
-                'password'      => bcrypt($nisn),
+            User::create([
+                'name'      => $nama,
+                'nip'       => $nip,
+                'kode_guru' => $kodeGuru ?: null,
+                'golongan'  => !empty($row['gol']) ? trim($row['gol']) : null,
+                'email'     => strtolower(str_replace(' ', '.', $nama)) . '@guru.sch.id',
+                'password'  => Hash::make($nip),
             ]);
 
             $this->importedCount++;
