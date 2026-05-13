@@ -2,17 +2,18 @@
 
 namespace App\Imports;
 
-use App\Models\User;
+use App\Models\Archive;
+use App\Models\Student;
+use App\Models\Classroom;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Spatie\Permission\Models\Role;
 
-class UsersImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
+class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 {
     public int $importedCount = 0;
-    public int $skippedCount = 0;
+    public int $skippedCount  = 0;
 
     public function headingRow(): int
     {
@@ -21,63 +22,51 @@ class UsersImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
     public function collection(Collection $rows)
     {
-        $role = Role::firstOrCreate(['name' => 'guru', 'guard_name' => 'web']);
+        $activeArchive = Archive::where('status', 'Active')->first();
 
         foreach ($rows as $row) {
             $nama = trim((string) ($row['nama'] ?? ''));
-            $nip  = trim((string) ($row['nip']  ?? ''));
-            $no   = trim((string) ($row['no']   ?? ''));
+            $nisn = trim((string) ($row['nisn'] ?? ''));
 
-            // Skip jika nama kosong
-            if (empty($nama)) {
+            // Skip jika nama atau NISN kosong
+            if (empty($nama) || empty($nisn)) {
                 $this->skippedCount++;
                 continue;
             }
 
-            // Bersihkan NIP dari spasi
-            $nipClean = preg_replace('/\s+/', '', $nip);
-
-            // Skip jika NIP sudah ada
-            if (!empty($nipClean) && User::where('nip', $nipClean)->exists()) {
+            // Skip jika NISN sudah ada
+            if (Student::where('nisn', $nisn)->exists()) {
                 $this->skippedCount++;
                 continue;
             }
 
-            // Kode guru dari kolom NO, format GR001
-            $kodeGuru = !empty($no) ? $no : null;
+            // Cari kelas berdasarkan nama rombel
+            $rombelNama  = trim((string) ($row['rombel_saat_ini'] ?? ''));
+            $classroom   = Classroom::where('name', $rombelNama)->first();
 
-            // Password default = NIP bersih
-            $password = !empty($nipClean) ? $nipClean : 'password123';
+            // Tanggal lahir
+            $tanggalLahir = null;
+            if (!empty($row['tanggal_lahir'])) {
+                try {
+                    $tanggalLahir = \Carbon\Carbon::parse($row['tanggal_lahir'])->format('Y-m-d');
+                } catch (\Exception $e) {
+                    $tanggalLahir = null;
+                }
+            }
 
-            $user = User::create([
-                'nip'       => $nipClean ?: null,
-                'kode_guru' => $kodeGuru,
-                'gol'       => !empty($row['gol']) ? trim($row['gol']) : null,
-                'name'      => $nama,
-                'email'     => null,
-                'password'  => bcrypt($password),
-                'address'   => null,
+            Student::create([
+                'nisn'          => $nisn,
+                'nipd'          => !empty($row['nipd']) ? trim($row['nipd']) : null,
+                'name'          => $nama,
+                'gender'        => strtoupper(trim((string) ($row['jk'] ?? ''))) === 'L' ? 'Male' : 'Female',
+                'place_of_birth'=> !empty($row['tempat_lahir']) ? trim($row['tempat_lahir']) : null,
+                'date_of_birth' => $tanggalLahir,
+                'classroom_id'  => $classroom?->id,
+                'archive_id'    => $activeArchive?->id,
+                'password'      => bcrypt($nisn),
             ]);
-
-            $user->assignRole($role);
 
             $this->importedCount++;
         }
-    }
-
-    private function generateEmail(string $nama, string $nip): string
-    {
-        $namaBersih = strtolower(preg_replace('/[^a-zA-Z\s]/', '', $nama));
-        $namaDepan  = explode(' ', trim($namaBersih))[0];
-        $email      = $namaDepan . (!empty($nip) ? $nip : rand(100, 999)) . '@guru.sch.id';
-
-        $counter = 1;
-        $baseEmail = $email;
-        while (User::where('email', $email)->exists()) {
-            $email = $baseEmail . $counter;
-            $counter++;
-        }
-
-        return $email;
     }
 }

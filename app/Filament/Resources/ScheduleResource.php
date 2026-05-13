@@ -79,11 +79,13 @@ class ScheduleResource extends Resource
                     ->required(),
 
                 Select::make('subject_id')
-                    ->relationship('subject', 'name')
-                    ->label('Mata Pelajaran')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
+    ->label('Mata Pelajaran')
+    ->options(function () use ($activeArchive) {
+        return \App\Models\Subject::where('archive_id', $activeArchive?->id)
+            ->pluck('name', 'id');
+    })
+    ->searchable()
+    ->required(),
 
                 Select::make('teacher_id')
                     ->relationship('teacher', 'name')

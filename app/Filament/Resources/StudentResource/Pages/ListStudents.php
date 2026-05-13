@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\StudentResource\Pages;
 
 use App\Imports\StudentsImport;
+use App\Models\Archive;
 use App\Models\Classroom;
 use Filament\Actions\CreateAction;
 use Filament\Actions\Action;
@@ -16,6 +17,20 @@ use Maatwebsite\Excel\Facades\Excel;
 class ListStudents extends ListRecords
 {
     protected static string $resource = StudentResource::class;
+
+    public function mount(): void
+    {
+        parent::mount();
+
+        if (!Archive::where('status', 'Active')->exists()) {
+            Notification::make()
+                ->title('Tidak ada arsip aktif')
+                ->body('Silakan tambahkan arsip tahun ajaran terlebih dahulu agar data siswa dapat diatur.')
+                ->danger()
+                ->persistent()
+                ->send();
+        }
+    }
 
     protected function getHeaderActions(): array
     {

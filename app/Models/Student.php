@@ -21,6 +21,7 @@ class Student extends Authenticatable
         'place_of_birth',
         'classroom_id',
         'gender',
+        'archive_id',
         'address',
         'email',
         'password',
@@ -45,5 +46,9 @@ class Student extends Authenticatable
     public function submissions()
     {
         return $this->hasMany(SubmissionAndAssessment::class);
+    }
+    public function archive()
+    {
+        return $this->belongsTo(Archive::class);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Filament\Resources\ScheduleResource\Pages;
 
 use App\Models\Schedule;
 use App\Models\Archive;
-use App\Filament\Actions\ExportScheduleAction;
+
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
@@ -34,7 +34,7 @@ class ListSchedules extends ListRecords
 
         return [
             CreateAction::make(),
-            ExportScheduleAction::make(),
+         
         ];
     }
 

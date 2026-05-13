@@ -31,28 +31,31 @@ class JadwalHariIni extends Widget
         $result = [];
 
         foreach ($schedules as $schedule) {
-            foreach ($schedule->schedule as $slot) {
-                if (strtolower($slot['day']) === strtolower($hariIni)) {
-                    $start = $slot['start'];
-                    $end   = $slot['end'];
+           foreach ($schedule->schedule as $slot) {
+    if (strtolower($slot['day'] ?? '') === strtolower($hariIni)) {
+        $start = $slot['start'] ?? null;
+        $end   = $slot['end']   ?? null;
 
-                    if ($sekarang > $end) {
-                        $status = 'selesai';
-                    } elseif ($sekarang >= $start && $sekarang <= $end) {
-                        $status = 'berlangsung';
-                    } else {
-                        $status = 'mendatang';
-                    }
+        // Skip slot yang tidak punya start/end
+        if (!$start || !$end) continue;
 
-                    $result[] = [
-                        'start'  => $start,
-                        'end'    => $end,
-                        'mapel'  => $schedule->subject->name ?? '-',
-                        'kelas'  => $schedule->classroom->name ?? '-',
-                        'status' => $status,
-                    ];
-                }
-            }
+        if ($sekarang > $end) {
+            $status = 'selesai';
+        } elseif ($sekarang >= $start && $sekarang <= $end) {
+            $status = 'berlangsung';
+        } else {
+            $status = 'mendatang';
+        }
+
+        $result[] = [
+            'start'  => $start,
+            'end'    => $end,
+            'mapel'  => $schedule->subject->name ?? '-',
+            'kelas'  => $schedule->classroom->name ?? '-',
+            'status' => $status,
+        ];
+    }
+}
         }
 
         usort($result, fn($a, $b) => $a['start'] <=> $b['start']);

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Archive;
 use App\Models\Student;
 use Filament\Forms\Form;
 use App\Models\Classroom;
@@ -20,7 +21,6 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\StudentResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StudentResource extends Resource
 {
@@ -78,6 +78,15 @@ class StudentResource extends Resource
                         ->options(Classroom::all()->pluck('name', 'id'))
                         ->searchable()
                         ->placeholder('Pilih kelas')
+                        ->required(),
+
+                    Select::make('archive_id')
+                        ->label('Arsip Tahun Ajaran')
+                        ->options(
+                            Archive::where('status', 'Active')->pluck('name', 'id')
+                        )
+                        ->searchable()
+                        ->placeholder('Pilih Arsip Aktif')
                         ->required(),
 
                     Select::make('gender')
@@ -151,6 +160,12 @@ class StudentResource extends Resource
                     ->badge()
                     ->colors(['primary'])
                     ->sortable(),
+
+                TextColumn::make('archive.name')
+                    ->label('Tahun Ajaran')
+                    ->badge()
+                    ->color('success')
+                    ->sortable(),
             ])
             ->filters([])
             ->actions([
@@ -162,7 +177,19 @@ class StudentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->query(
+                Student::query()->whereHas('archive', function ($query) {
+                    $query->where('status', 'Active');
+                })
+            );
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return Student::query()->whereHas('archive', function ($query) {
+            $query->where('status', 'Active');
+        });
     }
 
     public static function getRelations(): array

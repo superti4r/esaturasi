@@ -36,15 +36,17 @@ class SubjectResource extends Resource
                 Card::make()
                     ->columns(2)
                     ->schema([
-                        TextInput::make('name')
-                            ->label('Nama Mata Pelajaran')
-                            ->required()
-                            ->placeholder('Masukkan nama mata pelajaran')
-                            ->maxLength(255)
-                            ->rule(function ($record) {
-                                return Rule::unique('subject', 'name')->ignore($record?->id);
-                            }),
-
+                       TextInput::make('name')
+    ->label('Nama Mata Pelajaran')
+    ->required()
+    ->placeholder('Masukkan nama mata pelajaran')
+    ->maxLength(255)
+    ->validationAttribute('nama mata pelajaran')
+    ->rule(function ($get, $record) {
+        return Rule::unique('subject', 'name')
+            ->where(fn ($query) => $query->where('archive_id', $get('archive_id')))
+            ->ignore($record?->id);
+    }),
                         Select::make('archive_id')
                             ->label('Arsip Semester')
                             ->options(function () {
