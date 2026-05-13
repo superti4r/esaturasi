@@ -15,6 +15,7 @@ class Student extends Authenticatable
 
     protected $fillable = [
         'nisn',
+        'nipd',
         'name',
         'date_of_birth',
         'place_of_birth',

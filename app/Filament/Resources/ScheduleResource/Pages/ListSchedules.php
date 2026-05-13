@@ -2,27 +2,25 @@
 
 namespace App\Filament\Resources\ScheduleResource\Pages;
 
-use Filament\Actions;
-use App\Models\Archive;
 use App\Models\Schedule;
-use Filament\Actions\Action;
+use App\Models\Archive;
+use App\Filament\Actions\ExportScheduleAction;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\ScheduleResource;
+use Illuminate\Support\Facades\Auth;
 
 class ListSchedules extends ListRecords
 {
     protected static string $resource = ScheduleResource::class;
     protected static string $view = 'custom.schedule-card';
 
-    // ✅ Hilangkan breadcrumb otomatis Filament (penyebab double)
     public function getBreadcrumbs(): array
     {
         return [];
     }
 
-    // ✅ Hilangkan title otomatis Filament (penyebab double)
     public function getTitle(): string|\Illuminate\Contracts\Support\Htmlable
     {
         return '';
@@ -30,14 +28,13 @@ class ListSchedules extends ListRecords
 
     protected function getHeaderActions(): array
     {
+        if (!Auth::user()?->hasRole('Administrator')) {
+            return [];
+        }
+
         return [
             CreateAction::make(),
-            Action::make('export')
-                ->label('Cetak PDF')
-                ->icon('heroicon-o-printer')
-                ->color('success')
-                ->url(route('print.schedules'))
-                ->openUrlInNewTab(),
+            ExportScheduleAction::make(),
         ];
     }
 
@@ -57,12 +54,23 @@ class ListSchedules extends ListRecords
 
     public function getViewData(): array
     {
-        $schedules = Schedule::with(['classroom', 'subject', 'teacher'])->get();
+        $user    = Auth::user();
+        $isAdmin = $user->hasRole('Administrator');
+
+        $query = Schedule::with(['classroom', 'subject', 'teacher'])
+            ->whereHas('archive', fn($q) => $q->where('status', 'Active'));
+
+        if (!$isAdmin) {
+            $query->where('teacher_id', $user->id);
+        }
+
+        $schedules = $query->get();
 
         return [
             'groupedSchedules' => $schedules->groupBy(fn($item) => $item->classroom->name ?? 'Tanpa Kelas'),
             'recordPageUrl'    => fn(Schedule $schedule) => ScheduleResource::getUrl('edit', ['record' => $schedule]),
             'headerActions'    => $this->getHeaderActions(),
+            'isAdmin'          => $isAdmin,
         ];
     }
 }

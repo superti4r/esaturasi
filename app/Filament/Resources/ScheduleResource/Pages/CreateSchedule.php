@@ -13,7 +13,7 @@ class CreateSchedule extends CreateRecord
 {
     protected static string $resource = ScheduleResource::class;
 
-    // ✅ Hilangkan breadcrumb otomatis Filament (penyebab double)
+   
     public function getBreadcrumbs(): array
     {
         return [];
@@ -38,10 +38,9 @@ class CreateSchedule extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         foreach ($data['schedule'] as $item) {
-            if ($item['start'] < '07:00' || $item['end'] > '16:00') {
-                Notification::make()
+if ($item['start'] < '06:50' || $item['end'] > '15:15') {                Notification::make()
                     ->title('Jam tidak valid!')
-                    ->body('Jam jadwal harus antara 07:00 - 16:00.')
+                    ->body('Jam jadwal harus antara 06:50 - 15:15.')
                     ->danger()
                     ->persistent()
                     ->send();
@@ -61,14 +60,14 @@ class CreateSchedule extends CreateRecord
             }
         }
 
-        // ✅ Kirim teacher_id dari form data agar filter guru benar
+        //kirim teacher_id dari form data agar filter guru benar
         $this->validateJadwalBentrok($data['schedule'], null, $data['teacher_id'] ?? null);
         return $data;
     }
 
     protected function validateJadwalBentrok(array $jadwalBaru, ?int $excludeId, ?int $guruId = null): void
     {
-        // ✅ Filter hanya guru yang sama agar tidak false alarm antar guru berbeda
+        // Filter hanya guru yang sama agar tidak false alarm antar guru berbeda
         $allSchedules = Schedule::when($guruId, fn($q) => $q->where('teacher_id', $guruId))
             ->when($excludeId, fn($q) => $q->where('id', '!=', $excludeId))
             ->get();

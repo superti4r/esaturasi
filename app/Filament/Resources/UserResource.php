@@ -26,16 +26,16 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
     protected static ?string $navigationGroup = 'Master Data';
     protected static ?int $navigationSort = 1;
-
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationLabel = 'Pengguna';
     protected static ?string $pluralModelLabel = 'Pengguna';
     protected static ?string $modelLabel = 'Pengguna';
 
     public static function shouldRegisterNavigation(): bool
-{
-    return auth()->user()?->hasRole('admin') ?? false;
-}
+    {
+        return auth()->user()?->hasRole('Administrator') ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -44,9 +44,9 @@ class UserResource extends Resource
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
-                                TextInput::make('nik')
-                                    ->label('NIK')
-                                    ->placeholder('Masukkan NIK anda (Maksimal 16 digit)')
+                                TextInput::make('nip')
+                                    ->label('NIP')
+                                    ->placeholder('Masukkan NIP anda (Maksimal 16 digit)')
                                     ->required()
                                     ->minLength(16)
                                     ->maxLength(16)
@@ -54,9 +54,16 @@ class UserResource extends Resource
                                     ->rule(function ($record) {
                                         return [
                                             'digits:16',
-                                            Rule::unique('users', 'nik')->ignore($record?->id),
+                                            Rule::unique('users', 'nip')->ignore($record?->id),
                                         ];
                                     }),
+
+                                TextInput::make('kode_guru')
+                                    ->label('Kode Guru')
+                                    ->placeholder('Contoh: GR001')
+                                    ->unique(ignoreRecord: true)
+                                    ->maxLength(10)
+                                    ->nullable(),
 
                                 TextInput::make('name')
                                     ->label('Nama')
@@ -64,14 +71,19 @@ class UserResource extends Resource
                                     ->placeholder('Masukkan nama anda')
                                     ->maxLength(255),
 
+                                TextInput::make('gol')
+                                    ->label('Golongan')
+                                    ->placeholder('Contoh: Pembina, IV/a')
+                                    ->nullable(),
+
                                 DatePicker::make('date_of_birth')
                                     ->label('Tanggal Lahir')
-                                    ->required(),
+                                    ->nullable(),
 
                                 TextInput::make('place_of_birth')
                                     ->label('Tempat Lahir')
-                                    ->required()
                                     ->placeholder('Masukkan tempat lahir anda')
+                                    ->nullable()
                                     ->maxLength(255),
 
                                 TextInput::make('email')
@@ -82,27 +94,27 @@ class UserResource extends Resource
                                     ->unique(ignoreRecord: true),
                             ]),
 
-                                Textarea::make('address')
-                                    ->label('Alamat')
-                                    ->required()
-                                    ->placeholder('Masukkan alamat anda saat ini')
-                                    ->columnSpanFull(),
+                        Textarea::make('address')
+                            ->label('Alamat')
+                            ->nullable()
+                            ->placeholder('Masukkan alamat anda saat ini')
+                            ->columnSpanFull(),
 
-                                TextInput::make('password')
-                                    ->label('Password')
-                                    ->password()
-                                    ->required(fn(string $context): bool => $context === 'create')
-                                    ->placeholder('Masukkan password anda (gunakan password yang kuat)')
-                                    ->dehydrateStateUsing(fn(string $state): string => bcrypt($state))
-                                    ->dehydrated(fn(?string $state): bool => filled($state))
-                                    ->columnSpanFull(),
+                        TextInput::make('password')
+                            ->label('Password')
+                            ->password()
+                            ->required(fn(string $context): bool => $context === 'create')
+                            ->placeholder('Masukkan password anda (gunakan password yang kuat)')
+                            ->dehydrateStateUsing(fn(string $state): string => bcrypt($state))
+                            ->dehydrated(fn(?string $state): bool => filled($state))
+                            ->columnSpanFull(),
 
-                                Select::make('roles')
-                                    ->label('Peran')
-                                    ->relationship('roles', 'name')
-                                    ->preload()
-                                    ->columnSpanFull(),
-                    ])
+                        Select::make('roles')
+                            ->label('Peran')
+                            ->relationship('roles', 'name')
+                            ->preload()
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -115,25 +127,33 @@ class UserResource extends Resource
                     ->circular()
                     ->height(50)
                     ->width(50)
-                    ->getStateUsing(fn ($record) => $record->avatar_url ?: null)
-                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . 'background=random'),
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&background=random'),
 
-                TextColumn::make('nik')
-                    ->label('NIK')
+                TextColumn::make('kode_guru')
+                    ->label('Kode Guru')
+                    ->searchable()
+                    ->badge()
+                    ->color('success'),
+
+                TextColumn::make('nip')
+                    ->label('NIP')
                     ->searchable(),
 
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable(),
 
+                TextColumn::make('gol')
+                    ->label('Golongan')
+                    ->searchable(),
+
                 TextColumn::make('roles')
-                    ->label('Izin')
+                    ->label('Role')
                     ->getStateUsing(fn($record) => $record->roles->pluck('name')->implode(', '))
                     ->badge()
                     ->colors(['primary']),
             ])
-            ->filters([
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -147,8 +167,7 @@ class UserResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-        ];
+        return [];
     }
 
     public static function getPages(): array

@@ -10,10 +10,8 @@ use App\Models\Classroom;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rule;
 use Filament\Resources\Resource;
-use Illuminate\Support\Collection;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
-use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -22,7 +20,6 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\StudentResource\Pages;
-use Filament\Forms\Components\Select as FormSelect;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StudentResource extends Resource
@@ -42,18 +39,25 @@ class StudentResource extends Resource
             ->schema([
                 Card::make()->columns(2)->schema([
                     TextInput::make('nisn')
-                    ->label('NISN')
-                    ->placeholder('Masukkan NISN')
-                    ->required()
-                    ->numeric()
-                    ->minLength(10)
-                    ->maxLength(10)
-                    ->rule(function ($record) {
-                        return [
-                            'digits:10',
-                            Rule::unique('student', 'nisn')->ignore($record?->id),
-                        ];
-                    }),
+                        ->label('NISN')
+                        ->placeholder('Masukkan NISN')
+                        ->required()
+                        ->numeric()
+                        ->minLength(10)
+                        ->maxLength(10)
+                        ->rule(function ($record) {
+                            return [
+                                'digits:10',
+                                Rule::unique('student', 'nisn')->ignore($record?->id),
+                            ];
+                        }),
+
+                    TextInput::make('nipd')
+                        ->label('NIPD')
+                        ->placeholder('Contoh: 3046/974.016')
+                        ->unique(ignoreRecord: true)
+                        ->maxLength(20)
+                        ->nullable(),
 
                     TextInput::make('name')
                         ->label('Nama')
@@ -87,30 +91,30 @@ class StudentResource extends Resource
 
                     TextInput::make('address')
                         ->label('Alamat')
-                        ->placeholder('Masukkan alamat')
-                        ->required(),
+                        ->placeholder('Masukkan alamat'),
 
                     TextInput::make('email')
                         ->label('Email')
                         ->email()
                         ->placeholder('Masukkan email')
-                        ->unique(ignoreRecord: true)
-                        ->required(),
+                        ->unique(ignoreRecord: true),
 
                     TextInput::make('password')
                         ->label('Password')
                         ->password()
-                        ->required(fn(string $context): bool => $context === 'create')
-                        ->placeholder('Masukkan password anda (gunakan password yang kuat)')
-                        ->dehydrateStateUsing(fn(string $state): string => bcrypt($state))
-                        ->dehydrated(fn(?string $state): bool => filled($state))
+                        ->placeholder('Kosongkan untuk pakai NISN sebagai password')
+                        ->helperText('Jika dikosongkan, password otomatis menggunakan NISN siswa')
+                        ->dehydrateStateUsing(fn (?string $state, $record): string =>
+                            filled($state) ? bcrypt($state) : bcrypt($record?->nisn ?? $state)
+                        )
+                        ->dehydrated(fn (?string $state): bool => true)
                         ->columnSpanFull(),
 
                     FileUpload::make('avatar_url')
                         ->label('Avatar')
                         ->image()
                         ->imageEditor()
-                        ->imageCropAspectRatio(fn() => '1:1')
+                        ->imageCropAspectRatio(fn () => '1:1')
                         ->directory('student')
                         ->columnSpanFull()
                         ->nullable(),
@@ -134,6 +138,10 @@ class StudentResource extends Resource
                     ->label('NISN')
                     ->searchable(),
 
+                TextColumn::make('nipd')
+                    ->label('NIPD')
+                    ->searchable(),
+
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable(),
@@ -144,8 +152,7 @@ class StudentResource extends Resource
                     ->colors(['primary'])
                     ->sortable(),
             ])
-            ->filters([
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
@@ -154,41 +161,13 @@ class StudentResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-
-                    BulkAction::make('promote')
-                        ->label('Naik Kelas')
-                        ->form([
-                            FormSelect::make('new_classroom_id')
-                                ->label('Pilih Kelas Baru')
-                                ->options(Classroom::all()->pluck('name', 'id'))
-                                ->required(),
-                        ])
-                        ->action(function (Collection $records, array $data) {
-                            foreach ($records as $student) {
-                                $student->update([
-                                    'classroom_id' => $data['new_classroom_id'],
-                                ]);
-                            }
-
-                            $classroomName = Classroom::find($data['new_classroom_id'])?->name ?? 'kelas baru';
-
-                            Notification::make()
-                                ->title('Sukses')
-                                ->body("Siswa berhasil dipindahkan ke {$classroomName}.")
-                                ->success()
-                                ->send();
-                        })
-                        ->requiresConfirmation()
-                        ->icon('heroicon-o-arrow-up')
-                        ->color('success'),
                 ]),
             ]);
     }
 
     public static function getRelations(): array
     {
-        return [
-        ];
+        return [];
     }
 
     public static function getPages(): array

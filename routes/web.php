@@ -5,6 +5,7 @@ use App\Http\Controllers\SchedulePrinting;
 use App\Http\Controllers\StudentPrinting;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PdfTestController;
+use App\Http\Controllers\PrintScheduleController;
 
 
 Route::get('/', function () {
@@ -20,3 +21,6 @@ Route::get('/pdf/rekap-posttest', [PdfTestController::class, 'cetakSemuaPosttest
 Route::get('/pdf/rekap-test/siswa/{studentId}', [PdfTestController::class, 'cetakSiswa'])->name('pdf.rekap-siswa');
 Route::get('/pdf/rekap-posttest/siswa/{studentId}', [PdfTestController::class, 'cetakSiswaPosttest'])->name('pdf.rekap-siswa-posttest');
 
+Route::get('/schedules/print', [PrintScheduleController::class, 'print'])
+    ->name('print.schedules')
+    ->middleware(['auth']);

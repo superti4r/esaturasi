@@ -1,4 +1,17 @@
 <x-filament-panels::page>
+
+    {{-- ✅ Tombol Tambah Jadwal & Cetak PDF hanya untuk Administrator --}}
+    @if ($isAdmin)
+        <div class="flex justify-end gap-3 mb-4">
+            <a href="{{ \App\Filament\Resources\ScheduleResource::getUrl('create') }}"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg shadow transition">
+                <x-heroicon-o-plus class="w-4 h-4" />
+                Tambah Jadwal
+            </a>
+           
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse ($groupedSchedules as $className => $schedules)
             <x-filament::card class="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-md">
@@ -60,13 +73,16 @@
                                 @endforeach
                             </div>
 
-                            <div class="flex justify-end mt-3">
-                                <a href="{{ $recordPageUrl($first) }}"
-                                    class="text-xs text-blue-600 hover:underline flex items-center gap-1 font-bold">
-                                    <x-heroicon-o-pencil class="w-4 h-4 text-blue-600" />
-                                    Kelola
-                                </a>
-                            </div>
+                            {{-- ✅ Tombol Kelola hanya untuk Administrator --}}
+                            @if ($isAdmin)
+                                <div class="flex justify-end mt-3">
+                                    <a href="{{ $recordPageUrl($first) }}"
+                                        class="text-xs text-blue-600 hover:underline flex items-center gap-1 font-bold">
+                                        <x-heroicon-o-pencil class="w-4 h-4 text-blue-600" />
+                                        Kelola
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>
