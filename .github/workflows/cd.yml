@@ -2,7 +2,7 @@ name: CD
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "staging"]
 
 permissions:
   contents: read
@@ -39,6 +39,7 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     environment: staging
+    if: github.ref == 'refs/heads/staging'
     steps:
       - uses: actions/checkout@v4
 
@@ -68,8 +69,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            mkdir -p ~/apps/esaturasi
-            cd ~/apps/esaturasi
+            mkdir -p ~/apps/esaturasi-staging
+            cd ~/apps/esaturasi-staging
             # App image - keep in env file for compose
             echo "APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" > .env
             echo "APP_URL=${{ secrets.APP_URL }}" >> .env
@@ -84,7 +85,7 @@ jobs:
             ${COMPOSE_STAGING}
             YML
 
-            docker compose -f compose.yml pull
+            docker compose -f compose.yml pull || true
             docker compose -f compose.yml up -d
 
     env:
@@ -189,8 +190,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            mkdir -p ~/apps/esaturasi
-            cd ~/apps/esaturasi
+            mkdir -p ~/apps/esaturasi-prod
+            cd ~/apps/esaturasi-prod
             echo "APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" > .env
             echo "APP_URL=${{ secrets.APP_URL }}" >> .env
             echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
@@ -204,7 +205,7 @@ jobs:
             ${COMPOSE_PROD}
             YML
 
-            docker compose -f compose.yml pull
+            docker compose -f compose.yml pull || true
             docker compose -f compose.yml up -d
 
     env:
