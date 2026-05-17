@@ -1,14 +1,11 @@
 <?php
-
 namespace App\Http\Controllers\API;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\SubmissionAndAssessment;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-
 
 class SubmissiontaskController extends Controller
 {
@@ -19,43 +16,65 @@ class SubmissiontaskController extends Controller
 
         $request->validate([
             'task_id' => 'required|integer|exists:task,id',
-            'file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'file'    => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
         ]);
 
         try {
             if ($request->hasFile('file')) {
-                $file = $request->file('file');
+                $file      = $request->file('file');
                 $extension = $file->getClientOriginalExtension();
-
                 $originalName = $file->getClientOriginalName();
-                $hashName = hash('sha256', $originalName . time() . $student->id) . '.' . $extension;
-
+                $hashName  = hash('sha256', $originalName . time() . $student->id) . '.' . $extension;
                 $file->storeAs('pengumpulan_tugas', $hashName, 'public');
-
                 $file_path = 'pengumpulan_tugas/' . $hashName;
             } else {
                 return response()->json(['message' => 'File tidak ditemukan'], 400);
             }
 
+            // Cek apakah sudah ada submission sebelumnya
+            $existing = SubmissionAndAssessment::where('task_id', $request->task_id)
+                ->where('student_id', $student->id)
+                ->first();
+
+            if ($existing) {
+                // Hapus file lama dari storage
+                if ($existing->file_path && Storage::disk('public')->exists($existing->file_path)) {
+                    Storage::disk('public')->delete($existing->file_path);
+                    Log::info("File lama dihapus: {$existing->file_path}");
+                }
+
+                // Update data yang sudah ada
+                $existing->update([
+                    'file_path' => $file_path,
+                    'status'    => 'submitted',
+                ]);
+
+                return response()->json([
+                    'message' => 'Tugas berhasil diperbarui',
+                    'data'    => $existing,
+                ], 200);
+            }
+
+            // Buat submission baru jika belum pernah mengumpulkan
             $submission = SubmissionAndAssessment::create([
-                'task_id' => $request->task_id,
+                'task_id'    => $request->task_id,
                 'student_id' => $student->id,
-                'file_path' => $file_path,
+                'file_path'  => $file_path,
                 'assignment' => null,
-                'status' => 'submitted'
+                'status'     => 'submitted',
             ]);
 
             return response()->json([
                 'message' => 'Tugas berhasil dikumpulkan',
-                'data' => $submission,
+                'data'    => $submission,
             ], 201);
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
     }
-
 
     public function getSubmissionStatus($taskId)
     {
@@ -68,7 +87,7 @@ class SubmissiontaskController extends Controller
         if (!$submission) {
             return response()->json([
                 'message' => 'Belum ada pengumpulan untuk tugas ini',
-                'status' => 'not_submitted'
+                'status'  => 'not_submitted'
             ], 404);
         }
 
@@ -76,14 +95,14 @@ class SubmissiontaskController extends Controller
 
         return response()->json([
             'message' => 'Data pengumpulan tugas',
-            'data' => [
-                'id' => $submission->id,
-                'task_id' => $submission->task_id,
+            'data'    => [
+                'id'         => $submission->id,
+                'task_id'    => $submission->task_id,
                 'student_id' => $submission->student_id,
-                'file_path' => $submission->file_path,
-                'status' => $submission->status,
+                'file_path'  => $submission->file_path,
+                'status'     => $submission->status,
                 'created_at' => $submission->created_at,
-                'task_title' => $task ? $task->title : null
+                'task_title' => $task ? $task->title : null,
             ]
         ]);
     }
