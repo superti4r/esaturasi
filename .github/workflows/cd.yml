@@ -28,7 +28,10 @@ jobs:
             echo "ENV_STAGING_FILE secret is missing (Environment: staging)." >&2
             exit 1
           fi
-          printf '%s' '${{ secrets.ENV_STAGING_FILE }}' > .env.staging
+          cat > .env.staging << 'EOF'
+          ${{ secrets.ENV_STAGING_FILE }}
+          EOF
+          test -s .env.staging
           ls -la .env.staging
 
       - name: Login to GHCR

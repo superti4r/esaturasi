@@ -10,6 +10,7 @@ storage/framework/views
 vendor
 .env
 .env.*
+!.env.staging
 Dockerfile*
 docker-compose*.yml
 compose.*.yml
