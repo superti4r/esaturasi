@@ -21,12 +21,18 @@ class RekapNilaiResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->hasRole('guru') ?? false;
+        $user = auth()->user();
+
+        if ($user?->hasRole(config('filament-shield.super_admin.name'))) {
+            return true;
+        }
+
+        return $user?->can('view_any_rekap::nilai') ?? false;
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->hasRole('guru') ?? false;
+        return static::canAccess();
     }
 
     public static function canCreate(): bool

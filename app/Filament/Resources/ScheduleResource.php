@@ -28,26 +28,40 @@ class ScheduleResource extends Resource
     protected static ?string $pluralModelLabel = 'Jadwal';
     protected static ?string $modelLabel = 'Jadwal';
 
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+
+        if ($user?->hasRole(config('filament-shield.super_admin.name'))) {
+            return true;
+        }
+
+        return (
+            ($user?->can('view_any_schedule') ?? false)
+            || ($user?->can('view_schedule') ?? false)
+        );
+    }
+
     // ✅ Hanya Administrator dan guru yang lihat menu ini
     public static function shouldRegisterNavigation(): bool
     {
-        return Auth::user()?->hasAnyRole(['Administrator', 'guru']);
+        return static::canAccess();
     }
 
     // ✅ Hanya Administrator yang bisa create/edit/delete
     public static function canCreate(): bool
     {
-        return Auth::user()?->hasRole('Administrator') ?? false;
+        return Auth::user()?->can('create_schedule') ?? false;
     }
 
     public static function canEdit($record): bool
     {
-        return Auth::user()?->hasRole('Administrator') ?? false;
+        return Auth::user()?->can('update_schedule') ?? false;
     }
 
     public static function canDelete($record): bool
     {
-        return Auth::user()?->hasRole('Administrator') ?? false;
+        return Auth::user()?->can('delete_schedule') ?? false;
     }
 
     public static function form(Form $form): Form

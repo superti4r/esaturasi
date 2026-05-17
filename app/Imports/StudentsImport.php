@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Archive;
 use App\Models\Student;
 use App\Models\Classroom;
+use App\Models\Major;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -21,14 +22,6 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithStartRow, Skip
     {
         $this->activeArchiveId = Archive::where('status', 'Active')->value('id');
     }
-
-    private array $majorMap = [
-        'RPL'  => 1,
-        'TITL' => 2,
-        'TKR'  => 3,
-        'MM'   => 4,
-        'DKV'  => 4,
-    ];
 
     public function headingRow(): int
     {
@@ -64,7 +57,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithStartRow, Skip
                 $classroom = Classroom::where('name', $rombelName)->first();
 
                 if (!$classroom) {
-                    $majorId = $this->getMajorId($rombelName);
+                    $majorId = $this->resolveMajorIdFromRombel($rombelName);
                     $classroom = Classroom::create([
                         'name'     => $rombelName,
                         'major_id' => $majorId,
@@ -95,14 +88,33 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithStartRow, Skip
         }
     }
 
-    private function getMajorId(string $rombelName): int
+    private function resolveMajorIdFromRombel(string $rombelName): int
     {
-        foreach ($this->majorMap as $keyword => $majorId) {
-            if (str_contains(strtoupper($rombelName), $keyword)) {
-                return $majorId;
+        // Contoh rombel: "XI TKR 1", "X DKV 1".
+        $upper = strtoupper(trim($rombelName));
+
+        // Ambil token huruf terakhir yang biasanya kode jurusan
+        // (X / XI / XII) (TKR/TITL/RPL/DKV/MM) (1/2/3)
+        $tokens = preg_split('/\s+/', $upper) ?: [];
+        $majorCode = null;
+
+        foreach ($tokens as $token) {
+            if (preg_match('/^[A-Z]{2,5}$/', $token)) {
+                $majorCode = $token;
+                break;
             }
         }
-        return 1;
+
+        $majorCode = $majorCode ? trim($majorCode) : null;
+
+        // Tidak hardcode id: cari berdasarkan major_code.
+        // Kalau tidak ada, buat record Major baru otomatis.
+        $major = Major::firstOrCreate(
+            ['major_code' => $majorCode ?: 'UNKNOWN'],
+            ['name' => $majorCode ?: 'UNKNOWN']
+        );
+
+        return (int) $major->id;
     }
 
     private function parseDate($value): ?string
