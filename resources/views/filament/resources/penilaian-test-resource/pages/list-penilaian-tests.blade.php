@@ -120,7 +120,7 @@
         <div style="display:flex;gap:4px;background:#f3f4f6;border-radius:12px;padding:4px;margin-bottom:24px;width:fit-content;">
             @foreach (['pretest' => 'Pretest', 'tugas' => 'Tugas', 'posttest' => 'Posttest'] as $tabKey => $tabLabel)
                 <button
-                    wire:click="setActiveTab('{{ $tabKey }}')"
+                   wire:click="setTab('{{ $tabKey }}')"
                     style="padding:8px 20px;border-radius:9px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .15s;
                         background:{{ $activeTab === $tabKey ? '#fff' : 'transparent' }};
                         color:{{ $activeTab === $tabKey ? '#1f2937' : '#9ca3af' }};

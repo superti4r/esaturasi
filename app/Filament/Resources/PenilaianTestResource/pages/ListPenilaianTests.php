@@ -435,22 +435,4 @@ class ListPenilaianTests extends Page
     // HEADER ACTIONS
     // -------------------------------------------------------
 
-    public function getHeaderActions(): array
-    {
-        return [
-            Action::make('cetak_pdf')
-                ->label('Cetak PDF')
-                ->icon('heroicon-o-printer')
-                ->color('primary')
-                ->visible(fn () => $this->level === 'detail')
-                ->action(function () {
-                    $url = match ($this->activeTab) {
-                        'tugas'    => route('print.assessment'),
-                        'posttest' => route('pdf.rekap-posttest', ['posttest_id' => $this->selectedId]),
-                        default    => route('pdf.rekap-test', ['pretest_id' => $this->selectedId]),
-                    };
-                    $this->redirect($url, navigate: false);
-                }),
-        ];
-    }
 }

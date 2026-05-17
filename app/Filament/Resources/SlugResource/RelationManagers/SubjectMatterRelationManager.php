@@ -68,7 +68,7 @@ class SubjectMatterRelationManager extends RelationManager
                                     </span>';
                         }
                 
-                        $url = asset('storage/' . $state);
+                       $url = route('download.materi', basename($state));
                         $name = basename($state);
                 
                         return '<a href="' . $url . '" target="_blank" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 hover:underline">
@@ -87,7 +87,8 @@ class SubjectMatterRelationManager extends RelationManager
                     ->label('Download')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->visible(fn ($record) => !empty($record->file_path))
-                    ->url(fn ($record) => asset('storage/' . $record->file_path))
+                    ->url(fn ($record) => route('download.materi', basename($record->file_path)))
+->openUrlInNewTab(false)
                     ->openUrlInNewTab()
                     ->color('secondary'),
                 Tables\Actions\EditAction::make(),

@@ -75,8 +75,8 @@ class TaskRelationManager extends RelationManager
                                         Tidak ada file
                                     </span>';
                         }
-                
-                        $url = asset('storage/' . $state);
+                $url = route('download.tugas', basename($state));
+                        
                         $name = basename($state);
                 
                         return '<a href="' . $url . '" target="_blank" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 hover:underline">
@@ -98,7 +98,8 @@ class TaskRelationManager extends RelationManager
                     ->label('Download')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->visible(fn ($record) => !empty($record->file_path))
-                    ->url(fn ($record) => asset('storage/' . $record->file_path))
+                   ->url(fn ($record) => route('download.tugas', basename($record->file_path)))
+                    ->openUrlInNewTab(false)
                     ->openUrlInNewTab()
                     ->color('secondary'),
                 Tables\Actions\EditAction::make(),
