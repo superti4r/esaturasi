@@ -20,12 +20,12 @@ class PenilaianTestResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->hasRole('guru') ?? false;
+        return auth()->user()?->can('view_any_penilaian::test') ?? false;
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->hasRole('guru') ?? false;
+        return auth()->user()?->can('view_any_penilaian::test') ?? false;
     }
 
     public static function form(Form $form): Form

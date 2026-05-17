@@ -33,7 +33,19 @@ class UserResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->hasRole('Administrator') ?? false;
+        $user = auth()->user();
+
+        // Allow Filament Shield super admin to always see this resource.
+        if ($user?->hasRole(config('filament-shield.super_admin.name'))) {
+            return true;
+        }
+
+        return $user?->can('view_any_user') ?? false;
+    }
+
+    public static function canAccess(): bool
+    {
+        return static::shouldRegisterNavigation();
     }
 
     public static function form(Form $form): Form

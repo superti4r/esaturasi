@@ -3,7 +3,7 @@
 return [
     'shield_resource' => [
         'should_register_navigation' => true,
-        'slug' => 'permissions',
+        'slug' => 'shield/roles',
         'navigation_sort' => -1,
         'navigation_badge' => true,
         'navigation_group' => true,
@@ -22,9 +22,9 @@ return [
 
     'super_admin' => [
         'enabled' => true,
-        'name' => 'Administrator',
+        'name' => 'super_admin',
         'define_via_gate' => false,
-        'intercept_gate' => 'before',
+        'intercept_gate' => 'before', // after
     ],
 
     'panel_user' => [
