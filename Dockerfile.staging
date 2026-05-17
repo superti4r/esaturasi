@@ -58,8 +58,11 @@ ENV APP_ENV=production \
     COMPOSER_MEMORY_LIMIT=-1
 
 # Use --ignore-platform-reqs so build doesn't fail on optional ext mismatches.
-RUN composer install --no-interaction --prefer-dist --ignore-platform-reqs \
+RUN composer install --no-interaction --prefer-dist --ignore-platform-reqs --no-scripts \
   && rm -rf /root/.composer/cache
+
+RUN mkdir -p storage bootstrap/cache \
+  && php artisan package:discover --ansi || true
 
 RUN php artisan config:cache \
   && php artisan route:cache \
