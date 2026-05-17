@@ -30,6 +30,15 @@ su-exec www-data php artisan config:cache || true
 su-exec www-data php artisan route:cache || true
 su-exec www-data php artisan view:cache || true
 
+# If vendor autoload optimized file missing, run composer scripts and artisan discovery
+if [ -f vendor/autoload.php ]; then
+  echo "[entrypoint] vendor exists, ensuring autoload & discovery"
+  su-exec www-data composer dump-autoload --optimize || true
+  su-exec www-data php artisan package:discover --ansi || true
+  # filament upgrade may require interactive; run safe upgrade if available
+  su-exec www-data php artisan filament:upgrade || true
+fi
+
 # Migrate automatically for staging; for production you may want to run as a job.
 if [[ "${RUN_MIGRATIONS:-false}" == "true" ]]; then
   echo "[entrypoint] Running migrations..."
