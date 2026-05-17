@@ -16,11 +16,20 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - uses: actions/checkout@v4
 
       - name: Create .env.staging from secret
-        run: echo '${{ secrets.ENV_STAGING_FILE }}' > .env.staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${{ secrets.ENV_STAGING_FILE }}" ]; then
+            echo "ENV_STAGING_FILE secret is missing (Environment: staging)." >&2
+            exit 1
+          fi
+          printf '%s' '${{ secrets.ENV_STAGING_FILE }}' > .env.staging
+          ls -la .env.staging
 
       - name: Login to GHCR
         uses: docker/login-action@v3
