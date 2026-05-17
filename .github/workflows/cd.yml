@@ -31,6 +31,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          progress: plain
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:staging
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
@@ -49,29 +50,59 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            mkdir -p ~/apps/esaturasi-staging
+            mkdir -p ~/apps/esaturasi-staging/docker/nginx
+            mkdir -p ~/apps/esaturasi-staging/storage ~/apps/esaturasi-staging/bootstrap/cache
             cd ~/apps/esaturasi-staging
-            # clone if needed
-            if [ ! -d .git ]; then
-              git clone https://github.com/${{ github.repository }} .
-            fi
-            git fetch --all
-            git checkout staging
-            git reset --hard origin/staging
 
-            # write runtime .env with secrets
-            echo "APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" > .env
-            echo "APP_URL=${{ secrets.APP_URL }}" >> .env
-            echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-            echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
-            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env
-            echo "GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}" >> .env
+            # write runtime .env with secrets (DB is expected to be external)
+            cat > .env << 'ENV'
+            APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            APP_ENV=staging
+            APP_DEBUG=false
+            APP_URL=${{ secrets.APP_URL }}
+            APP_KEY=${{ secrets.APP_KEY }}
 
-            # create a minimal compose that uses pushed image
+            DB_CONNECTION=mysql
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_DATABASE=${{ secrets.DB_DATABASE }}
+            DB_USERNAME=${{ secrets.DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            ENV
+
+            # write minimal nginx config for PHP-FPM
+            cat > docker/nginx/default.conf << 'NGINX'
+            server {
+                listen 80;
+                server_name _;
+                root /var/www/html/public;
+                index index.php index.html;
+                client_max_body_size 50m;
+                location / {
+                    try_files $uri $uri/ /index.php?$query_string;
+                }
+                location ~ \.php$ {
+                    include fastcgi_params;
+                    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                    fastcgi_param PATH_INFO $fastcgi_path_info;
+                    fastcgi_index index.php;
+                    fastcgi_pass app:9000;
+                }
+            }
+            NGINX
+
+            # create minimal docker compose using the pushed image and external DB
             cat > compose.yml << 'YML'
             services:
+              app:
+                image: ${APP_IMAGE}
+                env_file: .env
+                volumes:
+                  - ./storage:/var/www/html/storage
+                  - ./bootstrap/cache:/var/www/html/bootstrap/cache
+                networks:
+                  - web
+
               nginx:
                 image: nginx:1.27-alpine
                 depends_on:
@@ -83,78 +114,12 @@ jobs:
                 networks:
                   - web
 
-              app:
-                image: ${APP_IMAGE}
-                environment:
-                  APP_ENV: staging
-                  APP_DEBUG: "false"
-                  APP_URL: ${APP_URL}
-                  APP_KEY: ${APP_KEY}
-                  DB_CONNECTION: mysql
-                  DB_HOST: mysql
-                  DB_PORT: 3306
-                  DB_DATABASE: ${DB_DATABASE}
-                  DB_USERNAME: ${DB_USERNAME}
-                  DB_PASSWORD: ${DB_PASSWORD}
-                  REDIS_HOST: redis
-                  REDIS_PORT: 6379
-                  CACHE_STORE: database
-                  SESSION_DRIVER: database
-                  QUEUE_CONNECTION: sync
-                  RUN_MIGRATIONS: "true"
-                depends_on:
-                  - mysql
-                  - redis
-                networks:
-                  - web
-                  - internal
-
-              mysql:
-                image: mysql:8.4
-                command: ["--default-authentication-plugin=mysql_native_password"]
-                environment:
-                  MYSQL_DATABASE: ${DB_DATABASE}
-                  MYSQL_USER: ${DB_USERNAME}
-                  MYSQL_PASSWORD: ${DB_PASSWORD}
-                  MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-                volumes:
-                  - mysql_data:/var/lib/mysql
-                networks:
-                  - internal
-
-              redis:
-                image: redis:7-alpine
-                networks:
-                  - internal
-
-              prometheus:
-                image: prom/prometheus:v2.55.1
-                volumes:
-                  - ./docker/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-                ports:
-                  - "9090:9090"
-                networks:
-                  - internal
-
-              grafana:
-                image: grafana/grafana:11.2.2
-                environment:
-                  GF_SECURITY_ADMIN_USER: admin
-                  GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
-                ports:
-                  - "3000:3000"
-                volumes:
-                  - grafana_data:/var/lib/grafana
-                networks:
-                  - internal
-
             networks:
               web:
-              internal:
 
             volumes:
-              mysql_data:
-              grafana_data:
+              storage:
+              bootstrap_cache:
             YML
 
             docker compose -f compose.yml pull || true

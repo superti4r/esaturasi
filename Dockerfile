@@ -27,7 +27,8 @@ WORKDIR /app
 
 # Install system dependencies required by some PHP extensions and composer
 RUN apk add --no-cache --virtual .build-deps \
-    $PHPIZE_DEPS \
+  $PHPIZE_DEPS \
+  build-base \
     icu-dev \
     libzip-dev \
     oniguruma-dev \
@@ -39,11 +40,14 @@ RUN apk add --no-cache --virtual .build-deps \
     git \
     curl \
   && docker-php-ext-configure gd --with-freetype --with-jpeg \
-  && docker-php-ext-install -j$(nproc) pdo_mysql mbstring zip intl gd opcache \
+  && docker-php-ext-install -j$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1) pdo_mysql mbstring zip intl gd opcache \
   && pecl install redis || true \
   && docker-php-ext-enable redis || true \
   && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
   && apk del .build-deps || true
+
+# Debug: list installed PHP modules
+RUN php -m || true
 
 COPY composer.json composer.lock ./
 
@@ -80,6 +84,7 @@ RUN apk add --no-cache \
   && docker-php-ext-configure gd --with-freetype --with-jpeg \
   && docker-php-ext-install -j$(nproc) pdo_mysql mbstring zip intl gd opcache \
   && rm -rf /var/cache/apk/*
+RUN php -m || true
 
 # Install Redis extension
 RUN apk add --no-cache $PHPIZE_DEPS \
