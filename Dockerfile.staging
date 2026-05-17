@@ -89,4 +89,6 @@ EXPOSE 8000
 USER www-data
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=8000", "--workers=8", "--max-requests=10000"]
+
+# Run FrankenPHP directly (Octane is not included in this project by default)
+CMD ["frankenphp", "run", "--listen=0.0.0.0:8000", "--root=/app/public"]
