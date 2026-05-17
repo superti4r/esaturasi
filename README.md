@@ -16,6 +16,78 @@
 
 <h2>🛠️ Langkah Installasi</h2>
 
+## Menjalankan dengan Docker (disarankan)
+
+Repo ini sudah dilengkapi setup Docker terpisah untuk **staging** dan **production** termasuk Nginx, PHP-FPM (Laravel), MySQL, Redis, Prometheus, dan Grafana.
+
+### Prasyarat
+
+* Docker Engine + Docker Compose v2
+
+### Staging (lokal)
+
+1. Salin file env lokal untuk docker.
+
+> Catatan: untuk lokal/staging kamu boleh menyimpan env di file lokal. Untuk CI/CD dan server production, **jangan commit `.env`** dan gunakan GitHub Secrets (lihat bagian CI/CD).
+
+```bash
+cp .env.example .env
+```
+
+2. Isi minimal variabel berikut di `.env`:
+
+* `APP_KEY` (gunakan `php artisan key:generate --show` sekali)
+* `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, `DB_ROOT_PASSWORD`
+* `APP_URL` (default: `http://localhost:8080`)
+* `GRAFANA_ADMIN_PASSWORD`
+
+3. Jalankan stack staging:
+
+```bash
+docker compose -f compose.staging.yml up -d --build
+```
+
+4. Akses aplikasi:
+
+* App: `http://localhost:8080`
+* Prometheus: `http://localhost:9090`
+* Grafana: `http://localhost:3000` (user: `admin`, password: dari `GRAFANA_ADMIN_PASSWORD`)
+
+### Production
+
+Untuk production, image aplikasi dibuild dan dipush ke GHCR lewat GitHub Actions, lalu server menarik image tersebut.
+
+File `compose.production.yml` mengharapkan variabel berikut tersedia di server (biasanya diletakkan di `~/apps/esaturasi/.env`):
+
+* `APP_IMAGE` (contoh: `ghcr.io/<owner>/<repo>:<sha>`)
+* `APP_URL`, `APP_KEY`
+* `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, `DB_ROOT_PASSWORD`
+* `GRAFANA_ADMIN_PASSWORD`
+
+Jalankan di server:
+
+```bash
+docker compose -f compose.production.yml up -d
+```
+
+## CI/CD (GitHub Actions)
+
+Workflow:
+
+* `CI`: `.github/workflows/ci.yml` menjalankan test Laravel.
+* `CD`: `.github/workflows/cd.yml` build & push image ke **GHCR**, lalu deploy ke **staging** dan **production** menggunakan **GitHub Environments** + **Secrets**.
+
+### Secrets yang dibutuhkan
+
+Buat **GitHub Environments**: `staging` dan `production`, lalu isi secrets berikut untuk masing-masing environment:
+
+* `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SSH_PORT`
+* `APP_URL`, `APP_KEY`
+* `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, `DB_ROOT_PASSWORD`
+* `GRAFANA_ADMIN_PASSWORD`
+
+> `.env` untuk server dibuat otomatis saat deploy dari secret (tidak disimpan di repository).
+
 <p>1. Copy .env</p>
 
 ```

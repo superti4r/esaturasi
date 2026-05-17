@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  # Nginx metrics via stub_status isn't enabled by default in this config.
+  # If you add an exporter later, add it here.
+
+  # MySQL exporter can be added later too.
+
+  # Basic container-level metrics require cAdvisor/node_exporter.
+  # Add them if you need richer dashboards.

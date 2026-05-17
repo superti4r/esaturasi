@@ -1,36 +1,85 @@
-# STAGE 1: Build PHP Dependencies
-FROM php:8.4-fpm-alpine AS builder
+# syntax=docker/dockerfile:1.7
 
+# --- Node build stage (Vite assets) ---
+FROM node:20-alpine AS node-build
 WORKDIR /app
 
-# Install system dependencies & Composer
-RUN apk add --no-cache curl git unzip libpng-dev libjpeg-turbo-dev freetype-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql gd \
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+RUN \
+  if [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable && pnpm i --frozen-lockfile; \
+  elif [ -f yarn.lock ]; then yarn install --frozen-lockfile; \
+  else npm i; fi
 
-# Copy project files
-COPY . .
+COPY resources ./resources
+COPY vite.config.js ./
+COPY public ./public
 
-# Run composer install untuk production
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Some Laravel Vite setups read version from composer.json; safe to include
+COPY composer.json ./
 
-# ==========================================
-# STAGE 2: Final Production Image (Poin 10)
-# ==========================================
+RUN npm run build
+
+
+# --- PHP build stage (vendor) ---
+FROM composer:2 AS php-vendor
+WORKDIR /app
+
+COPY composer.json composer.lock ./
+RUN composer install \
+  --no-dev \
+  --prefer-dist \
+  --no-interaction \
+  --no-progress \
+  --optimize-autoloader
+
+
+# --- Runtime stage (php-fpm) ---
 FROM php:8.4-fpm-alpine
+
+# System deps
+RUN apk add --no-cache \
+    bash \
+    curl \
+    icu-dev \
+    libzip-dev \
+    oniguruma-dev \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    zip \
+    unzip \
+    mysql-client \
+    su-exec \
+  && docker-php-ext-configure gd --with-freetype --with-jpeg \
+  && docker-php-ext-install -j$(nproc) pdo_mysql mbstring zip intl gd opcache \
+  && rm -rf /var/cache/apk/*
+
+# Install Redis extension
+RUN apk add --no-cache $PHPIZE_DEPS \
+  && pecl install redis \
+  && docker-php-ext-enable redis \
+  && apk del --no-network $PHPIZE_DEPS
+
+# PHP settings
+COPY docker/php/conf.d /usr/local/etc/php/conf.d
 
 WORKDIR /var/www/html
 
-# Salin ekstensi yang diperlukan saja dari alpine base
-RUN docker-php-ext-install pdo_mysql
+# App sources
+COPY --chown=www-data:www-data . .
 
-# Salin HANYA hasil akhir build dari STAGE 1 (Poin 16)
-COPY --from=builder /app /var/www/html
+# Bring in vendor + built assets
+COPY --from=php-vendor /app/vendor ./vendor
+COPY --from=node-build /app/public/build ./public/build
 
-# Set ownership dan permission yang aman untuk Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Laravel writable dirs
+RUN mkdir -p storage bootstrap/cache \
+  && chown -R www-data:www-data storage bootstrap/cache
+
+COPY docker/php/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 9000
-
-CMD ["php-fpm"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["php-fpm", "-F"]
