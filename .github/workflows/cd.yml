@@ -1,8 +1,8 @@
-name: CD
+name: Staging Deploy
 
 on:
   push:
-    branches: ["main", "staging"]
+    branches: ["staging"]
 
 permissions:
   contents: read
@@ -25,42 +25,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:staging
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-staging:
     needs: build-and-push
     runs-on: ubuntu-latest
     environment: staging
-    if: github.ref == 'refs/heads/staging'
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Render .env for staging (from GitHub Secrets)
-        run: |
-          cat > .env << 'EOF'
-          APP_NAME=esaturasi
-          APP_ENV=staging
-          APP_DEBUG=false
-          APP_URL=${{ secrets.APP_URL }}
-          APP_KEY=${{ secrets.APP_KEY }}
-
-          DB_CONNECTION=mysql
-          DB_HOST=mysql
-          DB_PORT=3306
-          DB_DATABASE=${{ secrets.DB_DATABASE }}
-          DB_USERNAME=${{ secrets.DB_USERNAME }}
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          EOF
-
-      - name: Deploy via SSH (docker compose up)
+      - name: Deploy via SSH (write env & run docker compose)
         uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -71,7 +51,15 @@ jobs:
             set -e
             mkdir -p ~/apps/esaturasi-staging
             cd ~/apps/esaturasi-staging
-            # App image - keep in env file for compose
+            # clone if needed
+            if [ ! -d .git ]; then
+              git clone https://github.com/${{ github.repository }} .
+            fi
+            git fetch --all
+            git checkout staging
+            git reset --hard origin/staging
+
+            # write runtime .env with secrets
             echo "APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" > .env
             echo "APP_URL=${{ secrets.APP_URL }}" >> .env
             echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
@@ -81,216 +69,94 @@ jobs:
             echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env
             echo "GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}" >> .env
 
+            # create a minimal compose that uses pushed image
             cat > compose.yml << 'YML'
-            ${COMPOSE_STAGING}
+            services:
+              nginx:
+                image: nginx:1.27-alpine
+                depends_on:
+                  - app
+                ports:
+                  - "8080:80"
+                volumes:
+                  - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+                networks:
+                  - web
+
+              app:
+                image: ${APP_IMAGE}
+                environment:
+                  APP_ENV: staging
+                  APP_DEBUG: "false"
+                  APP_URL: ${APP_URL}
+                  APP_KEY: ${APP_KEY}
+                  DB_CONNECTION: mysql
+                  DB_HOST: mysql
+                  DB_PORT: 3306
+                  DB_DATABASE: ${DB_DATABASE}
+                  DB_USERNAME: ${DB_USERNAME}
+                  DB_PASSWORD: ${DB_PASSWORD}
+                  REDIS_HOST: redis
+                  REDIS_PORT: 6379
+                  CACHE_STORE: database
+                  SESSION_DRIVER: database
+                  QUEUE_CONNECTION: sync
+                  RUN_MIGRATIONS: "true"
+                depends_on:
+                  - mysql
+                  - redis
+                networks:
+                  - web
+                  - internal
+
+              mysql:
+                image: mysql:8.4
+                command: ["--default-authentication-plugin=mysql_native_password"]
+                environment:
+                  MYSQL_DATABASE: ${DB_DATABASE}
+                  MYSQL_USER: ${DB_USERNAME}
+                  MYSQL_PASSWORD: ${DB_PASSWORD}
+                  MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+                volumes:
+                  - mysql_data:/var/lib/mysql
+                networks:
+                  - internal
+
+              redis:
+                image: redis:7-alpine
+                networks:
+                  - internal
+
+              prometheus:
+                image: prom/prometheus:v2.55.1
+                volumes:
+                  - ./docker/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+                ports:
+                  - "9090:9090"
+                networks:
+                  - internal
+
+              grafana:
+                image: grafana/grafana:11.2.2
+                environment:
+                  GF_SECURITY_ADMIN_USER: admin
+                  GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+                ports:
+                  - "3000:3000"
+                volumes:
+                  - grafana_data:/var/lib/grafana
+                networks:
+                  - internal
+
+            networks:
+              web:
+              internal:
+
+            volumes:
+              mysql_data:
+              grafana_data:
             YML
 
             docker compose -f compose.yml pull || true
-            docker compose -f compose.yml up -d
+            docker compose -f compose.yml up -d --remove-orphans
 
-    env:
-      COMPOSE_STAGING: |
-        services:
-          nginx:
-            image: nginx:1.27-alpine
-            depends_on:
-              - app
-            ports:
-              - "8080:80"
-            volumes:
-              - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-            networks:
-              - web
-
-          app:
-            image: ${APP_IMAGE}
-            environment:
-              APP_ENV: staging
-              APP_DEBUG: "false"
-              APP_URL: ${APP_URL}
-              APP_KEY: ${APP_KEY}
-              DB_CONNECTION: mysql
-              DB_HOST: mysql
-              DB_PORT: 3306
-              DB_DATABASE: ${DB_DATABASE}
-              DB_USERNAME: ${DB_USERNAME}
-              DB_PASSWORD: ${DB_PASSWORD}
-              REDIS_HOST: redis
-              REDIS_PORT: 6379
-              CACHE_STORE: database
-              SESSION_DRIVER: database
-              QUEUE_CONNECTION: sync
-              RUN_MIGRATIONS: "true"
-            depends_on:
-              - mysql
-              - redis
-            networks:
-              - web
-              - internal
-
-          mysql:
-            image: mysql:8.4
-            command: ["--default-authentication-plugin=mysql_native_password"]
-            environment:
-              MYSQL_DATABASE: ${DB_DATABASE}
-              MYSQL_USER: ${DB_USERNAME}
-              MYSQL_PASSWORD: ${DB_PASSWORD}
-              MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-            volumes:
-              - mysql_data:/var/lib/mysql
-            networks:
-              - internal
-
-          redis:
-            image: redis:7-alpine
-            networks:
-              - internal
-
-          prometheus:
-            image: prom/prometheus:v2.55.1
-            volumes:
-              - ./docker/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-            ports:
-              - "9090:9090"
-            networks:
-              - internal
-
-          grafana:
-            image: grafana/grafana:11.2.2
-            environment:
-              GF_SECURITY_ADMIN_USER: admin
-              GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
-            ports:
-              - "3000:3000"
-            volumes:
-              - grafana_data:/var/lib/grafana
-            networks:
-              - internal
-
-        networks:
-          web:
-          internal:
-
-        volumes:
-          mysql_data:
-          grafana_data:
-
-  deploy-production:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    environment: production
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Deploy via SSH (docker compose up)
-        uses: appleboy/ssh-action@v1.1.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            set -e
-            mkdir -p ~/apps/esaturasi-prod
-            cd ~/apps/esaturasi-prod
-            echo "APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" > .env
-            echo "APP_URL=${{ secrets.APP_URL }}" >> .env
-            echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-            echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
-            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env
-            echo "GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}" >> .env
-
-            cat > compose.yml << 'YML'
-            ${COMPOSE_PROD}
-            YML
-
-            docker compose -f compose.yml pull || true
-            docker compose -f compose.yml up -d
-
-    env:
-      COMPOSE_PROD: |
-        services:
-          nginx:
-            image: nginx:1.27-alpine
-            depends_on:
-              - app
-            ports:
-              - "80:80"
-            volumes:
-              - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-            networks:
-              - web
-
-          app:
-            image: ${APP_IMAGE}
-            environment:
-              APP_ENV: production
-              APP_DEBUG: "false"
-              APP_URL: ${APP_URL}
-              APP_KEY: ${APP_KEY}
-              DB_CONNECTION: mysql
-              DB_HOST: mysql
-              DB_PORT: 3306
-              DB_DATABASE: ${DB_DATABASE}
-              DB_USERNAME: ${DB_USERNAME}
-              DB_PASSWORD: ${DB_PASSWORD}
-              REDIS_HOST: redis
-              REDIS_PORT: 6379
-              CACHE_STORE: database
-              SESSION_DRIVER: database
-              QUEUE_CONNECTION: sync
-              RUN_MIGRATIONS: "false"
-            depends_on:
-              - mysql
-              - redis
-            networks:
-              - web
-              - internal
-
-          mysql:
-            image: mysql:8.4
-            command: ["--default-authentication-plugin=mysql_native_password"]
-            environment:
-              MYSQL_DATABASE: ${DB_DATABASE}
-              MYSQL_USER: ${DB_USERNAME}
-              MYSQL_PASSWORD: ${DB_PASSWORD}
-              MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-            volumes:
-              - mysql_data:/var/lib/mysql
-            networks:
-              - internal
-
-          redis:
-            image: redis:7-alpine
-            networks:
-              - internal
-
-          prometheus:
-            image: prom/prometheus:v2.55.1
-            volumes:
-              - ./docker/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-            ports:
-              - "9090:9090"
-            networks:
-              - internal
-
-          grafana:
-            image: grafana/grafana:11.2.2
-            environment:
-              GF_SECURITY_ADMIN_USER: admin
-              GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
-            ports:
-              - "3000:3000"
-            volumes:
-              - grafana_data:/var/lib/grafana
-            networks:
-              - internal
-
-        networks:
-          web:
-          internal:
-
-        volumes:
-          mysql_data:
-          grafana_data:
