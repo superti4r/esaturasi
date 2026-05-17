@@ -75,18 +75,16 @@ docker compose -f compose.production.yml up -d
 Workflow:
 
 * `CI`: `.github/workflows/ci.yml` menjalankan test Laravel.
-* `CD`: `.github/workflows/cd.yml` build & push image ke **GHCR**, lalu deploy ke **staging** dan **production** menggunakan **GitHub Environments** + **Secrets**.
+* `CD`: `.github/workflows/cd.yml` build & push image ke **GHCR**, lalu deploy ke **staging** (branch `staging`) menggunakan **GitHub Environments** + **Secrets**.
 
 ### Secrets yang dibutuhkan
 
-Buat **GitHub Environments**: `staging` dan `production`, lalu isi secrets berikut untuk masing-masing environment:
+Buat **GitHub Environment**: `staging`, lalu isi secrets berikut:
 
 * `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SSH_PORT`
-* `APP_URL`, `APP_KEY`
-* `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, `DB_ROOT_PASSWORD`
-* `GRAFANA_ADMIN_PASSWORD`
+* `ENV_STAGING_FILE` (isi full konten `.env` untuk staging; multi-line)
 
-> `.env` untuk server dibuat otomatis saat deploy dari secret (tidak disimpan di repository).
+> `.env.staging` dibuat di runner GitHub Actions dari secret `ENV_STAGING_FILE` dan dimasukkan ke image saat build.
 
 <p>1. Copy .env</p>
 
