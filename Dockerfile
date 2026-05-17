@@ -22,10 +22,35 @@ RUN npm run build
 
 
 # --- PHP build stage (vendor) ---
-FROM composer:2 AS php-vendor
+FROM php:8.4-cli-alpine AS php-vendor
 WORKDIR /app
 
+# Install system dependencies required by some PHP extensions and composer
+RUN apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS \
+    icu-dev \
+    libzip-dev \
+    oniguruma-dev \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+  && docker-php-ext-configure gd --with-freetype --with-jpeg \
+  && docker-php-ext-install -j$(nproc) pdo_mysql mbstring zip intl gd opcache \
+  && pecl install redis || true \
+  && docker-php-ext-enable redis || true \
+  && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+  && apk del .build-deps || true
+
 COPY composer.json composer.lock ./
+
+# Allow composer more memory in container builds
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_MEMORY_LIMIT=-1
+
 RUN composer install \
   --no-dev \
   --prefer-dist \
