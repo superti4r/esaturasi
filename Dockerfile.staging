@@ -75,13 +75,18 @@ FROM php-base AS final
 WORKDIR /app
 
 RUN mkdir -p storage bootstrap/cache \
+  && mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions \
   && chown -R www-data:www-data /app \
   && chmod -R ug+rw storage bootstrap/cache
 
 COPY --from=builder --chown=www-data:www-data /app /app
 COPY --from=build-js --chown=www-data:www-data /app/public/build /app/public/build
 
+COPY --chown=www-data:www-data docker/franken/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 8000
 USER www-data
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=8000", "--workers=8", "--max-requests=10000"]
