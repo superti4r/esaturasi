@@ -16,19 +16,25 @@ class TaskController extends Controller
         Log::info("Memulai getPendingTasks dengan classroomId: $classroomId, studentId: $studentId");
 
         try {
-            $schedules = \App\Models\Schedule::where('classroom_id', $classroomId)->pluck('id')->toArray();
-            Log::info("Jadwal yang ditemukan untuk kelas $classroomId: " . count($schedules) . " jadwal");
+            $schedules = \App\Models\Schedule::where('classroom_id', $classroomId)
+                ->whereHas('archive', function ($query) {
+                    $query->where('status', 'Active'); // ← filter archive aktif
+                })
+                ->pluck('id')
+                ->toArray();
+
+            Log::info("Jadwal aktif yang ditemukan untuk kelas $classroomId: " . count($schedules) . " jadwal");
 
             if (empty($schedules)) {
-                Log::warning("Tidak ada jadwal yang ditemukan untuk kelas $classroomId");
+                Log::warning("Tidak ada jadwal aktif untuk kelas $classroomId");
                 return $this->returnEmptyOrSampleResponse($studentId, $classroomId);
             }
 
             $slugs = Slugs::whereIn('schedule_id', $schedules)->pluck('id')->toArray();
-            Log::info("Slug yang ditemukan untuk jadwal kelas: " . count($slugs) . " slug");
+            Log::info("Slug yang ditemukan: " . count($slugs) . " slug");
 
             if (empty($slugs)) {
-                Log::warning("Tidak ada slug yang ditemukan untuk jadwal kelas $classroomId");
+                Log::warning("Tidak ada slug untuk jadwal kelas $classroomId");
                 return $this->returnEmptyOrSampleResponse($studentId, $classroomId);
             }
 
@@ -39,7 +45,7 @@ class TaskController extends Controller
             Log::info("Total tugas yang ditemukan: " . $tasks->count() . " tugas");
 
             if ($tasks->isEmpty()) {
-                Log::warning("Tidak ada tugas yang ditemukan untuk kelas $classroomId");
+                Log::warning("Tidak ada tugas untuk kelas $classroomId");
                 return $this->returnEmptyOrSampleResponse($studentId, $classroomId);
             }
 
@@ -50,13 +56,13 @@ class TaskController extends Controller
                 ->pluck('task_id')
                 ->toArray();
 
-            Log::info("Tugas yang sudah dikumpulkan oleh siswa $studentId: " . count($submittedTaskIds) . " tugas");
+            Log::info("Tugas yang sudah dikumpulkan siswa $studentId: " . count($submittedTaskIds) . " tugas");
 
             $pendingTasks = [];
 
             foreach ($tasks as $task) {
                 if (!in_array($task->id, $submittedTaskIds)) {
-                    Log::info("Memproses tugas yang belum dikumpulkan: ID {$task->id}, Judul: {$task->title}");
+                    Log::info("Memproses tugas pending: ID {$task->id}, Judul: {$task->title}");
 
                     $subjectName = 'Tidak Ada Mata Pelajaran';
                     try {
@@ -64,14 +70,13 @@ class TaskController extends Controller
                             $subjectName = $task->slug->schedule->subject->name;
                         }
                     } catch (\Exception $e) {
-                        Log::error("Error saat mengambil nama mata pelajaran untuk tugas {$task->id}: " . $e->getMessage());
+                        Log::error("Error ambil nama mapel tugas {$task->id}: " . $e->getMessage());
                     }
 
                     try {
-                        $deadline = new \DateTime($task->deadline);
-                        $now = new \DateTime();
-
-                        $isUrgent = $deadline < $now;
+                        $deadline  = new \DateTime($task->deadline);
+                        $now       = new \DateTime();
+                        $isUrgent  = $deadline < $now;
 
                         if ($deadline->format('Y-m-d') === $now->format('Y-m-d')) {
                             $deadlineFormatted = 'Hari ini, ' . $deadline->format('H:i');
@@ -82,43 +87,41 @@ class TaskController extends Controller
                         }
 
                         $pendingTasks[] = [
-                            'id' => $task->id,
-                            'title' => $task->title,
-                            'course' => $subjectName,
-                            'deadline' => $task->deadline,
+                            'id'                 => $task->id,
+                            'title'              => $task->title,
+                            'course'             => $subjectName,
+                            'deadline'           => $task->deadline,
                             'deadline_formatted' => $deadlineFormatted,
-                            'isUrgent' => $isUrgent
+                            'isUrgent'           => $isUrgent,
                         ];
 
-                        Log::info("Berhasil menambahkan tugas ID {$task->id} ke daftar tugas yang pending");
+                        Log::info("Berhasil tambah tugas ID {$task->id} ke pending");
                     } catch (\Exception $e) {
-                        Log::error("Error saat memproses deadline untuk tugas {$task->id}: " . $e->getMessage());
+                        Log::error("Error proses deadline tugas {$task->id}: " . $e->getMessage());
 
                         $pendingTasks[] = [
-                            'id' => $task->id,
-                            'title' => $task->title,
-                            'course' => $subjectName,
-                            'deadline' => $task->deadline ?? 'Tidak diketahui',
+                            'id'                 => $task->id,
+                            'title'              => $task->title,
+                            'course'             => $subjectName,
+                            'deadline'           => $task->deadline ?? 'Tidak diketahui',
                             'deadline_formatted' => 'Format tanggal tidak valid',
-                            'isUrgent' => false
+                            'isUrgent'           => false,
                         ];
-
-                        Log::info("Berhasil menambahkan tugas ID {$task->id} ke daftar tugas yang pending (dengan penanganan error)");
                     }
                 }
             }
 
-            Log::info("Total tugas yang belum dikumpulkan: " . count($pendingTasks));
+            Log::info("Total tugas pending: " . count($pendingTasks));
 
             if (empty($pendingTasks)) {
-                Log::info("Tidak ada tugas yang pending - menambahkan contoh tugas untuk testing");
+                Log::info("Tidak ada tugas pending - tambah contoh tugas untuk testing");
                 $pendingTasks[] = [
-                    'id' => 999999,
-                    'title' => 'Tugas Debugging (Task Sampel)',
-                    'course' => 'Debug 101',
-                    'deadline' => date('Y-m-d H:i:s', strtotime('+2 days')),
+                    'id'                 => 999999,
+                    'title'              => 'Tugas Debugging (Task Sampel)',
+                    'course'             => 'Debug 101',
+                    'deadline'           => date('Y-m-d H:i:s', strtotime('+2 days')),
                     'deadline_formatted' => 'Dalam 2 hari',
-                    'isUrgent' => false
+                    'isUrgent'           => false,
                 ];
             }
 
@@ -126,10 +129,10 @@ class TaskController extends Controller
                 'tasks' => $pendingTasks,
                 'debug_info' => [
                     'total_tasks_queried' => $tasks->count(),
-                    'submitted_tasks' => count($submittedTaskIds),
-                    'pending_tasks' => count($pendingTasks),
-                    'student_id' => $studentId,
-                    'classroom_id' => $classroomId
+                    'submitted_tasks'     => count($submittedTaskIds),
+                    'pending_tasks'       => count($pendingTasks),
+                    'student_id'          => $studentId,
+                    'classroom_id'        => $classroomId,
                 ]
             ]);
         } catch (\Exception $e) {
@@ -139,16 +142,16 @@ class TaskController extends Controller
             return response()->json([
                 'tasks' => [
                     [
-                        'id' => 999999,
-                        'title' => 'Error: ' . substr($e->getMessage(), 0, 50) . '...',
-                        'course' => 'Debug 101',
-                        'deadline' => date('Y-m-d H:i:s', strtotime('+1 days')),
+                        'id'                 => 999999,
+                        'title'              => 'Error: ' . substr($e->getMessage(), 0, 50) . '...',
+                        'course'             => 'Debug 101',
+                        'deadline'           => date('Y-m-d H:i:s', strtotime('+1 days')),
                         'deadline_formatted' => 'Terjadi error saat memuat tugas',
-                        'isUrgent' => true
+                        'isUrgent'           => true,
                     ]
                 ],
-                'error' => true,
-                'message' => 'Terjadi error: ' . $e->getMessage()
+                'error'   => true,
+                'message' => 'Terjadi error: ' . $e->getMessage(),
             ]);
         }
     }
@@ -158,21 +161,21 @@ class TaskController extends Controller
         return response()->json([
             'tasks' => [
                 [
-                    'id' => 999999,
-                    'title' => 'Tugas Debugging (Task Sampel)',
-                    'course' => 'Debug 101',
-                    'deadline' => date('Y-m-d H:i:s', strtotime('+2 days')),
+                    'id'                 => 999999,
+                    'title'              => 'Tugas Debugging (Task Sampel)',
+                    'course'             => 'Debug 101',
+                    'deadline'           => date('Y-m-d H:i:s', strtotime('+2 days')),
                     'deadline_formatted' => 'Dalam 2 hari',
-                    'isUrgent' => false
+                    'isUrgent'           => false,
                 ]
             ],
             'debug_info' => [
                 'total_tasks_queried' => 0,
-                'submitted_tasks' => 0,
-                'pending_tasks' => 0,
-                'student_id' => $studentId,
-                'classroom_id' => $classroomId,
-                'note' => 'Tidak ada tugas yang ditemukan - menampilkan contoh tugas'
+                'submitted_tasks'     => 0,
+                'pending_tasks'       => 0,
+                'student_id'          => $studentId,
+                'classroom_id'        => $classroomId,
+                'note'                => 'Tidak ada tugas aktif yang ditemukan',
             ]
         ]);
     }
@@ -192,22 +195,26 @@ class TaskController extends Controller
             'submissions' => function ($query) use ($studentId) {
                 $query->where('student_id', $studentId);
             }
-        ])->get();
+        ])
+        ->whereHas('slug.schedule.archive', function ($query) {
+            $query->where('status', 'Active'); // ← filter archive aktif
+        })
+        ->get();
 
         $formatted = $tugas->map(function ($task) {
             $submission = $task->submissions->first();
 
             return [
-                'id' => $task->id,
-                'judul' => $task->title,
-                'deskripsi' => $task->description,
-                'guru' => optional($task->slug->schedule->teacher)->name ?? 'Guru tidak diketahui',
+                'id'             => $task->id,
+                'judul'          => $task->title,
+                'deskripsi'      => $task->description,
+                'guru'           => optional($task->slug->schedule->teacher)->name ?? 'Guru tidak diketahui',
                 'mata_pelajaran' => optional($task->slug->schedule->subject)->name ?? 'Mata pelajaran tidak diketahui',
-                'deadline' => $task->deadline,
-                'file_path' => $task->file_path,
-                'attachments' => $task->file_path ? 1 : 0,
-                'status' => $submission ? $submission->status : 'Belum Dikerjakan',
-                'score' => $submission ? $submission->assignment : null,
+                'deadline'       => $task->deadline,
+                'file_path'      => $task->file_path,
+                'attachments'    => $task->file_path ? 1 : 0,
+                'status'         => $submission ? $submission->status : 'Belum Dikerjakan',
+                'score'          => $submission ? $submission->assignment : null,
             ];
         });
 
