@@ -211,28 +211,24 @@ jobs:
 
           cd "$VPS_PATH"
 
-          compose() {
-            if docker compose version >/dev/null 2>&1; then
-              docker compose "$@"
-            elif command -v docker-compose >/dev/null 2>&1; then
-              docker-compose "$@"
-            else
-              echo "Docker Compose is not installed. Please install docker-compose-plugin on VPS."
-              exit 1
-            fi
-          }
+          if ! docker compose version >/dev/null 2>&1; then
+            echo "Docker Compose v2 is not installed on VPS."
+            echo "Please install docker-compose-plugin and use docker compose, not docker-compose."
+            exit 1
+          fi
 
           echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
 
-          compose --env-file .env.production -f docker-compose.prod.yml pull
-          compose --env-file .env.production -f docker-compose.prod.yml up -d --remove-orphans
+          docker compose --env-file .env.production -f docker-compose.prod.yml pull
+          docker compose --env-file .env.production -f docker-compose.prod.yml down --remove-orphans
+          docker compose --env-file .env.production -f docker-compose.prod.yml up -d --remove-orphans
 
-          compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan storage:link || true
-          compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan migrate --force
-          compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan optimize:clear
-          compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan optimize
+          docker compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan storage:link || true
+          docker compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan migrate --force
+          docker compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan optimize:clear
+          docker compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan optimize
 
           docker image prune -af --filter "until=168h"
 
-          compose --env-file .env.production -f docker-compose.prod.yml ps
+          docker compose --env-file .env.production -f docker-compose.prod.yml ps
           EOF
