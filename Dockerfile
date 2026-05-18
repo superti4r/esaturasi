@@ -1,8 +1,35 @@
-FROM composer:2.7 as vendor
+FROM php:8.4-fpm-alpine as base
+WORKDIR /var/www/html
+RUN apk add --no-cache \
+    bash \
+    freetype-dev \
+    icu-dev \
+    jpeg-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libzip-dev \
+    oniguruma-dev \
+    supervisor \
+    unzip \
+    zip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+    bcmath \
+    exif \
+    gd \
+    intl \
+    mbstring \
+    opcache \
+    pdo_mysql \
+    zip \
+    && pecl install redis \
+    && docker-php-ext-enable redis
+
+FROM base as composer_builder
+COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY database/ database/
 COPY composer.json composer.lock ./
-ENV COMPOSER_MEMORY_LIMIT=-1
 RUN composer install --no-interaction --no-dev --no-scripts --prefer-dist --optimize-autoloader --ignore-platform-reqs
 
 FROM node:20-alpine as frontend
@@ -12,7 +39,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM php:8.4-fpm-alpine as production
+FROM base as production
 WORKDIR /var/www/html
 
 ENV DOCKERIZE_VERSION v0.7.0
@@ -20,36 +47,17 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-RUN apk add --no-cache \
-    libzip-dev \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    icu-dev \
-    redis \
-    supervisor
-
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-    pdo_mysql \
-    zip \
-    gd \
-    intl \
-    bcmath \
-    opcache \
-    redis
-
-COPY --from=vendor /app/vendor/ /var/www/html/vendor/
+COPY --from=composer_builder /app/vendor/ /var/www/html/vendor/
 COPY --from=frontend /app/public/ /var/www/html/public/
 COPY . .
-
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 COPY docker/php/production.ini /usr/local/etc/php/conf.d/production.ini
 COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
 EXPOSE 9000
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["php-fpm"]
+CMD ["app"]

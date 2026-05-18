@@ -20,3 +20,4 @@ elif [ "$ROLE" = "scheduler" ]; then
 else
     exec docker-php-entrypoint "$@"
 fi
+
