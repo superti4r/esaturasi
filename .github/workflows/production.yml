@@ -35,7 +35,7 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Prepare Testing Env
+      - name: Prepare Testing Environment
         run: |
           cp .env.example .env
           php artisan key:generate
@@ -45,7 +45,7 @@ jobs:
         run: php artisan test
 
   build:
-    name: Build and Push Image
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
     needs: test
 
@@ -74,7 +74,7 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Build and Push
+      - name: Build and Push Image
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -107,6 +107,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
+
           echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
 
@@ -116,35 +117,13 @@ jobs:
             ssh-keyscan -p "$VPS_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts
           fi
 
-      - name: Upload Deployment Files
+      - name: Create Production Env File
         shell: bash
         env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_PORT: ${{ secrets.VPS_PORT }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_PATH: ${{ secrets.VPS_PATH }}
-        run: |
-          ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" "mkdir -p $VPS_PATH"
-          rsync -az --delete \
-            -e "ssh -i ~/.ssh/deploy_key -p $VPS_PORT" \
-            docker-compose.prod.yml docker \
-            "$VPS_USER@$VPS_HOST:$VPS_PATH/"
-
-      - name: Deploy
-        shell: bash
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_PORT: ${{ secrets.VPS_PORT }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_PATH: ${{ secrets.VPS_PATH }}
-
           IMAGE: ${{ needs.build.outputs.image }}
           IMAGE_TAG: ${{ needs.build.outputs.tag }}
-          GHCR_USERNAME: ${{ github.actor }}
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
           APP_NAME: ${{ secrets.APP_NAME }}
-          APP_ENV: production
           APP_KEY: ${{ secrets.APP_KEY }}
           APP_URL: ${{ secrets.APP_URL }}
 
@@ -159,32 +138,12 @@ jobs:
           GRAFANA_ADMIN_USER: ${{ secrets.GRAFANA_ADMIN_USER }}
           GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
         run: |
-          ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
-            IMAGE="$IMAGE" \
-            IMAGE_TAG="$IMAGE_TAG" \
-            GHCR_USERNAME="$GHCR_USERNAME" \
-            GHCR_TOKEN="$GHCR_TOKEN" \
-            APP_NAME="$APP_NAME" \
-            APP_KEY="$APP_KEY" \
-            APP_URL="$APP_URL" \
-            DB_DATABASE="$DB_DATABASE" \
-            DB_USERNAME="$DB_USERNAME" \
-            DB_PASSWORD="$DB_PASSWORD" \
-            MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD" \
-            MYSQL_EXPORTER_USER="$MYSQL_EXPORTER_USER" \
-            MYSQL_EXPORTER_PASSWORD="$MYSQL_EXPORTER_PASSWORD" \
-            GRAFANA_ADMIN_USER="$GRAFANA_ADMIN_USER" \
-            GRAFANA_ADMIN_PASSWORD="$GRAFANA_ADMIN_PASSWORD" \
-            VPS_PATH="$VPS_PATH" \
-            'bash -s' << 'EOF'
-          set -e
+          mkdir -p .deploy
 
-          cd "$VPS_PATH"
-
-          cat > .env.production << ENV
+          cat > .deploy/.env.production << ENV
           APP_IMAGE=${IMAGE}:${IMAGE_TAG}
 
-          APP_NAME=${APP_NAME}
+          APP_NAME="${APP_NAME}"
           APP_ENV=production
           APP_KEY=${APP_KEY}
           APP_DEBUG=false
@@ -216,17 +175,64 @@ jobs:
           GRAFANA_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
           ENV
 
+      - name: Upload Deployment Files
+        shell: bash
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PATH: ${{ secrets.VPS_PATH }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" "mkdir -p $VPS_PATH"
+
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p $VPS_PORT" \
+            docker-compose.prod.yml docker .deploy/.env.production \
+            "$VPS_USER@$VPS_HOST:$VPS_PATH/"
+
+          ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" "chmod 600 $VPS_PATH/.env.production"
+
+      - name: Deploy
+        shell: bash
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PATH: ${{ secrets.VPS_PATH }}
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
+            GHCR_USERNAME="$GHCR_USERNAME" \
+            GHCR_TOKEN="$GHCR_TOKEN" \
+            VPS_PATH="$VPS_PATH" \
+            'bash -s' << 'EOF'
+          set -euo pipefail
+
+          cd "$VPS_PATH"
+
+          compose() {
+            if docker compose version >/dev/null 2>&1; then
+              docker compose "$@"
+            elif command -v docker-compose >/dev/null 2>&1; then
+              docker-compose "$@"
+            else
+              echo "Docker Compose is not installed. Please install docker-compose-plugin on VPS."
+              exit 1
+            fi
+          }
+
           echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
 
-          docker compose -f docker-compose.prod.yml --env-file .env.production pull
-          docker compose -f docker-compose.prod.yml --env-file .env.production up -d --remove-orphans
+          compose --env-file .env.production -f docker-compose.prod.yml pull
+          compose --env-file .env.production -f docker-compose.prod.yml up -d --remove-orphans
 
-          docker compose -f docker-compose.prod.yml --env-file .env.production exec -T app php artisan storage:link || true
-          docker compose -f docker-compose.prod.yml --env-file .env.production exec -T app php artisan migrate --force
-          docker compose -f docker-compose.prod.yml --env-file .env.production exec -T app php artisan optimize:clear
-          docker compose -f docker-compose.prod.yml --env-file .env.production exec -T app php artisan optimize
+          compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan storage:link || true
+          compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan migrate --force
+          compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan optimize:clear
+          compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan optimize
 
           docker image prune -af --filter "until=168h"
 
-          docker compose -f docker-compose.prod.yml --env-file .env.production ps
+          compose --env-file .env.production -f docker-compose.prod.yml ps
           EOF
