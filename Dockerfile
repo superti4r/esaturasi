@@ -2,7 +2,8 @@ FROM composer:2.7 as vendor
 WORKDIR /app
 COPY database/ database/
 COPY composer.json composer.lock ./
-RUN composer install --no-interaction --no-dev --no-scripts --prefer-dist --optimize-autoloader
+ENV COMPOSER_MEMORY_LIMIT=-1
+RUN composer install --no-interaction --no-dev --no-scripts --prefer-dist --optimize-autoloader --ignore-platform-reqs
 
 FROM node:20-alpine as frontend
 WORKDIR /app
