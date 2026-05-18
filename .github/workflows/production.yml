@@ -63,9 +63,10 @@ jobs:
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           echo "${VPS_SSH_KEY}" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
           echo "${VPS_KNOWN_HOSTS}" > ~/.ssh/known_hosts
-      - id: env_file
+
+      - name: Create Production Env File
         run: |
-          ENV_CONTENT=$(cat <<EOF
+          cat <<EOF > .env.production
           APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image_tag }}
           APP_NAME="${{ secrets.APP_NAME }}"
           APP_ENV=production
@@ -95,11 +96,22 @@ jobs:
           GRAFANA_ADMIN_USER=${{ secrets.GRAFANA_ADMIN_USER }}
           GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}
           EOF
-          )
-          echo "content<<EOF" >> $GITHUB_OUTPUT
-          echo "$ENV_CONTENT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-      - name: Deploy to Server
+
+      - name: Upload Files to Server
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PATH: ${{ secrets.VPS_PATH }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" "mkdir -p $VPS_PATH"
+          rsync -az --delete -e "ssh -i ~/.ssh/deploy_key -p $VPS_PORT" \
+            docker-compose.prod.yml \
+            .env.production \
+            docker/ \
+            "$VPS_USER@$VPS_HOST:$VPS_PATH/"
+
+      - name: Run Deployment on Server
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_PORT: ${{ secrets.VPS_PORT }}
@@ -107,20 +119,15 @@ jobs:
           VPS_PATH: ${{ secrets.VPS_PATH }}
           GHCR_USERNAME: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ENV_PRODUCTION: ${{ steps.env_file.outputs.content }}
         run: |
           ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
             "VPS_PATH='${VPS_PATH}'" \
             "GHCR_USERNAME='${GHCR_USERNAME}'" \
             "GHCR_TOKEN='${GHCR_TOKEN}'" \
-            "ENV_PRODUCTION='${ENV_PRODUCTION}'" \
             'bash -s' << 'EOF'
           set -euo pipefail
           cd "${VPS_PATH}"
           echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-stdin
-          echo "${ENV_PRODUCTION}" > .env.production
-          chmod 600 .env.production
-          rsync -a --delete ./docker/ ./docker-sync/
           docker compose -f docker-compose.prod.yml pull
           trap 'echo "--- DEPLOYMENT FAILED ---"; docker compose -f docker-compose.prod.yml ps -a; docker compose -f docker-compose.prod.yml logs --tail=100; exit 1' ERR
           docker compose -f docker-compose.prod.yml up -d --remove-orphans --wait
