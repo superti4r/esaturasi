@@ -1,3 +1,5 @@
+version: "2.4"
+
 services:
   app:
     image: ${APP_IMAGE}
@@ -70,21 +72,17 @@ services:
     restart: unless-stopped
     env_file:
       - .env.production
-    command:
-      - --default-authentication-plugin=caching_sha2_password
-      - --innodb-buffer-pool-size=256M
+    environment:
+      MYSQL_ROOT_HOST: "%"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "mysqladmin ping -h localhost -u$${MYSQL_USER} -p$${MYSQL_PASSWORD}",
-        ]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent || exit 1"]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 30
+      start_period: 120s
     networks:
       - app_network
 
