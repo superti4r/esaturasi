@@ -1,130 +1,161 @@
+version: '3.9'
+
+networks:
+  app_network:
+    driver: bridge
+    name: esaturasi_network
+
+volumes:
+  mysql_data:
+    name: esaturasi_mysql_data
+  redis_data:
+    name: esaturasi_redis_data
+  laravel_storage:
+    name: esaturasi_laravel_storage
+  prometheus_data:
+    name: esaturasi_prometheus_data
+  grafana_data:
+    name: esaturasi_grafana_data
+
 services:
   app:
     image: ${APP_IMAGE}
+    container_name: esaturasi-app
     restart: unless-stopped
-    env_file:
-      - .env.production
+    command: app
+    env_file: .env.production
+    volumes:
+      - laravel_storage:/var/www/html/storage
     depends_on:
       mysql:
         condition: service_healthy
-    volumes:
-      - laravel_storage:/var/www/html/storage
-      - laravel_cache:/var/www/html/bootstrap/cache
-      - laravel_public:/var/www/html/public
+      redis:
+        condition: service_healthy
     networks:
       - app_network
 
   queue:
     image: ${APP_IMAGE}
+    container_name: esaturasi-queue
     restart: unless-stopped
-    command: php artisan queue:work --sleep=3 --tries=3 --timeout=90
-    env_file:
-      - .env.production
-    depends_on:
-      mysql:
-        condition: service_healthy
-      app:
-        condition: service_started
+    command: queue
+    env_file: .env.production
     volumes:
       - laravel_storage:/var/www/html/storage
-      - laravel_cache:/var/www/html/bootstrap/cache
-      - laravel_public:/var/www/html/public
+    depends_on:
+      app:
+        condition: service_started
     networks:
       - app_network
 
   scheduler:
     image: ${APP_IMAGE}
+    container_name: esaturasi-scheduler
     restart: unless-stopped
-    command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
-    env_file:
-      - .env.production
-    depends_on:
-      mysql:
-        condition: service_healthy
-      app:
-        condition: service_started
+    command: scheduler
+    env_file: .env.production
     volumes:
       - laravel_storage:/var/www/html/storage
-      - laravel_cache:/var/www/html/bootstrap/cache
-      - laravel_public:/var/www/html/public
+    depends_on:
+      app:
+        condition: service_started
     networks:
       - app_network
 
   nginx:
-    image: nginx:alpine
+    image: nginx:1.27-alpine
+    container_name: esaturasi-nginx
     restart: unless-stopped
-    depends_on:
-      app:
-        condition: service_started
     ports:
       - "80:80"
     volumes:
-      - laravel_public:/var/www/html/public:ro
-      - laravel_storage:/var/www/html/storage:ro
+      - laravel_storage:/var/www/html/storage/app/public:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app:
+        condition: service_started
     networks:
       - app_network
 
   mysql:
     image: mysql:8.4
+    container_name: esaturasi-mysql
     restart: unless-stopped
-    env_file:
-      - .env.production
+    env_file: .env.production
     environment:
       MYSQL_ROOT_HOST: "%"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD}"]
-      interval: 10s
-      timeout: 10s
-      retries: 30
-      start_period: 120s
+      - ./docker/mysql/healthcheck.cnf:/etc/mysql/healthcheck.cnf:ro
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--defaults-file=/etc/mysql/healthcheck.cnf"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: esaturasi-redis
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.53.0
+    container_name: esaturasi-prometheus
     restart: unless-stopped
     ports:
       - "127.0.0.1:9090:9090"
     volumes:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
     networks:
       - app_network
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:11.1.0
+    container_name: esaturasi-grafana
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"
-    environment:
-      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
-      GF_USERS_ALLOW_SIGN_UP: "false"
+    env_file: .env.production
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
-      prometheus:
-        condition: service_started
+      - prometheus
     networks:
       - app_network
 
   node-exporter:
-    image: prom/node-exporter:latest
+    image: prom/node-exporter:v1.8.2
+    container_name: esaturasi-node-exporter
     restart: unless-stopped
-    command:
-      - --path.rootfs=/host
+    command: '--path.rootfs=/host'
+    pid: host
     volumes:
-      - /:/host:ro,rslave
+      - '/:/host:ro,rslave'
     networks:
       - app_network
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: esaturasi-cadvisor
     restart: unless-stopped
     privileged: true
     devices:
@@ -133,44 +164,34 @@ services:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
       - /sys:/sys:ro
-      - /var/lib/docker:/var/lib/docker:ro
-      - /dev/disk:/dev/disk:ro
+      - /var/lib/docker/:/var/lib/docker:ro
     networks:
       - app_network
 
   nginx-exporter:
     image: nginx/nginx-prometheus-exporter:1.5.1
+    container_name: esaturasi-nginx-exporter
     restart: unless-stopped
-    command:
-      - --nginx.scrape-uri=http://nginx/nginx_status
+    command: '-nginx.scrape-uri=http://nginx/nginx_status'
     depends_on:
-      nginx:
-        condition: service_started
+      - nginx
     networks:
       - app_network
 
   mysql-exporter:
-    image: prom/mysqld-exporter:latest
+    image: prom/mysqld-exporter:v0.15.1
+    container_name: esaturasi-mysql-exporter
     restart: unless-stopped
-    command:
-      - --mysqld.address=mysql:3306
-      - --mysqld.username=${MYSQL_EXPORTER_USER}
-    environment:
-      MYSQLD_EXPORTER_PASSWORD: ${MYSQL_EXPORTER_PASSWORD}
+    env_file: .env.production
+    command: '--config.my-cnf=/etc/mysql-exporter/.my.cnf'
+    volumes:
+      - type: bind
+        source: ./docker/mysql/exporter.cnf
+        target: /etc/mysql-exporter/.my.cnf
+        read_only: true
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       - app_network
 
-networks:
-  app_network:
-    driver: bridge
-
-volumes:
-  mysql_data:
-  laravel_storage:
-  laravel_cache:
-  laravel_public:
-  prometheus_data:
-  grafana_data:

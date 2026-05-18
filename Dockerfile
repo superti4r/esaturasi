@@ -1,78 +1,54 @@
-FROM php:8.4-fpm-alpine AS base
+FROM composer:2.7 as vendor
+WORKDIR /app
+COPY database/ database/
+COPY composer.json composer.lock ./
+RUN composer install --no-interaction --no-dev --no-scripts --prefer-dist --optimize-autoloader
 
+FROM node:20-alpine as frontend
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM php:8.4-fpm-alpine as production
 WORKDIR /var/www/html
 
+ENV DOCKERIZE_VERSION v0.7.0
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
 RUN apk add --no-cache \
-    bash \
-    curl \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
     freetype-dev \
     icu-dev \
-    libjpeg-turbo-dev \
-    libpng-dev \
-    libzip-dev \
-    mysql-client \
-    oniguruma-dev \
-    zip \
-    unzip \
-    git \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    redis \
+    supervisor
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
-    bcmath \
-    exif \
+    pdo_mysql \
+    zip \
     gd \
     intl \
+    bcmath \
     opcache \
-    pcntl \
-    pdo_mysql \
-    zip
+    redis
 
-COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-
-FROM base AS vendor
-
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-COPY composer.json composer.lock ./
-
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --prefer-dist \
-    --optimize-autoloader \
-    --no-scripts
-
+COPY --from=vendor /app/vendor/ /var/www/html/vendor/
+COPY --from=frontend /app/public/ /var/www/html/public/
 COPY . .
 
-RUN composer dump-autoload --optimize
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-FROM node:22-alpine AS assets
+COPY docker/php/production.ini /usr/local/etc/php/conf.d/production.ini
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN if [ -f package.json ]; then \
-    if [ -f package-lock.json ]; then npm ci; else npm install; fi; \
-    fi
-
-COPY . .
-
-RUN if [ -f package.json ]; then npm run build; else mkdir -p public/build; fi
-
-FROM base AS production
-
-ENV APP_ENV=production
-
-COPY --from=vendor --chown=www-data:www-data /var/www/html /var/www/html
-COPY --from=assets --chown=www-data:www-data /app/public/build /var/www/html/public/build
-
-COPY docker/php/entrypoint.sh /usr/local/bin/app-entrypoint
-
-RUN chmod +x /usr/local/bin/app-entrypoint \
-    && mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
-    && cp -a public public-dist \
-    && chown -R www-data:www-data storage bootstrap/cache public public-dist
-
-ENTRYPOINT ["app-entrypoint"]
-
-CMD ["php-fpm", "-F"]
+EXPOSE 9000
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["php-fpm"]

@@ -15,185 +15,112 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/${{ github.event.repository.name }}
 
 jobs:
   test:
-    name: Test Laravel
+    name: Test Application
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: "8.4"
-          extensions: mbstring, dom, fileinfo, mysql, pdo_mysql, sqlite, pdo_sqlite, bcmath, intl, gd, zip
+          extensions: mbstring, dom, fileinfo, pdo_mysql, redis, bcmath, intl, gd, zip
           coverage: none
-
-      - name: Install Composer Dependencies
-        run: composer install --no-interaction --prefer-dist --no-progress
-
-      - name: Prepare Testing Environment
-        run: |
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: |
           cp .env.example .env
           php artisan key:generate
           php artisan config:clear
-
-      - name: Run Tests
-        run: php artisan test
+      - run: php artisan test
 
   build:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     needs: test
-
     outputs:
-      image: ${{ steps.image.outputs.image }}
-      tag: ${{ github.sha }}
-
+      image_tag: ${{ steps.image_meta.outputs.version }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Normalize Image Name
-        id: image
-        shell: bash
-        run: |
-          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}"
-          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
-
-      - name: Login to GHCR
-        uses: docker/login-action@v4
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Build and Push Image
-        uses: docker/build-push-action@v7
+      - id: image_meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=,format=long
+            type=raw,value=latest
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           target: production
           push: true
-          tags: |
-            ${{ steps.image.outputs.image }}:${{ github.sha }}
-            ${{ steps.image.outputs.image }}:production
+          tags: ${{ steps.image_meta.outputs.tags }}
+          labels: ${{ steps.image_meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   deploy:
-    name: Deploy to VPS
+    name: Deploy to Production
     runs-on: ubuntu-latest
     needs: build
     environment: production
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Configure SSH
-        shell: bash
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_PORT: ${{ secrets.VPS_PORT }}
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
         run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-
-          echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-
-          if [ -n "$VPS_KNOWN_HOSTS" ]; then
-            echo "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          else
-            ssh-keyscan -p "$VPS_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts
-          fi
-
-      - name: Create Production Env File
-        shell: bash
-        env:
-          IMAGE: ${{ needs.build.outputs.image }}
-          IMAGE_TAG: ${{ needs.build.outputs.tag }}
-
-          APP_NAME: ${{ secrets.APP_NAME }}
-          APP_KEY: ${{ secrets.APP_KEY }}
-          APP_URL: ${{ secrets.APP_URL }}
-
-          DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-
-          MYSQL_EXPORTER_USER: ${{ secrets.MYSQL_EXPORTER_USER }}
-          MYSQL_EXPORTER_PASSWORD: ${{ secrets.MYSQL_EXPORTER_PASSWORD }}
-
-          GRAFANA_ADMIN_USER: ${{ secrets.GRAFANA_ADMIN_USER }}
-          GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          echo "${VPS_SSH_KEY}" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          echo "${VPS_KNOWN_HOSTS}" > ~/.ssh/known_hosts
+      - id: env_file
         run: |
-          mkdir -p .deploy
-
-          cat > .deploy/.env.production << ENV
-          APP_IMAGE=${IMAGE}:${IMAGE_TAG}
-
-          APP_NAME="${APP_NAME}"
+          ENV_CONTENT=$(cat <<EOF
+          APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image_tag }}
+          APP_NAME="${{ secrets.APP_NAME }}"
           APP_ENV=production
-          APP_KEY=${APP_KEY}
+          APP_KEY=${{ secrets.APP_KEY }}
           APP_DEBUG=false
-          APP_URL=${APP_URL}
-
+          APP_URL=${{ secrets.APP_URL }}
           LOG_CHANNEL=stderr
           LOG_LEVEL=error
-
           DB_CONNECTION=mysql
           DB_HOST=mysql
           DB_PORT=3306
-          DB_DATABASE=${DB_DATABASE}
-          DB_USERNAME=${DB_USERNAME}
-          DB_PASSWORD=${DB_PASSWORD}
-
-          MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-          MYSQL_DATABASE=${DB_DATABASE}
-          MYSQL_USER=${DB_USERNAME}
-          MYSQL_PASSWORD=${DB_PASSWORD}
-
-          MYSQL_EXPORTER_USER=${MYSQL_EXPORTER_USER}
-          MYSQL_EXPORTER_PASSWORD=${MYSQL_EXPORTER_PASSWORD}
-
-          CACHE_STORE=database
-          SESSION_DRIVER=database
-          QUEUE_CONNECTION=database
-
-          GRAFANA_ADMIN_USER=${GRAFANA_ADMIN_USER}
-          GRAFANA_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-          ENV
-
-      - name: Upload Deployment Files
-        shell: bash
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_PORT: ${{ secrets.VPS_PORT }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_PATH: ${{ secrets.VPS_PATH }}
-        run: |
-          ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" "mkdir -p $VPS_PATH"
-
-          rsync -az --delete \
-            -e "ssh -i ~/.ssh/deploy_key -p $VPS_PORT" \
-            docker-compose.prod.yml docker .deploy/.env.production \
-            "$VPS_USER@$VPS_HOST:$VPS_PATH/"
-
-          ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" "chmod 600 $VPS_PATH/.env.production"
-
-      - name: Deploy
-        shell: bash
+          DB_DATABASE=${{ secrets.DB_DATABASE }}
+          DB_USERNAME=${{ secrets.DB_USERNAME }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE=${{ secrets.DB_DATABASE }}
+          MYSQL_USER=${{ secrets.DB_USERNAME }}
+          MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }}
+          CACHE_DRIVER=redis
+          QUEUE_CONNECTION=redis
+          SESSION_DRIVER=redis
+          REDIS_HOST=redis
+          REDIS_PASSWORD=null
+          REDIS_PORT=6379
+          MYSQL_EXPORTER_USER=${{ secrets.MYSQL_EXPORTER_USER }}
+          MYSQL_EXPORTER_PASSWORD=${{ secrets.MYSQL_EXPORTER_PASSWORD }}
+          GRAFANA_ADMIN_USER=${{ secrets.GRAFANA_ADMIN_USER }}
+          GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+          EOF
+          )
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "$ENV_CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Deploy to Server
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_PORT: ${{ secrets.VPS_PORT }}
@@ -201,34 +128,28 @@ jobs:
           VPS_PATH: ${{ secrets.VPS_PATH }}
           GHCR_USERNAME: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENV_PRODUCTION: ${{ steps.env_file.outputs.content }}
         run: |
           ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
-            GHCR_USERNAME="$GHCR_USERNAME" \
-            GHCR_TOKEN="$GHCR_TOKEN" \
-            VPS_PATH="$VPS_PATH" \
+            "VPS_PATH='${VPS_PATH}'" \
+            "GHCR_USERNAME='${GHCR_USERNAME}'" \
+            "GHCR_TOKEN='${GHCR_TOKEN}'" \
+            "ENV_PRODUCTION='${ENV_PRODUCTION}'" \
             'bash -s' << 'EOF'
           set -euo pipefail
-
-          cd "$VPS_PATH"
-
-          if ! docker compose version >/dev/null 2>&1; then
-            echo "Docker Compose v2 is not installed on VPS."
-            echo "Please install docker-compose-plugin and use docker compose, not docker-compose."
-            exit 1
-          fi
-
-          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
-
-          docker compose --env-file .env.production -f docker-compose.prod.yml pull
-          docker compose --env-file .env.production -f docker-compose.prod.yml down --remove-orphans
-          docker compose --env-file .env.production -f docker-compose.prod.yml up -d --remove-orphans
-
-          docker compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan storage:link || true
-          docker compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan migrate --force
-          docker compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan optimize:clear
-          docker compose --env-file .env.production -f docker-compose.prod.yml exec -T app php artisan optimize
-
+          cd "${VPS_PATH}"
+          echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-stdin
+          echo "${ENV_PRODUCTION}" > .env.production
+          chmod 600 .env.production
+          rsync -a --delete ./docker/ ./docker-sync/
+          docker compose -f docker-compose.prod.yml pull
+          trap 'echo "--- DEPLOYMENT FAILED ---"; docker compose -f docker-compose.prod.yml ps -a; docker compose -f docker-compose.prod.yml logs --tail=100; exit 1' ERR
+          docker compose -f docker-compose.prod.yml up -d --remove-orphans --wait
+          trap - ERR
+          docker compose exec -T app php artisan storage:link
+          docker compose exec -T app php artisan migrate --force
+          docker compose exec -T app php artisan optimize:clear
           docker image prune -af --filter "until=168h"
-
-          docker compose --env-file .env.production -f docker-compose.prod.yml ps
+          echo "✅ Deployment successful!"
+          docker compose ps
           EOF
