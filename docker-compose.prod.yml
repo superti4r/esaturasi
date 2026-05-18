@@ -1,5 +1,3 @@
-version: '3.9'
-
 networks:
   esaturasi_network:
     driver: bridge
@@ -31,7 +29,7 @@ services:
     image: ${APP_IMAGE}
     container_name: esaturasi-queue
     restart: unless-stopped
-    command: queue
+    command: php artisan queue:work --sleep=3 --tries=3
     env_file: .env.production
     volumes:
       - .:/var/www/html
@@ -45,7 +43,7 @@ services:
     image: ${APP_IMAGE}
     container_name: esaturasi-scheduler
     restart: unless-stopped
-    command: scheduler
+    command: php artisan schedule:run
     env_file: .env.production
     volumes:
       - .:/var/www/html
@@ -86,7 +84,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 30
-      start_period: 60s
+      start_period: 30s
 
   redis:
     image: redis:7.2-alpine

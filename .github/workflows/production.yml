@@ -112,30 +112,19 @@ jobs:
             "$VPS_USER@$VPS_HOST:$VPS_PATH/"
 
       - name: Run Deployment on Server
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_PORT: ${{ secrets.VPS_PORT }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_PATH: ${{ secrets.VPS_PATH }}
-          GHCR_USERNAME: ${{ github.actor }}
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
-            "VPS_PATH='${VPS_PATH}'" \
-            "GHCR_USERNAME='${GHCR_USERNAME}'" \
-            "GHCR_TOKEN='${GHCR_TOKEN}'" \
-            'bash -s' << 'EOF'
-          set -euo pipefail
-          cd "${VPS_PATH}"
-          echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-stdin
-          docker compose -f docker-compose.prod.yml pull
-          trap 'echo "--- DEPLOYMENT FAILED ---"; docker compose -f docker-compose.prod.yml ps -a; docker compose -f docker-compose.prod.yml logs --tail=100; exit 1' ERR
-          docker compose -f docker-compose.prod.yml up -d --remove-orphans --wait
-          trap - ERR
-          docker compose exec -T app php artisan storage:link
-          docker compose exec -T app php artisan migrate --force
-          docker compose exec -T app php artisan optimize:clear
-          docker image prune -af --filter "until=168h"
-          echo "✅ Deployment successful!"
-          docker compose ps
-          EOF
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.VPS_PROJECT_PATH }}
+            export APP_IMAGE=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            docker compose -f docker-compose.prod.yml --env-file ./.env pull
+            docker compose -f docker-compose.prod.yml --env-file ./.env up -d --remove-orphans
+            docker compose -f docker-compose.prod.yml --env-file ./.env exec -T app php artisan migrate --force
+            docker compose -f docker-compose.prod.yml --env-file ./.env exec -T app php artisan optimize:clear
+            docker image prune -af --filter "until=168h"
+            echo "✅ Deployment successful!"
+            docker compose ps
