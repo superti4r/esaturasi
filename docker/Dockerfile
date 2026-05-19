@@ -16,13 +16,13 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock ./
+COPY composer.json ./
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-COPY package.json package-lock.json ./
+COPY package.json ./
 
-RUN npm ci && npm run build
+RUN npm install && npm run build
 
 FROM --platform=${TARGETPLATFORM} php:8.4-fpm
 
