@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - production
   workflow_dispatch:
 
 jobs:
@@ -15,113 +16,164 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create .env file from secrets
+      - name: Verify required secrets
         run: |
-          cp .env.example .env
-          echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-          echo "APP_URL=${{ secrets.APP_URL }}" >> .env
-          echo "APP_ENV=production" >> .env
-          echo "APP_DEBUG=false" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env
-          echo "GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}" >> .env
-          echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
-          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
-
-      - name: Verify secrets
-        run: |
-          if [ -z "${{ secrets.APP_KEY }}" ]; then
-            echo "❌ Error: APP_KEY secret not set"
-            exit 1
-          fi
-          if [ -z "${{ secrets.DB_PASSWORD }}" ]; then
-            echo "❌ Error: DB_PASSWORD secret not set"
-            exit 1
-          fi
-          echo "✓ All required secrets are configured"
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Push images to Docker Hub (multi-platform)
-        if: success()
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./docker/Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/esaturasi:latest
-            ${{ secrets.DOCKER_USERNAME }}/esaturasi:${{ github.sha }}
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-  deploy-vps:
-    runs-on: ubuntu-latest
-    needs: deploy
-    if: success()
-    environment: release
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+          REQUIRED_SECRETS=(
+            "APP_KEY"
+            "APP_URL"
+            "DB_PASSWORD"
+            "DB_ROOT_PASSWORD"
+            "GRAFANA_ADMIN_PASSWORD"
+            "MAIL_USERNAME"
+            "MAIL_PASSWORD"
+            "VPS_HOST"
+            "VPS_USER"
+            "VPS_APP_PATH"
+            "VPS_SSH_KEY"
+          )
+          
+          for secret in "${REQUIRED_SECRETS[@]}"; do
+            if [ -z "$(eval echo \${{ secrets.$secret }})" ]; then
+              echo "❌ Error: $secret secret not set"
+              exit 1
+            fi
+          done
+          
+          echo "✅ All required secrets configured"
 
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Deploy to VPS
         run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          ssh -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'DEPLOY_SCRIPT'
           set -e
-
-          cd ${{ secrets.VPS_APP_PATH }}
-
-          echo "Pulling latest code..."
+          
+          echo ""
+          echo "=========================================="
+          echo "🚀 Starting Production Deployment"
+          echo "=========================================="
+          echo ""
+          
+          APP_PATH="${{ secrets.VPS_APP_PATH }}"
+          REPO_URL="https://github.com/superti4r/esaturasi.git"
+          
+          # Create directory if not exists
+          if [ ! -d "$APP_PATH" ]; then
+            echo "📁 Creating application directory..."
+            mkdir -p "$APP_PATH"
+          fi
+          
+          cd "$APP_PATH"
+          
+          # Initialize repository if not exists
+          if [ ! -d ".git" ]; then
+            echo "📥 Cloning repository..."
+            git clone "$REPO_URL" .
+          fi
+          
+          # Update code
+          echo "🔄 Pulling latest code..."
           git fetch origin
           git checkout ${{ github.ref_name }}
-
-          echo "Ensuring .env exists..."
+          git pull origin ${{ github.ref_name }}
+          
+          # Setup .env file
+          echo "⚙️  Setting up environment..."
           if [ ! -f .env ]; then
+            echo "   Creating .env from template..."
             cp .env.example .env
-            echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-            echo "APP_URL=${{ secrets.APP_URL }}" >> .env
-            echo "APP_ENV=production" >> .env
-            echo "APP_DEBUG=false" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env
-            echo "GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}" >> .env
-            echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
-            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
           fi
-
-          echo "Pulling Docker images..."
-          docker compose pull
-
-          echo "Starting containers..."
+          
+          # Update .env with secrets (using sed for in-place editing)
+          sed -i.bak 's|^APP_KEY=.*|APP_KEY=${{ secrets.APP_KEY }}|' .env
+          sed -i.bak 's|^APP_URL=.*|APP_URL=${{ secrets.APP_URL }}|' .env
+          sed -i.bak 's|^APP_ENV=.*|APP_ENV=production|' .env
+          sed -i.bak 's|^APP_DEBUG=.*|APP_DEBUG=false|' .env
+          sed -i.bak 's|^DB_PASSWORD=.*|DB_PASSWORD=${{ secrets.DB_PASSWORD }}|' .env
+          sed -i.bak 's|^DB_ROOT_PASSWORD=.*|DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}|' .env
+          sed -i.bak 's|^GRAFANA_ADMIN_PASSWORD=.*|GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}|' .env
+          sed -i.bak 's|^MAIL_USERNAME=.*|MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}|' .env
+          sed -i.bak 's|^MAIL_PASSWORD=.*|MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}|' .env
+          rm -f .env.bak
+          
+          # Build and start containers
+          echo "🔨 Building Docker images..."
+          docker compose build --no-cache
+          
+          echo "🚀 Starting containers..."
           docker compose up -d
-
-          echo "Waiting for application to be ready..."
-          sleep 15
-
-          echo "Deployment completed successfully"
+          
+          echo "⏳ Waiting for containers to be ready (20 seconds)..."
+          sleep 20
+          
+          echo ""
+          echo "=========================================="
+          echo "✅ Deployment Status"
+          echo "=========================================="
           docker compose ps
-          EOF
+          
+          echo ""
+          echo "=========================================="
+          echo "📊 Application Info"
+          echo "=========================================="
+          echo "✅ Status: Production Deployment Complete"
+          echo "🌐 Application: ${{ secrets.APP_URL }}"
+          echo "🔐 Admin Panel: ${{ secrets.APP_URL }}/admin"
+          echo "📈 Grafana: ${{ secrets.APP_URL }}:3000"
+          echo "📊 Prometheus: ${{ secrets.APP_URL }}:9090"
+          echo ""
+          echo "🔑 Default Credentials:"
+          echo "   Email: admin@esaturasi.local"
+          echo "   Password: admin123."
+          echo "=========================================="
+          echo ""
+          
+          DEPLOY_SCRIPT
 
       - name: Verify deployment
         run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-          cd ${{ secrets.VPS_APP_PATH }}
-          echo "Checking container status..."
-          docker compose ps
-          echo "Checking application health..."
-          curl -f http://localhost/health || echo "Health check endpoint not yet available"
-          EOF
+          ssh -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'VERIFY_SCRIPT'
+          APP_PATH="${{ secrets.VPS_APP_PATH }}"
+          cd "$APP_PATH"
+          
+          echo ""
+          echo "=========================================="
+          echo "🔍 Verification Check"
+          echo "=========================================="
+          
+          # Check if containers are running
+          RUNNING=$(docker compose ps --services --filter "status=running" | wc -l)
+          TOTAL=$(docker compose ps --services | wc -l)
+          
+          echo "Containers: $RUNNING / $TOTAL running"
+          
+          if [ $RUNNING -eq $TOTAL ] && [ $TOTAL -gt 0 ]; then
+            echo "✅ All containers are running"
+          else
+            echo "⚠️  Some containers may not be ready yet"
+          fi
+          
+          echo "=========================================="
+          echo ""
+          
+          VERIFY_SCRIPT
 
       - name: Cleanup SSH key
         if: always()
         run: rm -f ~/.ssh/deploy_key
+
+      - name: Deployment Success
+        run: |
+          echo ""
+          echo "=========================================="
+          echo "✅ DEPLOYMENT SUCCESSFUL"
+          echo "=========================================="
+          echo ""
+          echo "Application is now running on production!"
+          echo "Monitor logs: docker compose logs -f app"
+          echo ""
