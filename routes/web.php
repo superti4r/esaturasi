@@ -6,8 +6,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PdfTestController;
 use Illuminate\Support\Facades\Storage;
 
-
-
 Route::get('/', function () {
     return view('welcome');
 });
