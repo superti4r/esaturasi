@@ -43,19 +43,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push Docker image
+      - name: Build Docker image (single platform for testing)
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./docker/Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: false
+          load: true
           tags: esaturasi:latest
-          outputs: type=docker,dest=/tmp/image.tar
-
-      - name: Load image for testing
-        run: |
-          docker load --input /tmp/image.tar
 
       - name: Run tests (optional)
         run: docker compose run --rm app php artisan test || true
@@ -64,7 +60,7 @@ jobs:
         run: |
           docker compose run --rm app php artisan shield:generate --all
 
-      - name: Push images to Docker Hub
+      - name: Push images to Docker Hub (multi-platform)
         if: success()
         uses: docker/build-push-action@v5
         with:
@@ -75,7 +71,6 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/esaturasi:latest
             ${{ secrets.DOCKER_USERNAME }}/esaturasi:${{ github.sha }}
-          registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
