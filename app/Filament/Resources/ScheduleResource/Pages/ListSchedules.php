@@ -28,7 +28,7 @@ class ListSchedules extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        if (!Auth::user()?->hasRole('Administrator')) {
+        if (!Auth::user()?->can('create_schedule')) {
             return [];
         }
 
@@ -55,7 +55,7 @@ class ListSchedules extends ListRecords
     public function getViewData(): array
     {
         $user    = Auth::user();
-        $isAdmin = $user->hasRole('Administrator');
+        $isAdmin = $user?->can('view_any_schedule') ?? false;
 
         $query = Schedule::with(['classroom', 'subject', 'teacher'])
             ->whereHas('archive', fn($q) => $q->where('status', 'Active'));

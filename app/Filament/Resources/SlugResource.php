@@ -32,9 +32,14 @@ class SlugResource extends Resource
     protected static ?string $pluralModelLabel = 'Manajemen Tugas & Materi';
     protected static ?string $modelLabel = 'Manajemen Tugas & Materi';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->can('view_any_slug') ?? false;
+    }
+
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->hasRole('guru') ?? false;
+        return auth()->user()?->can('view_any_slug') ?? false;
     }
 
     public static function form(Form $form): Form
