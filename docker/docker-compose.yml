@@ -52,7 +52,7 @@ services:
                 - linux/arm64
         container_name: esaturasi
         labels:
-            com.esaturasi.description: "eSaturasi Application"
+            com.esaturasi.description: "E-Saturasi Application"
             com.esaturasi.version: "1.0.0"
         ports:
             - "80:80"
