@@ -18,6 +18,9 @@ if [ ! -f .env ] || ! grep -q "APP_KEY=" .env || [ -z "$(grep 'APP_KEY=' .env | 
     php artisan key:generate --force
 fi
 
+echo "Running Composer post-autoload-dump scripts..."
+composer dump-autoload --optimize --no-ansi || true
+
 echo "Running database migrations..."
 php artisan migrate --force
 

@@ -23,7 +23,7 @@ WORKDIR /var/www/html
 
 COPY composer.json ./
 
-RUN composer install --optimize-autoloader --no-interaction --no-ansi --ignore-platform-req=ext-xml || composer install --no-cache --optimize-autoloader --no-interaction --no-ansi --ignore-platform-req=ext-xml
+RUN composer install --no-scripts --optimize-autoloader --no-interaction --no-ansi --ignore-platform-req=ext-xml || composer install --no-scripts --no-cache --optimize-autoloader --no-interaction --no-ansi --ignore-platform-req=ext-xml
 
 COPY package.json ./
 
@@ -46,6 +46,8 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
 RUN useradd -m -s /bin/bash -u 1000 appuser || true
 
 WORKDIR /var/www/html
+
+COPY --from=builder /usr/bin/composer /usr/bin/composer
 
 COPY --from=builder --chown=www-data:www-data /var/www/html /var/www/html
 
