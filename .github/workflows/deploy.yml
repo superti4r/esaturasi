@@ -41,14 +41,14 @@ jobs:
           echo "✓ All required secrets are configured"
 
       - name: Build Docker images
-        run: docker-compose build
+        run: docker compose build
 
       - name: Run tests (optional)
-        run: docker-compose run --rm app php artisan test || true
+        run: docker compose run --rm app php artisan test || true
 
       - name: Generate Filament Shield permissions
         run: |
-          docker-compose run --rm app php artisan shield:generate --all
+          docker compose run --rm app php artisan shield:generate --all
 
       - name: Push images to Docker Hub
         if: success()
@@ -108,22 +108,22 @@ jobs:
             cp .env.production .env
           fi
 
-          docker-compose pull
-          docker-compose up -d
-          docker-compose exec -T app php artisan migrate --force
-          docker-compose exec -T app php artisan shield:generate --all
-          docker-compose exec -T app php artisan config:cache
-          docker-compose exec -T app php artisan route:cache
-          docker-compose exec -T app php artisan view:cache
+          docker compose pull
+          docker compose up -d
+          docker compose exec -T app php artisan migrate --force
+          docker compose exec -T app php artisan shield:generate --all
+          docker compose exec -T app php artisan config:cache
+          docker compose exec -T app php artisan route:cache
+          docker compose exec -T app php artisan view:cache
 
-          if ! docker-compose exec -T app php artisan tinker <<'TINKEREOF' 2>/dev/null | grep -q "admin"; 
+          if ! docker compose exec -T app php artisan tinker <<'TINKEREOF' 2>/dev/null | grep -q "admin"; 
             use Spatie\Permission\Models\Role;
             echo Role::where('name', 'super_admin')->exists() ? "admin" : "none";
             exit(0);
           TINKEREOF
           then
             echo "Setting up Super Admin user..."
-            docker-compose exec -T app php artisan shield:super-admin --user=1 --panel=admin
+            docker compose exec -T app php artisan shield:super-admin --user=1 --panel=admin
           fi
 
           echo "Deployment completed successfully"
@@ -132,7 +132,7 @@ jobs:
       - name: Verify deployment
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-          docker-compose -f ${{ secrets.VPS_APP_PATH }}/docker-compose.yml ps
+          docker compose -f ${{ secrets.VPS_APP_PATH }}/docker-compose.yml ps
           EOF
 
       - name: Cleanup SSH key
