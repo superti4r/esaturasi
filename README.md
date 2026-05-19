@@ -35,7 +35,7 @@ docker-compose up -d
 ### 3. Access Application
 
 - **App**: http://localhost
-- **Admin**: http://localhost/admin (User: admin@esaturasi.local, Pass: admin123.)
+- **Admin**: http://localhost/admin (User: bchtrrprmd@gmail.com, Pass: admin123.)
 - **Grafana**: http://localhost:3000 (admin/admin123)
 - **Prometheus**: http://localhost:9090
 
@@ -43,7 +43,7 @@ docker-compose up -d
 
 ### First-time Setup
 - Database migrations run automatically
-- Default admin user seeded: **Bachtiar Dwi Pramudi** (admin@esaturasi.local : admin123.)
+- Default admin user seeded: **Bachtiar Dwi Pramudi** (bchtrrprmd@gmail.com : admin123.)
 - Filament Shield permissions generated
 - Super Admin role assigned to user ID 1
 
