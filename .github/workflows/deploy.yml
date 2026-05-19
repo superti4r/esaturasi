@@ -17,28 +17,35 @@ jobs:
 
       - name: Verify required secrets
         run: |
-          REQUIRED_SECRETS=(
-            "APP_KEY"
-            "APP_URL"
-            "DB_PASSWORD"
-            "DB_ROOT_PASSWORD"
-            "GRAFANA_ADMIN_PASSWORD"
-            "MAIL_USERNAME"
-            "MAIL_PASSWORD"
-            "VPS_HOST"
-            "VPS_USER"
-            "VPS_APP_PATH"
-            "VPS_SSH_KEY"
-          )
-
-          for secret in "${REQUIRED_SECRETS[@]}"; do
-            if [ -z "$(eval echo \${{ secrets.$secret }})" ]; then
+          echo "Verifying required secrets..."
+          
+          MISSING_SECRETS=0
+          
+          for secret in APP_KEY APP_URL DB_PASSWORD DB_ROOT_PASSWORD GRAFANA_ADMIN_PASSWORD MAIL_USERNAME MAIL_PASSWORD VPS_HOST VPS_USER VPS_APP_PATH VPS_SSH_KEY; do
+            if [ -z "$(eval echo \$$secret)" ]; then
               echo "❌ Error: $secret secret not set"
-              exit 1
+              MISSING_SECRETS=$((MISSING_SECRETS + 1))
             fi
           done
-
+          
+          if [ $MISSING_SECRETS -gt 0 ]; then
+            echo "❌ $MISSING_SECRETS required secrets are missing"
+            exit 1
+          fi
+          
           echo "✅ All required secrets configured"
+        env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_URL: ${{ secrets.APP_URL }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_APP_PATH: ${{ secrets.VPS_APP_PATH }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
 
       - name: Setup SSH key
         run: |
