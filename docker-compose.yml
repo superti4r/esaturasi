@@ -1,4 +1,3 @@
 version: '3.9'
 
-include:
-  - docker/docker-compose.yml
+include: docker/docker-compose.yml
