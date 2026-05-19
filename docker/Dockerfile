@@ -5,14 +5,17 @@ ARG TARGETPLATFORM
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl git unzip ca-certificates \
-    libpng-dev libjpeg-dev libfreetype6-dev libonig-dev libzip-dev libcurl4-openssl-dev libssl-dev \
-    libxml2-dev zlib1g-dev libicu-dev g++ \
-    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y --no-install-recommends nodejs \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-configure intl \
-    && docker-php-ext-install -j$(nproc) pdo_mysql mbstring exif pcntl bcmath zip gd curl xml dom ctype fileinfo intl tokenizer \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    build-essential libpng-dev libjpeg-dev libfreetype6-dev libonig-dev libzip-dev \
+    libcurl4-openssl-dev libssl-dev libxml2-dev zlib1g-dev libicu-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-configure intl && \
+    docker-php-ext-install -j$(nproc) pdo_mysql mbstring exif pcntl bcmath zip gd curl xml dom ctype fileinfo intl tokenizer
+
+RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y --no-install-recommends nodejs && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
@@ -32,12 +35,13 @@ ARG TARGETPLATFORM
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx curl ca-certificates \
-    libpng-dev libjpeg-dev libfreetype6-dev libonig-dev libzip-dev libcurl4-openssl-dev libssl-dev \
-    libxml2-dev zlib1g-dev libicu-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-configure intl \
-    && docker-php-ext-install -j$(nproc) pdo_mysql mbstring exif pcntl bcmath zip gd curl xml dom ctype fileinfo intl tokenizer \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    libpng-dev libjpeg-dev libfreetype6-dev libonig-dev libzip-dev \
+    libcurl4-openssl-dev libssl-dev libxml2-dev zlib1g-dev libicu-dev
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-configure intl && \
+    docker-php-ext-install -j$(nproc) pdo_mysql mbstring exif pcntl bcmath zip gd curl xml dom ctype fileinfo intl tokenizer && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN useradd -m -s /bin/bash -u 1000 appuser || true
 
