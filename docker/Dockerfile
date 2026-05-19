@@ -34,7 +34,7 @@ FROM --platform=${TARGETPLATFORM} php:8.4-fpm
 ARG TARGETPLATFORM
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    nginx curl ca-certificates \
+    nginx curl ca-certificates netcat-openbsd \
     libpng-dev libjpeg-dev libfreetype6-dev libonig-dev libzip-dev \
     libcurl4-openssl-dev libssl-dev libxml2-dev zlib1g-dev libicu-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*

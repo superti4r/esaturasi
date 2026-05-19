@@ -43,23 +43,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image (single platform for testing)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./docker/Dockerfile
-          platforms: linux/amd64
-          push: false
-          load: true
-          tags: esaturasi:latest
-
-      - name: Run tests (optional)
-        run: docker compose run --rm app php artisan test || true
-
-      - name: Generate Filament Shield permissions
-        run: |
-          docker compose run --rm app php artisan shield:generate --all
-
       - name: Push images to Docker Hub (multi-platform)
         if: success()
         uses: docker/build-push-action@v5
@@ -98,51 +81,45 @@ jobs:
 
           cd ${{ secrets.VPS_APP_PATH }}
 
+          echo "Pulling latest code..."
           git fetch origin
           git checkout ${{ github.ref_name }}
 
-          cp .env.example .env
-
-          if [ ! -f .env.production ]; then
-            cat > .env.production << ENVEOF
-          APP_KEY=${{ secrets.APP_KEY }}
-          APP_URL=${{ secrets.APP_URL }}
-          APP_ENV=production
-          APP_DEBUG=false
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
-          GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}
-          MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}
-          MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
-          ENVEOF
-            cp .env.production .env
+          echo "Ensuring .env exists..."
+          if [ ! -f .env ]; then
+            cp .env.example .env
+            echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
+            echo "APP_URL=${{ secrets.APP_URL }}" >> .env
+            echo "APP_ENV=production" >> .env
+            echo "APP_DEBUG=false" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env
+            echo "GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}" >> .env
+            echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
           fi
 
+          echo "Pulling Docker images..."
           docker compose pull
-          docker compose up -d
-          docker compose exec -T app php artisan migrate --force
-          docker compose exec -T app php artisan shield:generate --all
-          docker compose exec -T app php artisan config:cache
-          docker compose exec -T app php artisan route:cache
-          docker compose exec -T app php artisan view:cache
 
-          if ! docker compose exec -T app php artisan tinker <<'TINKEREOF' 2>/dev/null | grep -q "admin"; 
-            use Spatie\Permission\Models\Role;
-            echo Role::where('name', 'super_admin')->exists() ? "admin" : "none";
-            exit(0);
-          TINKEREOF
-          then
-            echo "Setting up Super Admin user..."
-            docker compose exec -T app php artisan shield:super-admin --user=1 --panel=admin
-          fi
+          echo "Starting containers..."
+          docker compose up -d
+
+          echo "Waiting for application to be ready..."
+          sleep 15
 
           echo "Deployment completed successfully"
+          docker compose ps
           EOF
 
       - name: Verify deployment
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-          docker compose -f ${{ secrets.VPS_APP_PATH }}/docker-compose.yml ps
+          cd ${{ secrets.VPS_APP_PATH }}
+          echo "Checking container status..."
+          docker compose ps
+          echo "Checking application health..."
+          curl -f http://localhost/health || echo "Health check endpoint not yet available"
           EOF
 
       - name: Cleanup SSH key
